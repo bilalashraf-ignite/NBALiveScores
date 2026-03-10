@@ -1,0 +1,146 @@
+# Requirements: Basketball Live Scores
+
+**Defined:** 2026-03-10
+**Core Value:** Users can quickly check live basketball game scores and context without ads, clutter, or slow page loads
+
+## v1.0 Requirements
+
+Requirements for initial release. Each maps to roadmap phases.
+
+### Live Scores
+
+- [ ] **LIVE-01**: User can view real-time score updates for ongoing basketball games
+- [ ] **LIVE-02**: User sees scores update automatically without page refresh (polling with API rate limits)
+- [ ] **LIVE-03**: User sees current game context (quarter/period, time remaining)
+- [ ] **LIVE-04**: User sees possession indicator showing which team has the ball
+- [ ] **LIVE-05**: User sees team fouls displayed for each team
+- [ ] **LIVE-06**: User sees game status badges (LIVE, FINAL, SCHEDULED) with clear visual distinction
+- [ ] **LIVE-07**: User sees "Last updated" timestamp to understand data freshness
+- [ ] **LIVE-08**: User can manually refresh scores if data appears stale
+
+### Historical Data
+
+- [ ] **HIST-01**: User can view final scores for completed games
+- [ ] **HIST-02**: User can access game results with date and time of completion
+- [ ] **HIST-03**: User can view historical head-to-head matchup data between teams
+- [ ] **HIST-04**: User can see last 5 meetings between two teams with outcomes
+
+### Leagues & Teams
+
+- [ ] **LEAGUE-01**: User can view games from NBA league
+- [ ] **LEAGUE-02**: User can view games from NCAA league
+- [ ] **LEAGUE-03**: User can view games from EuroLeague
+- [ ] **LEAGUE-04**: User can filter or navigate games by specific league
+- [ ] **TEAM-01**: User sees team names displayed for each game
+- [ ] **TEAM-02**: User sees team logos displayed for visual recognition
+- [ ] **TEAM-03**: User sees season records (W-L) for each team
+
+### Schedule
+
+- [ ] **SCHED-01**: User can view upcoming game fixtures
+- [ ] **SCHED-02**: User sees game date and time in their local timezone
+- [ ] **SCHED-03**: User sees scheduled matchups before games start
+- [ ] **SCHED-04**: User sees timezone-aware game times that adjust for DST transitions
+
+### Statistics
+
+- [ ] **STAT-01**: User can view basic team statistics during live games (field goal %, rebounds, assists)
+- [ ] **STAT-02**: User can view turnovers for each team
+- [ ] **STAT-03**: User can view individual player statistics during live games
+- [ ] **STAT-04**: User can see player points, rebounds, and assists
+- [ ] **STAT-05**: User can access player statistics by expanding game details
+
+### Home Page & Navigation
+
+- [ ] **NAV-01**: User sees all live games across all leagues on unified home page
+- [ ] **NAV-02**: User can view all live games at a glance without scrolling excessively
+- [ ] **NAV-03**: User can distinguish between live, scheduled, and completed games visually
+- [ ] **NAV-04**: User can navigate to detailed game view from home page
+
+### Performance
+
+- [ ] **PERF-01**: User experiences sub-1-second initial page load on desktop
+- [ ] **PERF-02**: User experiences sub-2-second initial page load on mobile devices
+- [ ] **PERF-03**: Site uses aggressive caching to minimize API calls and improve speed
+- [ ] **PERF-04**: Static assets (CSS, JS, images) are cached with CDN
+- [ ] **PERF-05**: Score updates do not cause page layout shifts or jumps
+
+### Mobile Experience
+
+- [ ] **MOB-01**: User can access site on mobile devices with responsive design
+- [ ] **MOB-02**: User can interact with touch-friendly tap targets and controls
+- [ ] **MOB-03**: User sees readable text sizes on small screens without zooming
+- [ ] **MOB-04**: User experiences optimized mobile performance (reduced polling on cellular)
+
+### User Experience
+
+- [ ] **UX-01**: User sees clean, scannable layout with minimal visual clutter
+- [ ] **UX-02**: User experiences ad-free or minimal advertising interface
+- [ ] **UX-03**: User sees graceful error messages (not blank screens) when API fails
+- [ ] **UX-04**: User sees cached data with timestamp when live updates are unavailable
+- [ ] **UX-05**: User sees loading indicators during data fetches
+- [ ] **UX-06**: User experiences smooth transitions when scores update
+
+## v2.0 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### AI/ML Predictions
+
+- **PRED-01**: User can view AI/ML-powered game predictions
+- **PRED-02**: User sees win probability percentages for upcoming games
+- **PRED-03**: User sees confidence scores for predictions
+- **PRED-04**: Predictions use historical data, team stats, and player performance
+
+### Play-by-Play
+
+- **PBP-01**: User can view real-time play-by-play event feed for live games
+- **PBP-02**: User sees chronological event stream (made shot, rebound, timeout)
+- **PBP-03**: User sees player names attributed to events
+
+### Advanced Features
+
+- **ADV-01**: User can enable browser push notifications for game events
+- **ADV-02**: User can customize notification preferences
+- **ADV-03**: User can switch between multiple view modes (list, card, compact)
+- **ADV-04**: User can view advanced metrics (True Shooting %, Player Efficiency Rating)
+
+### User Accounts
+
+- **ACCT-01**: User can create account with email and password
+- **ACCT-02**: User can save favorite teams across devices
+- **ACCT-03**: User can sync preferences across browsers and devices
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| AI/ML game predictions | Deferred to v2.0 — High complexity, requires data collection period, better to validate core experience first |
+| Play-by-play real-time feed | Deferred to v2.0 — Prioritize comprehensive game context over event-by-event updates |
+| User accounts/authentication | Deferred to v2.0 — Use local storage for preferences in v1; reduces complexity and signup friction |
+| Video highlights or streaming | Out of scope — Licensing costs prohibitive, bandwidth expensive, out of PROJECT.md constraints |
+| Real-time chat or comments | Out of scope — Moderation burden, distracts from core value of "quick check scores" |
+| Fantasy basketball integration | Out of scope — Complex integration, diverts focus from live scores core value |
+| Betting odds display | Out of scope — Regulatory complexity, ethical concerns, explicitly avoided per PROJECT.md |
+| Shot charts & visualizations | Deferred to v2.0+ — Requires paid APIs with tracking data, not viable with free API constraint |
+| Multi-sport support | Out of scope for v1.0 — Focus on basketball, each sport has unique display needs |
+| Advanced metrics (expected FG%, Gravity) | Deferred to v2.0 — Requires optical tracking data from paid APIs, not available with free API constraint |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| (To be filled by roadmapper) | | |
+
+**Coverage:**
+- v1.0 requirements: 45 total
+- Mapped to phases: 0 (pending roadmap)
+- Unmapped: 45 ⚠️
+
+---
+*Requirements defined: 2026-03-10*
+*Last updated: 2026-03-10 after initial definition*

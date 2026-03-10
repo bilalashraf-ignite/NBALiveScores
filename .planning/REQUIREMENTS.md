@@ -134,13 +134,59 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (To be filled by roadmapper) | | |
+| LIVE-01 | Phase 2 | Pending |
+| LIVE-02 | Phase 2 | Pending |
+| LIVE-03 | Phase 2 | Pending |
+| LIVE-04 | Phase 2 | Pending |
+| LIVE-05 | Phase 2 | Pending |
+| LIVE-06 | Phase 2 | Pending |
+| LIVE-07 | Phase 2 | Pending |
+| LIVE-08 | Phase 2 | Pending |
+| HIST-01 | Phase 2 | Pending |
+| HIST-02 | Phase 2 | Pending |
+| HIST-03 | Phase 4 | Pending |
+| HIST-04 | Phase 4 | Pending |
+| LEAGUE-01 | Phase 2 | Pending |
+| LEAGUE-02 | Phase 3 | Pending |
+| LEAGUE-03 | Phase 3 | Pending |
+| LEAGUE-04 | Phase 3 | Pending |
+| TEAM-01 | Phase 2 | Pending |
+| TEAM-02 | Phase 2 | Pending |
+| TEAM-03 | Phase 2 | Pending |
+| SCHED-01 | Phase 3 | Pending |
+| SCHED-02 | Phase 3 | Pending |
+| SCHED-03 | Phase 3 | Pending |
+| SCHED-04 | Phase 3 | Pending |
+| STAT-01 | Phase 4 | Pending |
+| STAT-02 | Phase 4 | Pending |
+| STAT-03 | Phase 4 | Pending |
+| STAT-04 | Phase 4 | Pending |
+| STAT-05 | Phase 4 | Pending |
+| NAV-01 | Phase 2 | Pending |
+| NAV-02 | Phase 2 | Pending |
+| NAV-03 | Phase 2 | Pending |
+| NAV-04 | Phase 2 | Pending |
+| PERF-01 | Phase 5 | Pending |
+| PERF-02 | Phase 5 | Pending |
+| PERF-03 | Phase 1 | Pending |
+| PERF-04 | Phase 1 | Pending |
+| PERF-05 | Phase 5 | Pending |
+| MOB-01 | Phase 5 | Pending |
+| MOB-02 | Phase 5 | Pending |
+| MOB-03 | Phase 5 | Pending |
+| MOB-04 | Phase 5 | Pending |
+| UX-01 | Phase 2 | Pending |
+| UX-02 | Phase 5 | Pending |
+| UX-03 | Phase 2 | Pending |
+| UX-04 | Phase 2 | Pending |
+| UX-05 | Phase 2 | Pending |
+| UX-06 | Phase 2 | Pending |
 
 **Coverage:**
 - v1.0 requirements: 45 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 45 ⚠️
+- Mapped to phases: 45 (100%)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-10*
-*Last updated: 2026-03-10 after initial definition*
+*Last updated: 2026-03-10 after roadmap creation*

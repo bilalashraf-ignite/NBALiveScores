@@ -110,7 +110,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Infrastructure | 0/3 | Not started | - |
+| 1. Foundation & Infrastructure | 2/3 | In Progress|  |
 | 2. Live Scores Display | 0/? | Not started | - |
 | 3. Multi-League & Schedule | 0/? | Not started | - |
 | 4. Game Details & Statistics | 0/? | Not started | - |

@@ -9,7 +9,7 @@
  * Target time to swap: Under 4 hours (addresses PITFALLS.md #7)
  */
 
-export { SportsDataAdapter } from './sports-api-adapter';
+export type { SportsDataAdapter } from './sports-api-adapter';
 export { BalldontlieAdapter } from './balldontlie-adapter';
 
 // Default adapter (can be changed via configuration)

@@ -14,14 +14,14 @@ import { Game, GameState } from '@/types/sports-data';
  * - Final games: Stop polling (no changes expected)
  * - Postponed: 30 minutes (check for rescheduling)
  */
-const POLLING_INTERVALS = {
-  SCHEDULED: 5 * 60 * 1000,  // 5 minutes for scheduled games
-  LIVE: 15 * 1000,           // 15 seconds for live games (balances freshness vs rate limits)
-  HALFTIME: 2 * 60 * 1000,   // 2 minutes during halftime
-  FINAL: null,               // Stop polling finished games
-  POSTPONED: 30 * 60 * 1000, // 30 minutes for postponed (check for rescheduling)
-  CANCELLED: null            // Stop polling cancelled games
-} as const;
+const POLLING_INTERVALS: Record<GameState, number | null> = {
+  [GameState.SCHEDULED]: 5 * 60 * 1000,  // 5 minutes for scheduled games
+  [GameState.LIVE]: 15 * 1000,           // 15 seconds for live games (balances freshness vs rate limits)
+  [GameState.HALFTIME]: 2 * 60 * 1000,   // 2 minutes during halftime
+  [GameState.FINAL]: null,               // Stop polling finished games
+  [GameState.POSTPONED]: 30 * 60 * 1000, // 30 minutes for postponed (check for rescheduling)
+  [GameState.CANCELLED]: null            // Stop polling cancelled games
+};
 
 /**
  * Get the appropriate polling interval for a game based on its state.

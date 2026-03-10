@@ -62,7 +62,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PERF-01**: User experiences sub-1-second initial page load on desktop
 - [ ] **PERF-02**: User experiences sub-2-second initial page load on mobile devices
 - [ ] **PERF-03**: Site uses aggressive caching to minimize API calls and improve speed
-- [ ] **PERF-04**: Static assets (CSS, JS, images) are cached with CDN
+- [x] **PERF-04**: Static assets (CSS, JS, images) are cached with CDN
 - [ ] **PERF-05**: Score updates do not cause page layout shifts or jumps
 
 ### Mobile Experience
@@ -169,7 +169,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERF-01 | Phase 5 | Pending |
 | PERF-02 | Phase 5 | Pending |
 | PERF-03 | Phase 1 | Pending |
-| PERF-04 | Phase 1 | Pending |
+| PERF-04 | Phase 1 | Complete |
 | PERF-05 | Phase 5 | Pending |
 | MOB-01 | Phase 5 | Pending |
 | MOB-02 | Phase 5 | Pending |

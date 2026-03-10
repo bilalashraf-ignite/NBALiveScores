@@ -27,7 +27,12 @@
 3. API responses cache with appropriate TTL and serve from Redis without origin hits
 4. Deployment pipeline builds and deploys changes to production in under 5 minutes
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Next.js project scaffold with TypeScript, Tailwind CSS, and CDN-optimized configuration
+- [ ] 01-02-PLAN.md — API abstraction layer with adapter pattern and game state machine for intelligent polling
+- [ ] 01-03-PLAN.md — Database schema, Redis caching infrastructure, and CI/CD deployment pipeline
 
 ---
 
@@ -105,7 +110,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Infrastructure | 0/? | Not started | - |
+| 1. Foundation & Infrastructure | 0/3 | Not started | - |
 | 2. Live Scores Display | 0/? | Not started | - |
 | 3. Multi-League & Schedule | 0/? | Not started | - |
 | 4. Game Details & Statistics | 0/? | Not started | - |

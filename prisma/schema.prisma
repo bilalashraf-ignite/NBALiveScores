@@ -1,0 +1,53 @@
+// Prisma schema for Basketball Live Scores
+// Database: PostgreSQL (Vercel Postgres in production)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Team model - Represents basketball teams across all leagues
+model Team {
+  id           String   @id @default(cuid())
+  name         String
+  abbreviation String   @unique
+  logoUrl      String?
+  league       String   // "NBA", "NCAA", "EUROLEAGUE"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  homeGames    Game[]   @relation("HomeTeam")
+  awayGames    Game[]   @relation("AwayTeam")
+
+  @@index([league])
+}
+
+// Game model - Represents basketball games with real-time state tracking
+// Note: scheduledTime always stored in UTC per PITFALLS.md Pitfall 3
+model Game {
+  id            String   @id @default(cuid())
+  externalId    String?  @unique  // ID from external API
+  homeTeamId    String
+  awayTeamId    String
+  homeScore     Int      @default(0)
+  awayScore     Int      @default(0)
+  state         String   // Maps to GameState enum (scheduled, live, halftime, final, postponed, cancelled)
+  scheduledTime DateTime // Always stored in UTC per PITFALLS.md Pitfall 3
+  period        Int?
+  timeRemaining String?
+  possession    String?  // "home" or "away"
+  league        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  homeTeam      Team     @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam      Team     @relation("AwayTeam", fields: [awayTeamId], references: [id])
+
+  @@index([state])
+  @@index([scheduledTime])
+  @@index([league])
+}

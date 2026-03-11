@@ -32,22 +32,56 @@ export class BalldontlieAdapter implements SportsDataAdapter {
   /**
    * Fetch all live NBA games.
    *
-   * Note: Phase 1 returns empty array. Implementation will be added in Phase 2.
+   * Note: Phase 2 returns mock data. Real API calls will be added in Phase 3.
    *
    * @param league - League identifier (only "nba" supported by balldontlie.io)
    * @returns Array of live games
    */
   async getLiveGames(league: string): Promise<Game[]> {
     try {
-      // Phase 1: Return empty array (no network calls yet)
-      // Phase 2: Implement actual HTTP fetch to /games endpoint with live filter
-      // const response = await fetch(`${this.baseUrl}/games?live=true`, {
-      //   headers: { 'Authorization': this.apiKey }
-      // });
-      // const data = await response.json();
-      // return data.data.map(this.mapToGame);
+      // Phase 2: Return mock data for UI development
+      // Phase 3: Implement actual HTTP fetch to /games endpoint with live filter
 
-      return [];
+      // Generate mock games with various states
+      const states = [GameState.LIVE, GameState.HALFTIME, GameState.FINAL, GameState.SCHEDULED];
+      const mockGames: Game[] = [];
+
+      for (let i = 0; i < 8; i++) {
+        const state = states[i % states.length];
+        const homeScore = Math.floor(Math.random() * 40) + 80;
+        const awayScore = Math.floor(Math.random() * 40) + 80;
+
+        mockGames.push({
+          id: `game-${i}`,
+          homeTeam: {
+            id: `team-home-${i}`,
+            name: `Home Team ${i}`,
+            abbreviation: `HT${i}`,
+            logoUrl: undefined
+          },
+          awayTeam: {
+            id: `team-away-${i}`,
+            name: `Away Team ${i}`,
+            abbreviation: `AT${i}`,
+            logoUrl: undefined
+          },
+          score: { home: homeScore, away: awayScore },
+          state: state,
+          scheduledTime: new Date(Date.now() - 3600000),
+          period: state === GameState.LIVE || state === GameState.HALFTIME
+            ? Math.floor(Math.random() * 4) + 1
+            : undefined,
+          timeRemaining: state === GameState.LIVE ? '8:42' : undefined,
+          possession: state === GameState.LIVE
+            ? (Math.random() > 0.5 ? 'home' : 'away')
+            : undefined,
+          teamFouls: state === GameState.LIVE || state === GameState.HALFTIME
+            ? { home: Math.floor(Math.random() * 7), away: Math.floor(Math.random() * 7) }
+            : undefined
+        });
+      }
+
+      return mockGames;
     } catch (error) {
       console.error('Failed to fetch live games from balldontlie.io:', error);
       return []; // Graceful degradation

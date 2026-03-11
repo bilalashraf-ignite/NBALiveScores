@@ -9,12 +9,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Live Scores
 
-- [ ] **LIVE-01**: User can view real-time score updates for ongoing basketball games
+- [x] **LIVE-01**: User can view real-time score updates for ongoing basketball games
 - [ ] **LIVE-02**: User sees scores update automatically without page refresh (polling with API rate limits)
-- [ ] **LIVE-03**: User sees current game context (quarter/period, time remaining)
-- [ ] **LIVE-04**: User sees possession indicator showing which team has the ball
-- [ ] **LIVE-05**: User sees team fouls displayed for each team
-- [ ] **LIVE-06**: User sees game status badges (LIVE, FINAL, SCHEDULED) with clear visual distinction
+- [x] **LIVE-03**: User sees current game context (quarter/period, time remaining)
+- [x] **LIVE-04**: User sees possession indicator showing which team has the ball
+- [x] **LIVE-05**: User sees team fouls displayed for each team
+- [x] **LIVE-06**: User sees game status badges (LIVE, FINAL, SCHEDULED) with clear visual distinction
 - [ ] **LIVE-07**: User sees "Last updated" timestamp to understand data freshness
 - [ ] **LIVE-08**: User can manually refresh scores if data appears stale
 
@@ -31,9 +31,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **LEAGUE-02**: User can view games from NCAA league
 - [ ] **LEAGUE-03**: User can view games from EuroLeague
 - [ ] **LEAGUE-04**: User can filter or navigate games by specific league
-- [ ] **TEAM-01**: User sees team names displayed for each game
-- [ ] **TEAM-02**: User sees team logos displayed for visual recognition
-- [ ] **TEAM-03**: User sees season records (W-L) for each team
+- [x] **TEAM-01**: User sees team names displayed for each game
+- [x] **TEAM-02**: User sees team logos displayed for visual recognition
+- [x] **TEAM-03**: User sees season records (W-L) for each team
 
 ### Schedule
 
@@ -54,7 +54,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **NAV-01**: User sees all live games across all leagues on unified home page
 - [ ] **NAV-02**: User can view all live games at a glance without scrolling excessively
-- [ ] **NAV-03**: User can distinguish between live, scheduled, and completed games visually
+- [x] **NAV-03**: User can distinguish between live, scheduled, and completed games visually
 - [ ] **NAV-04**: User can navigate to detailed game view from home page
 
 ### Performance
@@ -78,7 +78,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **UX-02**: User experiences ad-free or minimal advertising interface
 - [ ] **UX-03**: User sees graceful error messages (not blank screens) when API fails
 - [ ] **UX-04**: User sees cached data with timestamp when live updates are unavailable
-- [ ] **UX-05**: User sees loading indicators during data fetches
+- [x] **UX-05**: User sees loading indicators during data fetches
 - [ ] **UX-06**: User experiences smooth transitions when scores update
 
 ## v2.0 Requirements
@@ -134,12 +134,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LIVE-01 | Phase 2 | Pending |
+| LIVE-01 | Phase 2 | Complete |
 | LIVE-02 | Phase 2 | Pending |
-| LIVE-03 | Phase 2 | Pending |
-| LIVE-04 | Phase 2 | Pending |
-| LIVE-05 | Phase 2 | Pending |
-| LIVE-06 | Phase 2 | Pending |
+| LIVE-03 | Phase 2 | Complete |
+| LIVE-04 | Phase 2 | Complete |
+| LIVE-05 | Phase 2 | Complete |
+| LIVE-06 | Phase 2 | Complete |
 | LIVE-07 | Phase 2 | Pending |
 | LIVE-08 | Phase 2 | Pending |
 | HIST-01 | Phase 2 | Pending |
@@ -150,9 +150,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LEAGUE-02 | Phase 3 | Pending |
 | LEAGUE-03 | Phase 3 | Pending |
 | LEAGUE-04 | Phase 3 | Pending |
-| TEAM-01 | Phase 2 | Pending |
-| TEAM-02 | Phase 2 | Pending |
-| TEAM-03 | Phase 2 | Pending |
+| TEAM-01 | Phase 2 | Complete |
+| TEAM-02 | Phase 2 | Complete |
+| TEAM-03 | Phase 2 | Complete |
 | SCHED-01 | Phase 3 | Pending |
 | SCHED-02 | Phase 3 | Pending |
 | SCHED-03 | Phase 3 | Pending |
@@ -164,7 +164,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STAT-05 | Phase 4 | Pending |
 | NAV-01 | Phase 2 | Pending |
 | NAV-02 | Phase 2 | Pending |
-| NAV-03 | Phase 2 | Pending |
+| NAV-03 | Phase 2 | Complete |
 | NAV-04 | Phase 2 | Pending |
 | PERF-01 | Phase 5 | Pending |
 | PERF-02 | Phase 5 | Pending |
@@ -179,7 +179,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UX-02 | Phase 5 | Pending |
 | UX-03 | Phase 2 | Pending |
 | UX-04 | Phase 2 | Pending |
-| UX-05 | Phase 2 | Pending |
+| UX-05 | Phase 2 | Complete |
 | UX-06 | Phase 2 | Pending |
 
 **Coverage:**

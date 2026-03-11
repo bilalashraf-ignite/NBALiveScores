@@ -14,3 +14,7 @@ export { BalldontlieAdapter } from './balldontlie-adapter';
 
 // Default adapter (can be changed via configuration)
 export { BalldontlieAdapter as DefaultAdapter } from './balldontlie-adapter';
+
+// Default adapter instance for use across the application
+import { BalldontlieAdapter } from './balldontlie-adapter';
+export const adapter = new BalldontlieAdapter();

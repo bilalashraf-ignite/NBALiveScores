@@ -5,45 +5,80 @@
  * Implements unidirectional server-push pattern for automatic score updates
  * without client polling overhead.
  *
+ * Phase 3: Multi-league support with parallel fetching from NBA, NCAA, and EuroLeague.
+ * Uses Promise.allSettled to ensure one failing API doesn't block others.
+ *
  * Critical configuration:
  * - runtime = 'nodejs' prevents edge runtime buffering
  * - dynamic = 'force-dynamic' disables caching
  *
- * Pattern source: RESEARCH.md Pattern 1 (verified against Next.js docs)
+ * Pattern source: RESEARCH.md Pattern 1 & Pattern 4 (SSE + parallel multi-league)
  * Prevents Pitfall 2: Response buffering breaks SSE streaming
  */
 
-import { adapter } from '@/lib/adapters';
-import { cache, CACHE_TTL } from '@/lib/cache';
-import { Game } from '@/types/sports-data';
+import { getAdapter } from '@/lib/adapters';
+import type { League, Game } from '@/types/sports-data';
 
 // CRITICAL: Prevent buffering and caching that breaks SSE
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
+ * Fetch games from all supported leagues in parallel.
+ * Uses Promise.allSettled for fault tolerance - one failing API doesn't block others.
+ *
+ * @returns Object with combined games array and per-league error map
+ */
+async function fetchAllLeagues(): Promise<{
+  games: Game[];
+  errors: Partial<Record<League, string>>;
+}> {
+  const leagues: League[] = ['NBA', 'NCAA', 'EuroLeague'];
+
+  // Parallel fetches — don't wait for slow APIs
+  const results = await Promise.allSettled(
+    leagues.map(async (league) => {
+      const adapter = getAdapter(league);
+      return adapter.getLiveGames(league);
+    })
+  );
+
+  const games: Game[] = [];
+  const errors: Partial<Record<League, string>> = {};
+
+  results.forEach((result, index) => {
+    const league = leagues[index];
+    if (result.status === 'fulfilled') {
+      games.push(...result.value);
+    } else {
+      errors[league] = result.reason.message;
+      console.error(`[${league}] Fetch failed:`, result.reason);
+    }
+  });
+
+  return { games, errors };
+}
+
+/**
  * Async generator that yields game updates every 15 seconds.
- * Implements cache-first strategy with 10-second TTL for live games.
+ * Fetches from all three leagues in parallel on each update.
  */
 async function* scoreUpdates() {
   const encoder = new TextEncoder();
 
   while (true) {
     try {
-      const cacheKey = cache.keys.liveGames('nba');
+      const { games, errors } = await fetchAllLeagues();
 
-      // Try cache first
-      let games = await cache.get<Game[]>(cacheKey);
-
-      // On cache miss or stale data, fetch from adapter
-      if (!games) {
-        games = await adapter.getLiveGames('nba');
-        await cache.set(cacheKey, games, CACHE_TTL.LIVE_GAME);
-      }
-
-      // Format as SSE: data: <json>\n\n (two newlines required)
+      // Send games data (SSE format: data: <json>\n\n)
       const data = `data: ${JSON.stringify(games)}\n\n`;
       yield encoder.encode(data);
+
+      // Optional: send errors as separate event type for per-league warnings
+      if (Object.keys(errors).length > 0) {
+        const errorData = `event: error\ndata: ${JSON.stringify(errors)}\n\n`;
+        yield encoder.encode(errorData);
+      }
 
       // Wait 15 seconds before next update
       await new Promise(resolve => setTimeout(resolve, 15000));

@@ -5,6 +5,12 @@
  */
 
 /**
+ * Supported basketball leagues.
+ * Each league has its own adapter implementation.
+ */
+export type League = 'NBA' | 'NCAA' | 'EuroLeague';
+
+/**
  * All possible states a basketball game can be in.
  * Used to determine polling frequency and display logic.
  */
@@ -58,6 +64,8 @@ export interface TeamFouls {
 export interface Game {
   /** Internal unique identifier (not tied to any specific API) */
   id: string;
+  /** League this game belongs to */
+  league: League;
   /** Home team information */
   homeTeam: Team;
   /** Away team information */

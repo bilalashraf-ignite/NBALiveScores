@@ -18,6 +18,15 @@ jest.mock('@/components/game-list', () => ({
   ),
 }));
 
+jest.mock('@/components/league-filter', () => ({
+  LeagueFilter: ({ games, selectedLeague, onSelectLeague }: any) => (
+    <div data-testid="league-filter">
+      <button onClick={() => onSelectLeague('NBA')}>NBA</button>
+      <button onClick={() => onSelectLeague('NCAA')}>NCAA</button>
+    </div>
+  ),
+}));
+
 jest.mock('@/components/game-card-skeleton', () => ({
   GameCardSkeleton: () => <div data-testid="game-skeleton">Loading...</div>,
 }));
@@ -44,6 +53,7 @@ global.fetch = jest.fn();
 
 const createMockGame = (id: string): Game => ({
   id,
+  league: 'NBA',
   state: GameState.LIVE,
   homeTeam: {
     id: 'team-1',
@@ -243,7 +253,7 @@ describe('HomePage', () => {
 
       // Verify page renders without error
       expect(container).toBeInTheDocument();
-      expect(screen.getByText(/live nba scores/i)).toBeInTheDocument();
+      expect(screen.getByText(/live basketball scores/i)).toBeInTheDocument();
     });
   });
 

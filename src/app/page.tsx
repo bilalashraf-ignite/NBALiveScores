@@ -3,8 +3,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useSSE } from '@/hooks/useSSE';
-import { Game } from '@/types/sports-data';
+import { Game, League } from '@/types/sports-data';
 import { GameList } from '@/components/game-list';
+import { LeagueFilter } from '@/components/league-filter';
 import { GameCardSkeleton } from '@/components/game-card-skeleton';
 import { StaleDataBanner } from '@/components/stale-data-banner';
 import { ErrorFallback } from '@/components/error-fallback';
@@ -24,6 +25,7 @@ import { ErrorFallback } from '@/components/error-fallback';
 export default function HomePage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedLeague, setSelectedLeague] = useState<League | 'all'>('all');
 
   // SSE connection for live updates
   const { data: games, isConnected, error, reconnect } = useSSE<Game[]>({
@@ -60,7 +62,7 @@ export default function HomePage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header with manual refresh button */}
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Live NBA Scores</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Live Basketball Scores</h1>
           <button
             onClick={handleManualRefresh}
             disabled={isRefreshing}
@@ -70,6 +72,15 @@ export default function HomePage() {
             {isRefreshing ? '↻ Refreshing...' : '↻ Refresh'}
           </button>
         </div>
+
+        {/* League filter */}
+        {games && (
+          <LeagueFilter
+            games={games}
+            selectedLeague={selectedLeague}
+            onSelectLeague={setSelectedLeague}
+          />
+        )}
 
         {/* Stale data warning - show when disconnected but have cached data */}
         {!isConnected && games && lastUpdated && (
@@ -86,7 +97,13 @@ export default function HomePage() {
         )}
 
         {/* Game list - show when data available */}
-        {games && <GameList games={games} lastUpdated={lastUpdated || undefined} />}
+        {games && (
+          <GameList
+            games={games}
+            selectedLeague={selectedLeague}
+            lastUpdated={lastUpdated || undefined}
+          />
+        )}
 
         {/* Error state - handled by ErrorBoundary */}
         {/* If error thrown during render, ErrorFallback shown automatically */}

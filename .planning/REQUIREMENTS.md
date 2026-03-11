@@ -30,17 +30,17 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **LEAGUE-01**: User can view games from NBA league
 - [x] **LEAGUE-02**: User can view games from NCAA league
 - [x] **LEAGUE-03**: User can view games from EuroLeague
-- [ ] **LEAGUE-04**: User can filter or navigate games by specific league
+- [x] **LEAGUE-04**: User can filter or navigate games by specific league
 - [x] **TEAM-01**: User sees team names displayed for each game
 - [x] **TEAM-02**: User sees team logos displayed for visual recognition
 - [x] **TEAM-03**: User sees season records (W-L) for each team
 
 ### Schedule
 
-- [ ] **SCHED-01**: User can view upcoming game fixtures
-- [ ] **SCHED-02**: User sees game date and time in their local timezone
-- [ ] **SCHED-03**: User sees scheduled matchups before games start
-- [ ] **SCHED-04**: User sees timezone-aware game times that adjust for DST transitions
+- [x] **SCHED-01**: User can view upcoming game fixtures
+- [x] **SCHED-02**: User sees game date and time in their local timezone
+- [x] **SCHED-03**: User sees scheduled matchups before games start
+- [x] **SCHED-04**: User sees timezone-aware game times that adjust for DST transitions
 
 ### Statistics
 
@@ -149,14 +149,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LEAGUE-01 | Phase 2 | Pending |
 | LEAGUE-02 | Phase 3 | Complete |
 | LEAGUE-03 | Phase 3 | Complete |
-| LEAGUE-04 | Phase 3 | Pending |
+| LEAGUE-04 | Phase 3 | Complete |
 | TEAM-01 | Phase 2 | Complete |
 | TEAM-02 | Phase 2 | Complete |
 | TEAM-03 | Phase 2 | Complete |
-| SCHED-01 | Phase 3 | Pending |
-| SCHED-02 | Phase 3 | Pending |
-| SCHED-03 | Phase 3 | Pending |
-| SCHED-04 | Phase 3 | Pending |
+| SCHED-01 | Phase 3 | Complete |
+| SCHED-02 | Phase 3 | Complete |
+| SCHED-03 | Phase 3 | Complete |
+| SCHED-04 | Phase 3 | Complete |
 | STAT-01 | Phase 4 | Pending |
 | STAT-02 | Phase 4 | Pending |
 | STAT-03 | Phase 4 | Pending |

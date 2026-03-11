@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-last_updated: "2026-03-11T15:48:41.257Z"
+last_updated: "2026-03-11T20:48:59Z"
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
+  completed_phases: 3
+  total_plans: 9
+  completed_plans: 9
   percent: 100
 ---
 
@@ -30,14 +30,14 @@ progress:
 ## Current Position
 
 **Phase:** 03 - Multi-League Schedule
-**Plan:** 01 of 02 complete
-**Status:** Executing
+**Plan:** 02 of 02 complete
+**Status:** Complete
 
 **Progress:**
-[██████████████████████] 87.5%
+[█████████████████████████] 100%
 [██████████] 100% Phase 1: Foundation & Infrastructure (3/3 plans)
 [██████████] 100% Phase 2: Live Scores Display (4/4 plans)
-[█████     ] 50% Phase 3: Multi-League Schedule (1/2 plans)
+[██████████] 100% Phase 3: Multi-League Schedule (2/2 plans)
 ```
 
 ---
@@ -48,8 +48,8 @@ progress:
 |--------|--------|---------|--------|
 | Requirements mapped | 45/45 | 45/45 | ✓ Complete |
 | Phases planned | 5 | 5 | ✓ Complete |
-| Plans created | 7 | 9 | In Progress |
-| Plans executed | 7 | 8 | In Progress |
+| Plans created | 7 | 9 | ✓ Complete |
+| Plans executed | 7 | 9 | In Progress |
 | Implementation started | - | Yes | ✓ Active |
 
 **Plan Execution Metrics:**
@@ -63,6 +63,7 @@ progress:
 | Phase 02 P03 | 283s | 3 | 9 | ✓ Complete |
 | Phase 02 P04 | 409s | 3 | 6 | ✓ Complete |
 | Phase 03 P01 | 1903s | 3 | 13 | ✓ Complete |
+| Phase 03 P02 | 1393s | 3 | 10 | ✓ Complete |
 
 ## Accumulated Context
 
@@ -70,6 +71,10 @@ progress:
 
 | Decision | Rationale | Date |
 |----------|-----------|------|
+| Intl.DateTimeFormat for timezone handling | Browser-native API handles DST transitions automatically, no external library needed | 2026-03-11 |
+| Filter pills instead of dropdown | Pills show game counts inline, better UX for 4 leagues, mobile-friendly | 2026-03-11 |
+| Composite keys (league-id) for React rendering | Prevents key collisions when same game ID exists across leagues | 2026-03-11 |
+| Client-side filtering instead of API filtering | SSE already fetches all leagues, client filtering is instant with no network delay | 2026-03-11 |
 | 5-phase coarse granularity structure | Config specifies "coarse" granularity; 45 requirements cluster naturally into foundation → core features → extensions → polish | 2026-03-10 |
 | Phase 1 focuses on API abstraction | Research (PITFALLS.md) emphasizes vendor lock-in risk; adapter pattern must be established early | 2026-03-10 |
 | Phase 2 starts with NBA only | Reduce initial complexity; validate core polling and caching before multi-league | 2026-03-10 |
@@ -128,23 +133,25 @@ None currently - roadmap approved and ready for planning.
 
 ### What Just Happened
 
-Completed Phase 03 Plan 01: Multi-League Adapter Architecture
-- Added League type ('NBA' | 'NCAA' | 'EuroLeague') and Game.league field
-- Created BaseAdapter abstract class with shared cache and error handling logic
-- Implemented NcaaAdapter and EuroLeagueAdapter extending BaseAdapter
-- Refactored BalldontlieAdapter to extend BaseAdapter with league='NBA'
-- Implemented getAdapter() factory function with singleton pattern
-- Updated SSE endpoint for parallel multi-league fetching with Promise.allSettled
+Completed Phase 03 Plan 02: League Filtering and Timezone Display
+- Created LeagueFilter component with pills UI for All, NBA, NCAA, EuroLeague
+- Implemented dynamic game count calculation and active state styling
+- Created GameTime component using Intl.DateTimeFormat for timezone conversion
+- Auto-detects user timezone and locale for 12h/24h format preference
+- Handles DST transitions automatically via browser API
+- Updated GameList with selectedLeague prop and filtering logic
+- Integrated GameTime component in GameCard for SCHEDULED games
+- Added league filter state management on home page
 - All work completed with TDD (RED-GREEN pattern)
-- 3 tasks completed, 6 commits made, 13 files (7 created, 6 modified)
-- All tests passing (116/116)
-- 43 new tests added (adapter tests, type tests, SSE tests)
+- 3 tasks completed, 3 commits made, 10 files (4 created, 6 modified)
+- All tests passing (141/141)
+- 23 new tests added (LeagueFilter, GameTime, filtering, integration)
 
 ### Next Actions
 
-1. Phase 3 in progress (1/2 plans complete)
-2. Execute Plan 02: League Filtering UI
-3. Continue with remaining Phase 3 plans
+1. Phase 3 complete (2/2 plans)
+2. Plan Phase 4 (next feature set per ROADMAP.md)
+3. Optional: User acceptance testing for league filter UI
 
 ### Context for Next Session
 
@@ -152,17 +159,19 @@ Completed Phase 03 Plan 01: Multi-League Adapter Architecture
 - Read `.planning/STATE.md` (this file) for current position
 - Read `.planning/ROADMAP.md` for phase structure
 - Read `.planning/REQUIREMENTS.md` for detailed requirements
-- Current phase: Phase 2 complete (4/4 plans)
-- Next step: Plan Phase 3 (NBA API Integration)
+- Current phase: Phase 3 complete (2/2 plans)
+- Next step: Plan Phase 4 (next feature set)
 
 **Critical context:**
 - Phase 1 complete: Database schema, Redis caching, Vercel deployment, GitHub Actions CI
 - Phase 2 complete: SSE streaming, UI components, home page with real-time updates, team fouls display
-- Phase 3 in progress: Multi-league adapter architecture complete (Plan 01 of 02)
-- Multi-league support: NBA, NCAA, EuroLeague with parallel fetching
+- Phase 3 complete: Multi-league adapter architecture, league filtering UI, timezone-aware scheduling
+- Multi-league support: NBA, NCAA, EuroLeague with parallel fetching and client-side filtering
 - BaseAdapter pattern established for shared infrastructure
 - Promise.allSettled ensures fault-tolerant multi-API aggregation
-- Test infrastructure in place: Jest + React Testing Library (116 tests passing)
+- League filter pills with live game counts and active state styling
+- Timezone handling via Intl.DateTimeFormat (auto-detects user timezone, handles DST)
+- Test infrastructure in place: Jest + React Testing Library (141 tests passing)
 - TDD workflow established and working (RED-GREEN pattern)
 - Error handling: ErrorBoundary, StaleDataBanner for graceful degradation
 - Mobile-first responsive design (1/2/3 column grid)

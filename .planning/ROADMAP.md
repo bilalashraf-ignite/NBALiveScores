@@ -7,7 +7,7 @@
 ## Phases
 
 - [x] **Phase 1: Foundation & Infrastructure** - Project scaffold, API abstraction layer, caching, deployment (completed 2026-03-10)
-- [ ] **Phase 2: Live Scores Display** - Real-time NBA scores, home page, automatic updates
+- [x] **Phase 2: Live Scores Display** - Real-time NBA scores, home page, automatic updates (completed 2026-03-11)
 - [ ] **Phase 3: Multi-League & Schedule** - NCAA/EuroLeague support, scheduling, timezone handling
 - [ ] **Phase 4: Game Details & Statistics** - Team/player stats, historical matchups, detailed views
 - [ ] **Phase 5: Performance & Polish** - Mobile optimization, sub-1s load, UX refinements
@@ -53,9 +53,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — SSE streaming endpoint, React hook for connection management, and manual refresh capability
-- [ ] 02-02-PLAN.md — Game card component, status badges with animations, and loading skeletons
-- [ ] 02-03-PLAN.md — Home page integration with error boundaries and real-time updates
+- [x] 02-01-PLAN.md — SSE streaming endpoint, React hook for connection management, and manual refresh capability (621s, 3 tasks, 14 files)
+- [x] 02-02-PLAN.md — Game card component, status badges with animations, and loading skeletons (369s, 3 tasks, 8 files)
+- [x] 02-03-PLAN.md — Home page integration with error boundaries and real-time updates (283s, 3 tasks, 9 files)
 
 ---
 

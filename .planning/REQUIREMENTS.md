@@ -15,19 +15,19 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **LIVE-04**: User sees possession indicator showing which team has the ball
 - [x] **LIVE-05**: User sees team fouls displayed for each team
 - [x] **LIVE-06**: User sees game status badges (LIVE, FINAL, SCHEDULED) with clear visual distinction
-- [ ] **LIVE-07**: User sees "Last updated" timestamp to understand data freshness
+- [x] **LIVE-07**: User sees "Last updated" timestamp to understand data freshness
 - [x] **LIVE-08**: User can manually refresh scores if data appears stale
 
 ### Historical Data
 
-- [ ] **HIST-01**: User can view final scores for completed games
-- [ ] **HIST-02**: User can access game results with date and time of completion
+- [x] **HIST-01**: User can view final scores for completed games
+- [x] **HIST-02**: User can access game results with date and time of completion
 - [ ] **HIST-03**: User can view historical head-to-head matchup data between teams
 - [ ] **HIST-04**: User can see last 5 meetings between two teams with outcomes
 
 ### Leagues & Teams
 
-- [ ] **LEAGUE-01**: User can view games from NBA league
+- [x] **LEAGUE-01**: User can view games from NBA league
 - [ ] **LEAGUE-02**: User can view games from NCAA league
 - [ ] **LEAGUE-03**: User can view games from EuroLeague
 - [ ] **LEAGUE-04**: User can filter or navigate games by specific league
@@ -52,10 +52,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Home Page & Navigation
 
-- [ ] **NAV-01**: User sees all live games across all leagues on unified home page
-- [ ] **NAV-02**: User can view all live games at a glance without scrolling excessively
+- [x] **NAV-01**: User sees all live games across all leagues on unified home page
+- [x] **NAV-02**: User can view all live games at a glance without scrolling excessively
 - [x] **NAV-03**: User can distinguish between live, scheduled, and completed games visually
-- [ ] **NAV-04**: User can navigate to detailed game view from home page
+- [x] **NAV-04**: User can navigate to detailed game view from home page
 
 ### Performance
 
@@ -74,12 +74,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### User Experience
 
-- [ ] **UX-01**: User sees clean, scannable layout with minimal visual clutter
+- [x] **UX-01**: User sees clean, scannable layout with minimal visual clutter
 - [ ] **UX-02**: User experiences ad-free or minimal advertising interface
-- [ ] **UX-03**: User sees graceful error messages (not blank screens) when API fails
-- [ ] **UX-04**: User sees cached data with timestamp when live updates are unavailable
+- [x] **UX-03**: User sees graceful error messages (not blank screens) when API fails
+- [x] **UX-04**: User sees cached data with timestamp when live updates are unavailable
 - [x] **UX-05**: User sees loading indicators during data fetches
-- [ ] **UX-06**: User experiences smooth transitions when scores update
+- [x] **UX-06**: User experiences smooth transitions when scores update
 
 ## v2.0 Requirements
 

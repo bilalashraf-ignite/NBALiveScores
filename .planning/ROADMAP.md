@@ -50,12 +50,13 @@ Plans:
 4. User sees "Last updated" timestamp and cached scores with clear staleness warnings when API fails
 5. User sees all live NBA games on unified home page without excessive scrolling
 
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
 - [x] 02-01-PLAN.md — SSE streaming endpoint, React hook for connection management, and manual refresh capability (621s, 3 tasks, 14 files)
 - [x] 02-02-PLAN.md — Game card component, status badges with animations, and loading skeletons (369s, 3 tasks, 8 files)
 - [x] 02-03-PLAN.md — Home page integration with error boundaries and real-time updates (283s, 3 tasks, 9 files)
+- [ ] 02-04-PLAN.md — Team fouls display (gap closure from verification)
 
 ---
 
@@ -116,7 +117,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Infrastructure | 3/3 | Complete   | 2026-03-10 |
-| 2. Live Scores Display | 0/3 | Not started | - |
+| 2. Live Scores Display | 3/4 | Gap closure | 2026-03-11 |
 | 3. Multi-League & Schedule | 0/? | Not started | - |
 | 4. Game Details & Statistics | 0/? | Not started | - |
 | 5. Performance & Polish | 0/? | Not started | - |

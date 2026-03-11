@@ -56,7 +56,7 @@ Plans:
 - [x] 02-01-PLAN.md — SSE streaming endpoint, React hook for connection management, and manual refresh capability (621s, 3 tasks, 14 files)
 - [x] 02-02-PLAN.md — Game card component, status badges with animations, and loading skeletons (369s, 3 tasks, 8 files)
 - [x] 02-03-PLAN.md — Home page integration with error boundaries and real-time updates (283s, 3 tasks, 9 files)
-- [ ] 02-04-PLAN.md — Team fouls display (gap closure from verification)
+- [x] 02-04-PLAN.md — Team fouls display (gap closure from verification) (409s, 3 tasks, 6 files)
 
 ---
 

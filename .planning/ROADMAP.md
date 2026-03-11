@@ -73,7 +73,11 @@ Plans:
 3. User sees upcoming game fixtures with date and time displayed in their local timezone
 4. User sees correct game times that adjust automatically during DST transitions
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Multi-league adapter infrastructure with BaseAdapter, NCAA/EuroLeague adapters, and parallel SSE fetching
+- [ ] 03-02-PLAN.md — League filtering UI, timezone-aware scheduling display, and home page integration
 
 ---
 
@@ -117,8 +121,8 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Infrastructure | 3/3 | Complete   | 2026-03-10 |
-| 2. Live Scores Display | 3/4 | Gap closure | 2026-03-11 |
-| 3. Multi-League & Schedule | 0/? | Not started | - |
+| 2. Live Scores Display | 4/4 | Complete | 2026-03-11 |
+| 3. Multi-League & Schedule | 0/2 | Not started | - |
 | 4. Game Details & Statistics | 0/? | Not started | - |
 | 5. Performance & Polish | 0/? | Not started | - |
 

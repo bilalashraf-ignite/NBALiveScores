@@ -16,3 +16,18 @@ if (typeof global.TextEncoder === 'undefined') {
 if (typeof global.TextDecoder === 'undefined') {
   global.TextDecoder = TextDecoder as any;
 }
+
+// Mock Next.js server components for tests
+jest.mock('next/server', () => ({
+  NextRequest: jest.fn(),
+  NextResponse: {
+    json: (body: any, init?: any) => {
+      const response = {
+        json: async () => body,
+        status: init?.status || 200,
+        headers: new Headers(init?.headers || {}),
+      };
+      return response;
+    },
+  },
+}));

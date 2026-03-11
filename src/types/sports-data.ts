@@ -42,6 +42,17 @@ export interface Score {
 }
 
 /**
+ * Team fouls count for each team.
+ * Used to display foul counts during live games.
+ */
+export interface TeamFouls {
+  /** Home team fouls */
+  home: number;
+  /** Away team fouls */
+  away: number;
+}
+
+/**
  * Complete representation of a basketball game with all essential data.
  */
 export interface Game {
@@ -67,4 +78,6 @@ export interface Game {
   timeRemaining?: string;
   /** Which team currently has possession */
   possession?: 'home' | 'away';
+  /** Team fouls count (optional - not all APIs provide this data) */
+  teamFouls?: TeamFouls;
 }

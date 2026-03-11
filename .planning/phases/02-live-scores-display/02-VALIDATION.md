@@ -2,7 +2,7 @@
 phase: 02
 slug: live-scores-display
 status: draft
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-03-11
 ---
@@ -38,15 +38,15 @@ created: 2026-03-11
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 02-01-01 | 01 | 0 | Testing infra | setup | `npm test` | ❌ W0 | ⬜ pending |
-| 02-01-02 | 01 | 1 | LIVE-01 | integration | `npm test -- tests/components/game-card.test.tsx -x` | ❌ W0 | ⬜ pending |
-| 02-01-03 | 01 | 1 | LIVE-02 | integration | `npm test -- tests/hooks/useSSE.test.tsx -x` | ❌ W0 | ⬜ pending |
-| 02-01-04 | 01 | 1 | LIVE-06 | unit | `npm test -- tests/components/status-badge.test.tsx -x` | ❌ W0 | ⬜ pending |
-| 02-01-05 | 01 | 1 | LIVE-07 | unit | `npm test -- tests/components/game-list.test.tsx -x` | ❌ W0 | ⬜ pending |
-| 02-01-06 | 01 | 1 | LIVE-08 | integration | `npm test -- tests/hooks/useGameUpdates.test.tsx -x` | ❌ W0 | ⬜ pending |
-| 02-01-07 | 01 | 1 | UX-03 | integration | `npm test -- tests/components/error-fallback.test.tsx -x` | ❌ W0 | ⬜ pending |
-| 02-01-08 | 01 | 1 | UX-04 | integration | `npm test -- tests/components/stale-data-banner.test.tsx -x` | ❌ W0 | ⬜ pending |
-| 02-01-09 | 01 | 1 | UX-05 | unit | `npm test -- tests/components/game-card-skeleton.test.tsx -x` | ❌ W0 | ⬜ pending |
+| 02-01-T1 | 01 | 1 | LIVE-02 | integration | `npm test -- tests/api/scores-live.test.ts -x` | ❌ W0 | ⬜ pending |
+| 02-01-T2 | 01 | 1 | LIVE-02 | integration | `npm test -- tests/hooks/useSSE.test.tsx -x` | ❌ W0 | ⬜ pending |
+| 02-01-T3 | 01 | 1 | LIVE-08 | integration | `npm test -- tests/api/scores-refresh.test.ts -x` | ❌ W0 | ⬜ pending |
+| 02-02-T1 | 02 | 1 | LIVE-06 | unit | `npm test -- tests/components/status-badge.test.tsx -x` | ❌ W0 | ⬜ pending |
+| 02-02-T2 | 02 | 1 | LIVE-01, TEAM-01 | integration | `npm test -- tests/components/game-card.test.tsx -x` | ❌ W0 | ⬜ pending |
+| 02-02-T3 | 02 | 1 | UX-05 | unit | `npm test -- tests/components/game-card-skeleton.test.tsx -x` | ❌ W0 | ⬜ pending |
+| 02-03-T1 | 03 | 2 | LIVE-07, NAV-02 | integration | `npm test -- tests/components/game-list.test.tsx -x` | ❌ W0 | ⬜ pending |
+| 02-03-T2 | 03 | 2 | UX-03, UX-04 | integration | `npm test -- tests/components/error-fallback.test.tsx tests/components/stale-data-banner.test.tsx -x` | ❌ W0 | ⬜ pending |
+| 02-03-T3 | 03 | 2 | NAV-01, UX-01 | integration | `npm test -- tests/integration/home-page.test.tsx -x` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -60,6 +60,8 @@ created: 2026-03-11
 - [ ] `tests/components/game-card.test.tsx` — Unit tests for GameCard component rendering, props
 - [ ] `tests/components/status-badge.test.tsx` — Unit tests for badge colors, animations per state
 - [ ] `tests/hooks/useSSE.test.tsx` — Integration tests for SSE connection, cleanup, error handling
+- [ ] `tests/components/error-fallback.test.tsx` — Unit tests for error fallback rendering, retry button
+- [ ] `tests/components/stale-data-banner.test.tsx` — Unit tests for stale data banner, timestamp formatting
 - [ ] `npm install -D jest @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom msw @types/jest`
 
 ---
@@ -76,11 +78,11 @@ created: 2026-03-11
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 10s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 10s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved

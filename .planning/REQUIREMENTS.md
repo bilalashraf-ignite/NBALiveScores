@@ -28,8 +28,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Leagues & Teams
 
 - [x] **LEAGUE-01**: User can view games from NBA league
-- [ ] **LEAGUE-02**: User can view games from NCAA league
-- [ ] **LEAGUE-03**: User can view games from EuroLeague
+- [x] **LEAGUE-02**: User can view games from NCAA league
+- [x] **LEAGUE-03**: User can view games from EuroLeague
 - [ ] **LEAGUE-04**: User can filter or navigate games by specific league
 - [x] **TEAM-01**: User sees team names displayed for each game
 - [x] **TEAM-02**: User sees team logos displayed for visual recognition
@@ -147,8 +147,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HIST-03 | Phase 4 | Pending |
 | HIST-04 | Phase 4 | Pending |
 | LEAGUE-01 | Phase 2 | Pending |
-| LEAGUE-02 | Phase 3 | Pending |
-| LEAGUE-03 | Phase 3 | Pending |
+| LEAGUE-02 | Phase 3 | Complete |
+| LEAGUE-03 | Phase 3 | Complete |
 | LEAGUE-04 | Phase 3 | Pending |
 | TEAM-01 | Phase 2 | Complete |
 | TEAM-02 | Phase 2 | Complete |

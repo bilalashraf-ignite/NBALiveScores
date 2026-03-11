@@ -145,10 +145,87 @@ describe('GameCard', () => {
       state: GameState.HALFTIME,
       period: 2
     }
-    
+
     render(<GameCard game={halftimeGame} />)
-    
+
     // Halftime game should show period
     expect(screen.getByText(/Q2/)).toBeInTheDocument()
+  })
+
+  it('shows fouls count when teamFouls exists for LIVE game', () => {
+    const gameWithFouls: Game = {
+      ...mockGame,
+      state: GameState.LIVE,
+      teamFouls: {
+        home: 3,
+        away: 2
+      }
+    }
+
+    render(<GameCard game={gameWithFouls} />)
+
+    // Should display "Fouls: 3-2"
+    expect(screen.getByText('Fouls: 3-2')).toBeInTheDocument()
+  })
+
+  it('shows fouls count when teamFouls exists for HALFTIME game', () => {
+    const gameWithFouls: Game = {
+      ...mockGame,
+      state: GameState.HALFTIME,
+      teamFouls: {
+        home: 4,
+        away: 5
+      }
+    }
+
+    render(<GameCard game={gameWithFouls} />)
+
+    // Should display "Fouls: 4-5"
+    expect(screen.getByText('Fouls: 4-5')).toBeInTheDocument()
+  })
+
+  it('hides fouls section when teamFouls is undefined', () => {
+    const gameWithoutFouls: Game = {
+      ...mockGame,
+      state: GameState.LIVE,
+      teamFouls: undefined
+    }
+
+    render(<GameCard game={gameWithoutFouls} />)
+
+    // Should NOT display fouls text
+    expect(screen.queryByText(/Fouls:/)).not.toBeInTheDocument()
+  })
+
+  it('hides fouls section for FINAL game even if teamFouls exists', () => {
+    const finalGame: Game = {
+      ...mockGame,
+      state: GameState.FINAL,
+      teamFouls: {
+        home: 6,
+        away: 4
+      }
+    }
+
+    render(<GameCard game={finalGame} />)
+
+    // Should NOT display fouls for final games
+    expect(screen.queryByText(/Fouls:/)).not.toBeInTheDocument()
+  })
+
+  it('displays fouls in correct format "Fouls: H-A"', () => {
+    const gameWithFouls: Game = {
+      ...mockGame,
+      state: GameState.LIVE,
+      teamFouls: {
+        home: 0,
+        away: 6
+      }
+    }
+
+    render(<GameCard game={gameWithFouls} />)
+
+    // Should display exact format
+    expect(screen.getByText('Fouls: 0-6')).toBeInTheDocument()
   })
 })

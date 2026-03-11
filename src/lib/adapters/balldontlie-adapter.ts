@@ -1,5 +1,6 @@
-import { Game, GameState, Team, Score } from '@/types/sports-data';
+import { Game, GameState, Team, Score, League } from '@/types/sports-data';
 import { SportsDataAdapter } from './sports-api-adapter';
+import { BaseAdapter } from './base-adapter';
 
 /**
  * Adapter for balldontlie.io API (free NBA data provider).
@@ -12,21 +13,18 @@ import { SportsDataAdapter } from './sports-api-adapter';
  * Note: Phase 1 implementation returns mock data. Network calls will be added
  * in Phase 2 after API key configuration is established.
  */
-export class BalldontlieAdapter implements SportsDataAdapter {
+export class BalldontlieAdapter extends BaseAdapter implements SportsDataAdapter {
+  protected league: League = 'NBA';
+  protected baseUrl: string = 'https://api.balldontlie.io/v1';
   private readonly apiKey: string;
-  private readonly baseUrl: string;
 
   /**
    * Create a new balldontlie.io adapter.
    * @param apiKey - API key from balldontlie.io (required for production use)
-   * @param baseUrl - Base URL for API (defaults to official endpoint)
    */
-  constructor(
-    apiKey: string = process.env.BALLDONTLIE_API_KEY || '',
-    baseUrl: string = 'https://api.balldontlie.io/v1'
-  ) {
+  constructor(apiKey: string = process.env.BALLDONTLIE_API_KEY || '') {
+    super();
     this.apiKey = apiKey;
-    this.baseUrl = baseUrl;
   }
 
   /**
@@ -53,6 +51,7 @@ export class BalldontlieAdapter implements SportsDataAdapter {
 
         mockGames.push({
           id: `game-${i}`,
+          league: 'NBA',
           homeTeam: {
             id: `team-home-${i}`,
             name: `Home Team ${i}`,
@@ -184,6 +183,7 @@ export class BalldontlieAdapter implements SportsDataAdapter {
 
     return {
       id: String(apiResponse.id),
+      league: 'NBA',
       homeTeam,
       awayTeam,
       score,

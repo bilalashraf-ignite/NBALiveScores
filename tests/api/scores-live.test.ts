@@ -1,58 +1,33 @@
 /**
- * Tests for SSE live scores endpoint.
+ * Tests for SSE live scores endpoint with multi-league support.
  *
  * Verifies:
  * - SSE headers are set correctly
  * - Stream returns properly formatted SSE data
- * - Cache integration works
- * - Error handling returns empty array
+ * - Parallel fetching from all three leagues (NBA, NCAA, EuroLeague)
+ * - One league failure doesn't prevent others from loading
+ * - Games from all leagues are combined in response
+ * - Promise.allSettled used for fault tolerance
  */
 
 import { GET } from '@/app/api/scores/live/route';
-import { adapter } from '@/lib/adapters';
-import { cache, CACHE_TTL } from '@/lib/cache';
+import { getAdapter } from '@/lib/adapters';
 import { Game, GameState } from '@/types/sports-data';
 
-// Mock dependencies
+// Mock getAdapter to return mock adapters
 jest.mock('@/lib/adapters', () => ({
-  adapter: {
-    getLiveGames: jest.fn(),
-  },
-}));
-
-jest.mock('@/lib/cache', () => ({
-  cache: {
-    get: jest.fn(),
-    set: jest.fn(),
-    del: jest.fn(),
-    keys: {
-      liveGames: (league: string) => `games:live:${league}`,
-    },
-  },
-  CACHE_TTL: {
-    LIVE_GAME: 10,
-  },
+  getAdapter: jest.fn(),
 }));
 
 // Don't use fake timers - we need real async behavior for streams
 
-const mockGames: Game[] = [
+const mockNBAGames: Game[] = [
   {
-    id: '1',
-    homeTeam: {
-      id: '1',
-      name: 'Lakers',
-      abbreviation: 'LAL',
-    },
-    awayTeam: {
-      id: '2',
-      name: 'Warriors',
-      abbreviation: 'GSW',
-    },
-    score: {
-      home: 95,
-      away: 88,
-    },
+    id: 'nba-1',
+    league: 'NBA',
+    homeTeam: { id: '1', name: 'Lakers', abbreviation: 'LAL' },
+    awayTeam: { id: '2', name: 'Warriors', abbreviation: 'GSW' },
+    score: { home: 95, away: 88 },
     state: GameState.LIVE,
     scheduledTime: new Date('2026-03-11T19:00:00Z'),
     period: 3,
@@ -60,7 +35,33 @@ const mockGames: Game[] = [
   },
 ];
 
-describe('GET /api/scores/live', () => {
+const mockNCAAGames: Game[] = [
+  {
+    id: 'ncaa-1',
+    league: 'NCAA',
+    homeTeam: { id: 'duke', name: 'Duke', abbreviation: 'DUKE' },
+    awayTeam: { id: 'unc', name: 'UNC', abbreviation: 'UNC' },
+    score: { home: 72, away: 68 },
+    state: GameState.LIVE,
+    scheduledTime: new Date('2026-03-11T19:00:00Z'),
+    period: 2,
+    timeRemaining: '3:45',
+  },
+];
+
+const mockEuroGames: Game[] = [
+  {
+    id: 'euro-1',
+    league: 'EuroLeague',
+    homeTeam: { id: 'real', name: 'Real Madrid', abbreviation: 'RMB' },
+    awayTeam: { id: 'barca', name: 'Barcelona', abbreviation: 'BAR' },
+    score: { home: 85, away: 82 },
+    state: GameState.FINAL,
+    scheduledTime: new Date('2026-03-11T19:00:00Z'),
+  },
+];
+
+describe('GET /api/scores/live (multi-league)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -70,7 +71,9 @@ describe('GET /api/scores/live', () => {
   });
 
   it('should return SSE stream with correct headers', async () => {
-    (cache.get as jest.Mock).mockResolvedValue(mockGames);
+    (getAdapter as jest.Mock).mockReturnValue({
+      getLiveGames: jest.fn().mockResolvedValue([]),
+    });
 
     const response = await GET();
 
@@ -79,62 +82,117 @@ describe('GET /api/scores/live', () => {
     expect(response.headers.get('Connection')).toBe('keep-alive');
   });
 
-  it('should fetch from cache first', async () => {
-    (cache.get as jest.Mock).mockResolvedValue(mockGames);
-    (cache.set as jest.Mock).mockResolvedValue(undefined);
+  it('should fetch from all three leagues in parallel', async () => {
+    const mockAdapters = {
+      NBA: { getLiveGames: jest.fn().mockResolvedValue(mockNBAGames) },
+      NCAA: { getLiveGames: jest.fn().mockResolvedValue(mockNCAAGames) },
+      EuroLeague: { getLiveGames: jest.fn().mockResolvedValue(mockEuroGames) },
+    };
 
-    const response = await GET();
-    const reader = response.body?.getReader();
-
-    // Read first chunk to trigger the generator
-    if (reader) {
-      const readPromise = reader.read();
-      // Allow pending promises to resolve
-      await Promise.resolve();
-      await readPromise;
-    }
-
-    expect(cache.get).toHaveBeenCalledWith('games:live:nba');
-    expect(adapter.getLiveGames).not.toHaveBeenCalled();
-  });
-
-  it('should fetch from adapter on cache miss and update cache', async () => {
-    (cache.get as jest.Mock).mockResolvedValue(null);
-    (adapter.getLiveGames as jest.Mock).mockResolvedValue(mockGames);
-    (cache.set as jest.Mock).mockResolvedValue(undefined);
+    (getAdapter as jest.Mock).mockImplementation((league) => mockAdapters[league]);
 
     const response = await GET();
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
 
-    // Read first chunk to trigger the generator
     if (reader) {
       const { value } = await reader.read();
       const text = decoder.decode(value);
 
-      // Verify the data returned matches what adapter would provide
+      // Extract JSON from SSE format
       const jsonStr = text.replace(/^data: /, '').replace(/\n\n$/, '');
       const games = JSON.parse(jsonStr);
-      expect(games).toEqual(mockGames);
 
-      // Verify cache was checked
-      expect(cache.get).toHaveBeenCalledWith('games:live:nba');
+      // Verify all adapters were called
+      expect(getAdapter).toHaveBeenCalledWith('NBA');
+      expect(getAdapter).toHaveBeenCalledWith('NCAA');
+      expect(getAdapter).toHaveBeenCalledWith('EuroLeague');
+      expect(mockAdapters.NBA.getLiveGames).toHaveBeenCalledWith('NBA');
+      expect(mockAdapters.NCAA.getLiveGames).toHaveBeenCalledWith('NCAA');
+      expect(mockAdapters.EuroLeague.getLiveGames).toHaveBeenCalledWith('EuroLeague');
 
-      // Verify adapter was called due to cache miss
-      expect(adapter.getLiveGames).toHaveBeenCalledWith('nba');
+      // Verify combined games from all leagues
+      expect(games).toHaveLength(3);
+      expect(games).toEqual(expect.arrayContaining([
+        expect.objectContaining({ league: 'NBA' }),
+        expect.objectContaining({ league: 'NCAA' }),
+        expect.objectContaining({ league: 'EuroLeague' }),
+      ]));
+    }
+  });
 
-      // Verify cache was updated
-      expect(cache.set).toHaveBeenCalledWith(
-        'games:live:nba',
-        mockGames,
-        CACHE_TTL.LIVE_GAME
-      );
+  it('should handle partial failures gracefully (Promise.allSettled)', async () => {
+    const mockAdapters = {
+      NBA: { getLiveGames: jest.fn().mockResolvedValue(mockNBAGames) },
+      NCAA: { getLiveGames: jest.fn().mockRejectedValue(new Error('NCAA API down')) },
+      EuroLeague: { getLiveGames: jest.fn().mockResolvedValue(mockEuroGames) },
+    };
+
+    (getAdapter as jest.Mock).mockImplementation((league) => mockAdapters[league]);
+
+    const response = await GET();
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+
+    if (reader) {
+      const { value } = await reader.read();
+      const text = decoder.decode(value);
+
+      const jsonStr = text.replace(/^data: /, '').replace(/\n\n$/, '');
+      const games = JSON.parse(jsonStr);
+
+      // Should contain games from NBA and EuroLeague (NCAA failed)
+      expect(games).toHaveLength(2);
+      expect(games).toEqual(expect.arrayContaining([
+        expect.objectContaining({ league: 'NBA' }),
+        expect.objectContaining({ league: 'EuroLeague' }),
+      ]));
+
+      // Verify NCAA was attempted despite failure
+      expect(getAdapter).toHaveBeenCalledWith('NCAA');
+      expect(mockAdapters.NCAA.getLiveGames).toHaveBeenCalled();
+    }
+  });
+
+  it('should return combined games array with correct league fields', async () => {
+    const mockAdapters = {
+      NBA: { getLiveGames: jest.fn().mockResolvedValue(mockNBAGames) },
+      NCAA: { getLiveGames: jest.fn().mockResolvedValue(mockNCAAGames) },
+      EuroLeague: { getLiveGames: jest.fn().mockResolvedValue(mockEuroGames) },
+    };
+
+    (getAdapter as jest.Mock).mockImplementation((league) => mockAdapters[league]);
+
+    const response = await GET();
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+
+    if (reader) {
+      const { value } = await reader.read();
+      const text = decoder.decode(value);
+
+      const jsonStr = text.replace(/^data: /, '').replace(/\n\n$/, '');
+      const games = JSON.parse(jsonStr);
+
+      // Verify each game has correct league field
+      const nbaGame = games.find((g: Game) => g.id === 'nba-1');
+      const ncaaGame = games.find((g: Game) => g.id === 'ncaa-1');
+      const euroGame = games.find((g: Game) => g.id === 'euro-1');
+
+      expect(nbaGame?.league).toBe('NBA');
+      expect(ncaaGame?.league).toBe('NCAA');
+      expect(euroGame?.league).toBe('EuroLeague');
     }
   });
 
   it('should return SSE formatted data', async () => {
-    (cache.get as jest.Mock).mockResolvedValue(mockGames);
-    (cache.set as jest.Mock).mockResolvedValue(undefined);
+    const mockAdapters = {
+      NBA: { getLiveGames: jest.fn().mockResolvedValue(mockNBAGames) },
+      NCAA: { getLiveGames: jest.fn().mockResolvedValue([]) },
+      EuroLeague: { getLiveGames: jest.fn().mockResolvedValue([]) },
+    };
+
+    (getAdapter as jest.Mock).mockImplementation((league) => mockAdapters[league]);
 
     const response = await GET();
     const reader = response.body?.getReader();
@@ -148,17 +206,20 @@ describe('GET /api/scores/live', () => {
       expect(text).toMatch(/^data: /);
       expect(text).toMatch(/\n\n$/);
 
-      // Extract JSON and verify
+      // Verify valid JSON
       const jsonStr = text.replace(/^data: /, '').replace(/\n\n$/, '');
-      const games = JSON.parse(jsonStr);
-      expect(games).toEqual(mockGames);
+      expect(() => JSON.parse(jsonStr)).not.toThrow();
     }
   });
 
-  it('should handle errors gracefully', async () => {
-    (cache.get as jest.Mock).mockRejectedValue(new Error('Cache error'));
-    (adapter.getLiveGames as jest.Mock).mockRejectedValue(new Error('API error'));
-    (cache.set as jest.Mock).mockResolvedValue(undefined);
+  it('should handle all leagues failing gracefully', async () => {
+    const mockAdapters = {
+      NBA: { getLiveGames: jest.fn().mockRejectedValue(new Error('NBA error')) },
+      NCAA: { getLiveGames: jest.fn().mockRejectedValue(new Error('NCAA error')) },
+      EuroLeague: { getLiveGames: jest.fn().mockRejectedValue(new Error('Euro error')) },
+    };
+
+    (getAdapter as jest.Mock).mockImplementation((league) => mockAdapters[league]);
 
     const response = await GET();
     const reader = response.body?.getReader();
@@ -168,7 +229,7 @@ describe('GET /api/scores/live', () => {
       const { value } = await reader.read();
       const text = decoder.decode(value);
 
-      // Should return empty array on error
+      // Should return empty array when all leagues fail
       const jsonStr = text.replace(/^data: /, '').replace(/\n\n$/, '');
       const games = JSON.parse(jsonStr);
       expect(games).toEqual([]);

@@ -1,5 +1,6 @@
 import { Game, GameState } from '@/types/sports-data'
 import { StatusBadge } from './status-badge'
+import { GameTime } from './game-time'
 
 interface GameCardProps {
   game: Game
@@ -107,13 +108,7 @@ export function GameCard({ game }: GameCardProps) {
       {/* Scheduled game time - only show for scheduled games */}
       {game.state === GameState.SCHEDULED && (
         <div className="mt-4 border-t border-gray-100 pt-4 text-sm text-gray-600">
-          {new Date(game.scheduledTime).toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            timeZoneName: 'short'
-          })}
+          <GameTime scheduledTime={game.scheduledTime} format="full" />
         </div>
       )}
     </div>

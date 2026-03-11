@@ -2,8 +2,16 @@ import { render, screen } from '@testing-library/react'
 import { GameCard } from '@/components/game-card'
 import { Game, GameState } from '@/types/sports-data'
 
+// Mock GameTime component
+jest.mock('@/components/game-time', () => ({
+  GameTime: ({ scheduledTime }: { scheduledTime: Date }) => (
+    <time data-testid="game-time">{scheduledTime.toISOString()}</time>
+  ),
+}));
+
 const mockGame: Game = {
   id: '1',
+  league: 'NBA',
   homeTeam: {
     id: 'lal',
     name: 'Los Angeles Lakers',
@@ -101,7 +109,7 @@ describe('GameCard', () => {
     expect(images[1]).toHaveAttribute('alt', 'Golden State Warriors')
   })
 
-  it('shows scheduled game time for SCHEDULED state', () => {
+  it('shows scheduled game time for SCHEDULED state using GameTime component', () => {
     const scheduledGame: Game = {
       ...mockGame,
       state: GameState.SCHEDULED,
@@ -109,11 +117,11 @@ describe('GameCard', () => {
       timeRemaining: undefined,
       possession: undefined
     }
-    
+
     render(<GameCard game={scheduledGame} />)
-    
-    // Should show formatted date/time (Mar 11 at ...)
-    expect(screen.getByText(/Mar/)).toBeInTheDocument()
+
+    // Should render GameTime component
+    expect(screen.getByTestId('game-time')).toBeInTheDocument()
   })
 
   it('hides game context section for scheduled games', () => {
@@ -227,5 +235,29 @@ describe('GameCard', () => {
 
     // Should display exact format
     expect(screen.getByText('Fouls: 0-6')).toBeInTheDocument()
+  })
+
+  it('shows GameTime component only for SCHEDULED games, not for LIVE', () => {
+    const liveGame: Game = {
+      ...mockGame,
+      state: GameState.LIVE,
+    }
+
+    render(<GameCard game={liveGame} />)
+
+    // Should NOT render GameTime for live games
+    expect(screen.queryByTestId('game-time')).not.toBeInTheDocument()
+  })
+
+  it('shows GameTime component only for SCHEDULED games, not for FINAL', () => {
+    const finalGame: Game = {
+      ...mockGame,
+      state: GameState.FINAL,
+    }
+
+    render(<GameCard game={finalGame} />)
+
+    // Should NOT render GameTime for final games
+    expect(screen.queryByTestId('game-time')).not.toBeInTheDocument()
   })
 })

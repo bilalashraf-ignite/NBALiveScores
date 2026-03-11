@@ -97,7 +97,10 @@ export function GameCard({ game }: GameCardProps) {
               Q{game.period} {game.timeRemaining || ''}
             </span>
           )}
-          {/* Team fouls - show if available in future, otherwise hide */}
+          {/* Team fouls - show if available */}
+          {game.teamFouls && (
+            <span>Fouls: {game.teamFouls.home}-{game.teamFouls.away}</span>
+          )}
         </div>
       )}
 

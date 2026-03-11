@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-last_updated: "2026-03-11T14:07:12.148Z"
+status: executing
+last_updated: "2026-03-11T14:11:44.403Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
-  percent: 67
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State: Basketball Live Scores
@@ -30,14 +30,14 @@ progress:
 ## Current Position
 
 **Phase:** 02 - Live Scores Display
-**Plan:** 02 of 03 complete
+**Plan:** 01 of 03 complete
 **Status:** Executing
 
 **Progress:**
-```
+[████████░░] 83%
 [███████░░░] 67%
 [██████████] 100% Phase 1: Foundation & Infrastructure (3/3 plans)
-[███████░░░]  67% Phase 2: Live Scores Display (2/3 plans)
+[███░░░░░░░]  33% Phase 2: Live Scores Display (1/3 plans)
 ```
 
 ---
@@ -59,6 +59,7 @@ progress:
 | Phase 01 P01 | 1020s | 2 | 16 | ✓ Complete |
 | Phase 01 P03 | 756s | 3 | 9 | ✓ Complete |
 | Phase 02 P02 | 369s | 3 | 8 | ✓ Complete |
+| Phase 02 P01 | 621s | 3 | 14 | ✓ Complete |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ progress:
 | Differentiated TTL strategy (10s/2min/15min/24h) | Optimizes cache efficiency based on data volatility; research shows live games update frequently while scheduled games rarely change | 2026-03-10 |
 | Graceful cache degradation | Redis failures should not break the application; cache operations return null on error | 2026-03-10 |
 | Two-layer cache headers (next.config.ts + vercel.json) | next.config.ts provides baseline for all environments; vercel.json optimizes production CDN edge network | 2026-03-10 |
+| Installed Jest and React Testing Library | Plan required tests but project had no test infrastructure; essential for TDD workflow and verification | 2026-03-11 |
+| Used POST for refresh endpoint | Cache invalidation is a side effect; POST correctly signals non-idempotent action per HTTP semantics | 2026-03-11 |
+| Chose SSE over WebSockets | Unidirectional updates don't need full-duplex communication; SSE has built-in reconnection | 2026-03-11 |
 | Pulse animation only on badges | Animating entire cards causes mobile jank; limit animation to small elements (RESEARCH.md Pitfall 6) | 2026-03-11 |
 | Logo fallback to abbreviation circles | When logoUrl missing, show team abbreviation in gray circle (TEAM-02 requirement) | 2026-03-11 |
 | Game context visibility logic | Show period/time only for LIVE/HALFTIME states per CONTEXT.md locked decisions | 2026-03-11 |

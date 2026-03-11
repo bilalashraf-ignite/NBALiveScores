@@ -10,13 +10,13 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Live Scores
 
 - [x] **LIVE-01**: User can view real-time score updates for ongoing basketball games
-- [ ] **LIVE-02**: User sees scores update automatically without page refresh (polling with API rate limits)
+- [x] **LIVE-02**: User sees scores update automatically without page refresh (polling with API rate limits)
 - [x] **LIVE-03**: User sees current game context (quarter/period, time remaining)
 - [x] **LIVE-04**: User sees possession indicator showing which team has the ball
 - [x] **LIVE-05**: User sees team fouls displayed for each team
 - [x] **LIVE-06**: User sees game status badges (LIVE, FINAL, SCHEDULED) with clear visual distinction
 - [ ] **LIVE-07**: User sees "Last updated" timestamp to understand data freshness
-- [ ] **LIVE-08**: User can manually refresh scores if data appears stale
+- [x] **LIVE-08**: User can manually refresh scores if data appears stale
 
 ### Historical Data
 
@@ -135,13 +135,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | LIVE-01 | Phase 2 | Complete |
-| LIVE-02 | Phase 2 | Pending |
+| LIVE-02 | Phase 2 | Complete |
 | LIVE-03 | Phase 2 | Complete |
 | LIVE-04 | Phase 2 | Complete |
 | LIVE-05 | Phase 2 | Complete |
 | LIVE-06 | Phase 2 | Complete |
 | LIVE-07 | Phase 2 | Pending |
-| LIVE-08 | Phase 2 | Pending |
+| LIVE-08 | Phase 2 | Complete |
 | HIST-01 | Phase 2 | Pending |
 | HIST-02 | Phase 2 | Pending |
 | HIST-03 | Phase 4 | Pending |

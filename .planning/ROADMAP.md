@@ -94,7 +94,13 @@ Plans:
 3. User can access historical head-to-head data showing last 5 meetings between two teams
 4. User navigates from home page game card to detailed game view with full statistics
 
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Modal infrastructure with Radix Dialog, GameCard integration, browser history support, on-demand GameDetails fetching
+- [ ] 04-02-PLAN.md — Team statistics display with side-by-side comparison table, bold highlighting, made-attempted + percentage format
+- [ ] 04-03-PLAN.md — Player statistics with TanStack Table sortable columns, both teams in single table, DNP handling, horizontal scroll
+- [ ] 04-04-PLAN.md — Historical matchup data with last 5 meetings, season series, all-time record, fallback messaging
 
 ---
 
@@ -123,7 +129,7 @@ Plans:
 | 1. Foundation & Infrastructure | 3/3 | Complete   | 2026-03-10 |
 | 2. Live Scores Display | 4/4 | Complete | 2026-03-11 |
 | 3. Multi-League & Schedule | 0/2 | Not started | - |
-| 4. Game Details & Statistics | 0/? | Not started | - |
+| 4. Game Details & Statistics | 0/4 | Not started | - |
 | 5. Performance & Polish | 0/? | Not started | - |
 
 ---
@@ -137,4 +143,4 @@ Plans:
 ---
 
 *Created: 2026-03-10*
-*Last updated: 2026-03-11*
+*Last updated: 2026-03-12*

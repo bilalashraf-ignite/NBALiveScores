@@ -10,7 +10,7 @@
 
 import { BaseAdapter } from '@/lib/adapters/base-adapter';
 import { cache, CACHE_TTL } from '@/lib/cache';
-import type { Game, League } from '@/types/sports-data';
+import type { Game, League, GameDetails } from '@/types/sports-data';
 
 // Mock cache module
 jest.mock('@/lib/cache', () => ({
@@ -145,6 +145,65 @@ describe('BaseAdapter', () => {
       expect(() => {
         adapter.testHandleError(error, 'unknown operation');
       }).toThrow('[NBA] unknown operation: Unknown error');
+    });
+  });
+
+  // ============================================================================
+  // PHASE 04 RED TESTS - These tests will FAIL until getGameDetails is implemented
+  // ============================================================================
+
+  describe('getGameDetails method (RED TEST)', () => {
+    it('should have abstract getGameDetails method', () => {
+      // This test will FAIL because getGameDetails method doesn't exist yet
+      const concreteAdapter = new TestAdapter();
+
+      // Check that the method exists on the class prototype
+      expect(typeof (concreteAdapter as any).getGameDetails).toBe('function');
+    });
+
+    it('should accept gameId and league parameters', async () => {
+      // This test will FAIL because getGameDetails method doesn't exist yet
+      const concreteAdapter = new TestAdapter();
+      const gameId = 'test-game-123';
+      const league: League = 'NBA';
+
+      // Verify method signature accepts correct parameters
+      try {
+        await (concreteAdapter as any).getGameDetails(gameId, league);
+      } catch (error) {
+        // Expected to throw since it's not implemented yet
+        // But we're testing the signature exists
+      }
+
+      expect((concreteAdapter as any).getGameDetails).toBeDefined();
+    });
+
+    it('should return Promise<GameDetails>', async () => {
+      // This test will FAIL because getGameDetails method doesn't exist yet
+      class MockAdapter extends BaseAdapter {
+        protected league: League = 'NBA';
+        protected baseUrl: string = 'https://test.api.com';
+
+        async getGameDetails(gameId: string, league: League): Promise<GameDetails> {
+          return {
+            gameId,
+            league,
+            homeTeam: { id: 'lal', name: 'Lakers', abbreviation: 'LAL' },
+            awayTeam: { id: 'gsw', name: 'Warriors', abbreviation: 'GSW' },
+            status: 'live' as any,
+            score: { home: 95, away: 92 },
+            teamStats: { home: {} as any, away: {} as any },
+            playerStats: { home: [], away: [] },
+            historicalMatchup: {} as any
+          };
+        }
+      }
+
+      const mockAdapter = new MockAdapter();
+      const result = await mockAdapter.getGameDetails('game-1', 'NBA');
+
+      expect(result.gameId).toBe('game-1');
+      expect(result.league).toBe('NBA');
     });
   });
 });

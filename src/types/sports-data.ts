@@ -104,13 +104,30 @@ export interface GameContext {
 }
 
 /**
+ * Shooting statistics with made, attempted, and percentage.
+ */
+export interface ShootingStat {
+  made: number;
+  attempted: number;
+  percentage: number;
+}
+
+/**
  * Team statistics for a game.
- * Placeholder for Plan 02 - will be fully defined with all 10 stats.
+ * Includes all 10 specified stats: shooting (FG, 3P, FT), assists, turnovers,
+ * rebounds (offensive, defensive, total), steals, and blocks.
  */
 export interface TeamStats {
-  // Will be populated in Plan 02 with:
-  // fieldGoals, threePointers, freeThrows, assists, turnovers,
-  // reboundsOffensive, reboundsDefensive, reboundsTotal, steals, blocks
+  fieldGoals: ShootingStat;
+  threePointers: ShootingStat;
+  freeThrows: ShootingStat;
+  assists: number;
+  turnovers: number;
+  reboundsOffensive: number;
+  reboundsDefensive: number;
+  reboundsTotal: number;
+  steals: number;
+  blocks: number;
 }
 
 /**

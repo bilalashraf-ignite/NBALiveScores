@@ -271,10 +271,32 @@ export class BalldontlieAdapter extends BaseAdapter implements SportsDataAdapter
           home: 3,
           away: 2
         },
-        // Placeholder empty objects - will be populated in Plan 02
+        // Mock NBA team stats: Lakers vs Celtics live game
         teamStats: {
-          home: {} as TeamStats,
-          away: {} as TeamStats
+          home: {
+            fieldGoals: { made: 38, attempted: 82, percentage: 46.3 },
+            threePointers: { made: 12, attempted: 35, percentage: 34.3 },
+            freeThrows: { made: 18, attempted: 22, percentage: 81.8 },
+            assists: 8,
+            turnovers: 12,
+            reboundsOffensive: 10,
+            reboundsDefensive: 28,
+            reboundsTotal: 38,
+            steals: 6,
+            blocks: 5
+          },
+          away: {
+            fieldGoals: { made: 42, attempted: 88, percentage: 47.7 },
+            threePointers: { made: 15, attempted: 38, percentage: 39.5 },
+            freeThrows: { made: 14, attempted: 18, percentage: 77.8 },
+            assists: 12,
+            turnovers: 10,
+            reboundsOffensive: 8,
+            reboundsDefensive: 32,
+            reboundsTotal: 40,
+            steals: 8,
+            blocks: 6
+          }
         },
         // Placeholder empty arrays - will be populated in Plan 03
         playerStats: {

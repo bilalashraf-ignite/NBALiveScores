@@ -140,10 +140,32 @@ export class EuroLeagueAdapter extends BaseAdapter implements SportsDataAdapter 
           home: 5,
           away: 6
         },
-        // Placeholder empty objects - will be populated in Plan 02
+        // Mock EuroLeague team stats: Real Madrid vs Barcelona final game
         teamStats: {
-          home: {} as TeamStats,
-          away: {} as TeamStats
+          home: {
+            fieldGoals: { made: 32, attempted: 68, percentage: 47.1 },
+            threePointers: { made: 10, attempted: 28, percentage: 35.7 },
+            freeThrows: { made: 11, attempted: 15, percentage: 73.3 },
+            assists: 18,
+            turnovers: 9,
+            reboundsOffensive: 7,
+            reboundsDefensive: 26,
+            reboundsTotal: 33,
+            steals: 6,
+            blocks: 4
+          },
+          away: {
+            fieldGoals: { made: 30, attempted: 64, percentage: 46.9 },
+            threePointers: { made: 8, attempted: 24, percentage: 33.3 },
+            freeThrows: { made: 14, attempted: 18, percentage: 77.8 },
+            assists: 16,
+            turnovers: 11,
+            reboundsOffensive: 5,
+            reboundsDefensive: 28,
+            reboundsTotal: 33,
+            steals: 4,
+            blocks: 3
+          }
         },
         // Placeholder empty arrays - will be populated in Plan 03
         playerStats: {

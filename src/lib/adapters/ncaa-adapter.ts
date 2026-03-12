@@ -142,10 +142,32 @@ export class NcaaAdapter extends BaseAdapter implements SportsDataAdapter {
           home: 4,
           away: 3
         },
-        // Placeholder empty objects - will be populated in Plan 02
+        // Mock NCAA team stats: Duke vs UNC live game
         teamStats: {
-          home: {} as TeamStats,
-          away: {} as TeamStats
+          home: {
+            fieldGoals: { made: 28, attempted: 55, percentage: 50.9 },
+            threePointers: { made: 8, attempted: 22, percentage: 36.4 },
+            freeThrows: { made: 8, attempted: 12, percentage: 66.7 },
+            assists: 15,
+            turnovers: 11,
+            reboundsOffensive: 6,
+            reboundsDefensive: 24,
+            reboundsTotal: 30,
+            steals: 7,
+            blocks: 3
+          },
+          away: {
+            fieldGoals: { made: 26, attempted: 58, percentage: 44.8 },
+            threePointers: { made: 6, attempted: 18, percentage: 33.3 },
+            freeThrows: { made: 10, attempted: 14, percentage: 71.4 },
+            assists: 13,
+            turnovers: 14,
+            reboundsOffensive: 8,
+            reboundsDefensive: 22,
+            reboundsTotal: 30,
+            steals: 5,
+            blocks: 2
+          }
         },
         // Placeholder empty arrays - will be populated in Plan 03
         playerStats: {

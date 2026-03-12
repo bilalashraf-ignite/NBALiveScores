@@ -3,18 +3,18 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-last_updated: "2026-03-12T16:02:05.584Z"
+last_updated: "2026-03-12T16:15:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 14
+  total_plans: 19
   completed_plans: 14
   percent: 93
 ---
 
 # Project State: Basketball Live Scores
 
-**Last Updated:** 2026-03-11
+**Last Updated:** 2026-03-12
 **Milestone:** v1.0 Live Scores
 
 ## Project Reference
@@ -29,16 +29,17 @@ progress:
 
 ## Current Position
 
-**Phase:** 04 - Game Details & Statistics
-**Plan:** 03 of 05 in progress
-**Status:** Ready to plan
+**Phase:** 05 - Performance & Polish
+**Plan:** Ready for execution
+**Status:** Planning complete
 
 **Progress:**
 [█████████░] 93%
 [██████████] 100% Phase 1: Foundation & Infrastructure (3/3 plans)
 [██████████] 100% Phase 2: Live Scores Display (4/4 plans)
 [██████████] 100% Phase 3: Multi-League Schedule (2/2 plans)
-[██████░░░░] 60% Phase 4: Game Details & Statistics (3/5 plans)
+[██████████] 100% Phase 4: Game Details & Statistics (5/5 plans)
+[░░░░░░░░░░] 0% Phase 5: Performance & Polish (0/5 plans)
 ```
 
 ---
@@ -49,8 +50,8 @@ progress:
 |--------|--------|---------|--------|
 | Requirements mapped | 45/45 | 45/45 | ✓ Complete |
 | Phases planned | 5 | 5 | ✓ Complete |
-| Plans created | 14 | 14 | ✓ Complete |
-| Plans executed | 14 | 10 | In Progress |
+| Plans created | 19 | 19 | ✓ Complete |
+| Plans executed | 19 | 13 | In Progress |
 | Implementation started | - | Yes | ✓ Active |
 
 **Plan Execution Metrics:**
@@ -77,6 +78,14 @@ progress:
 
 | Decision | Rationale | Date |
 |----------|-----------|------|
+| System fonts only for Phase 5 | -apple-system, Segoe UI stack provides zero network cost, instant rendering, native feel | 2026-03-12 |
+| 48x48px touch targets (Material Design) | More generous than Apple's 44px, better for users with larger fingers | 2026-03-12 |
+| Pull-to-refresh and swipe gestures | Full mobile-native experience users expect from native sports apps | 2026-03-12 |
+| 50% SSE reduction on cellular | 20-second updates (vs 10s WiFi) still feel real-time, saves significant data | 2026-03-12 |
+| Network Information API for detection | Detects 'slow-2g', '2g', '3g', '4g' connection types with good browser support | 2026-03-12 |
+| Lazy load modal on click | Modal + stats components load when user clicks game card, accepts 200-300ms delay | 2026-03-12 |
+| Perceived speed over true load time | Show skeleton instantly, swap to real data - users perceive this as faster than spinner | 2026-03-12 |
+| Reserve space for dynamic content | Prevents layout shift without complex animation orchestration (scores, badges, modal) | 2026-03-12 |
 | TanStack Table for player stats sorting | Built-in sortUndefined handling for DNP players; getSortedRowModel provides efficient sorting | 2026-03-12 |
 | Unified player table with visual divider | Single table maintains sort consistency across teams; divider separates home from away | 2026-03-12 |
 | Made-attempted format without percentage | Display as "8-15" string matches basketball scoreboard conventions; avoids precision issues | 2026-03-12 |
@@ -152,62 +161,59 @@ None currently - roadmap approved and ready for planning.
 
 ### What Just Happened
 
-Completed Phase 04 Plan 03: Player Statistics Display
-- Defined PlayerStats interface with all 12 required fields (jersey, name, minutes, points, rebounds, assists, shooting stats)
-- Populated realistic mock player rosters for all 3 league adapters (10-12 players per team including DNP players)
-- Installed @tanstack/react-table for sortable columns
-- Built PlayerStatsTable component with sortable columns for all stats
-- Implemented default sort by points descending (highest scorers first)
-- Used made-attempted format for shooting stats (e.g., "8-15")
-- Player names display as "#jerseyNumber lastName" format (e.g., "#23 James")
-- Visual divider separates home and away teams in unified table
-- DNP players included with 0:00 minutes and zero stats
-- Horizontal scroll wrapper for mobile devices
-- Integrated PlayerStatsTable into GameDetailModal below team stats
-- All 3 tasks followed TDD RED-GREEN cycle
-- 51 tests passing (28 type tests + 10 component tests + 13 integration tests)
-- 3 commits: ac48acc, ceb9c8a, 84e333e
-- Duration: 1303 seconds (22 minutes)
-- Requirements completed: STAT-03 (individual player statistics), STAT-04 (player points, rebounds, assists)
+Completed Phase 5 Planning: Performance & Polish
+- Captured implementation decisions through interactive discussion (05-CONTEXT.md)
+- Selected approaches: Load time optimization, mobile touch targets, layout shift prevention, cellular data conservation
+- Created research document with 15+ sources (05-RESEARCH.md)
+- Defined validation strategy with Nyquist compliance (05-VALIDATION.md)
+- Created 5 plans: Wave 0 (test infrastructure) + 4 implementation plans
+- Wave structure: Wave 0 → Wave 1 (load + mobile) → Wave 2 (layout shifts + data)
+- All plans verified with proper dependencies and automated verification
+- Requirements covered: PERF-01, PERF-02, PERF-05, MOB-01, MOB-02, MOB-03, MOB-04, UX-02
+
+**Key Implementation Decisions:**
+- Code splitting: Lazy load modal on click (200-300ms acceptable)
+- Images: Next.js Image with blur placeholder
+- Fonts: System font stack only (-apple-system, Segoe UI)
+- Touch targets: 48x48px minimum (Material Design)
+- Mobile gestures: Pull-to-refresh (80px), swipe-to-close (100px), haptic feedback
+- Layout shifts: Reserved space for scores/badges, dimension-matched skeletons
+- Network detection: Network Information API for cellular detection
+- SSE frequency: 10s WiFi, 20s cellular (50% data reduction)
 
 ### Next Actions
 
-1. Phase 04 is 60% complete (3/5 plans)
-2. Plans 01-03 complete: Modal infrastructure, team stats, player stats
-3. Plan 04 already complete: Historical matchup display
-4. Ready for Phase 5 or additional polish
-3. PlayerStats and HistoricalMatchup interfaces ready to be populated
+1. Phase 5 planning complete (5/5 plans created and verified)
+2. Ready for execution: `/gsd:execute-phase 05`
+3. Wave 0 must complete first (test infrastructure)
+4. Then Wave 1 can execute in parallel (05-01, 05-02)
+5. Then Wave 2 can execute in parallel (05-03, 05-04)
 
 ### Context for Next Session
 
 **If starting fresh:**
 - Read `.planning/STATE.md` (this file) for current position
 - Read `.planning/ROADMAP.md` for phase structure
-- Read `.planning/REQUIREMENTS.md` for detailed requirements
-- Current phase: Phase 4 context captured, ready for planning
-- Next step: Run `/gsd:plan-phase 4` to create executable plans
+- Read `.planning/phases/05-performance-polish/05-CONTEXT.md` for Phase 5 decisions
+- Current phase: Phase 5 planning complete, ready for execution
+- Next step: Run `/gsd:execute-phase 05` to implement performance & polish
 
 **Critical context:**
 - Phase 1 complete: Database schema, Redis caching, Vercel deployment, GitHub Actions CI
 - Phase 2 complete: SSE streaming, UI components, home page with real-time updates, team fouls display
 - Phase 3 complete: Multi-league adapter architecture, league filtering UI, timezone-aware scheduling
-- Phase 4 context complete: Game detail modal structure, team/player stats display, historical matchup data
-- Phase 4 Plan 01 complete: Modal infrastructure with Radix Dialog, on-demand fetch, browser history integration
+- Phase 4 complete: Game detail modals, team/player stats tables, historical matchup display
+- Phase 5 planned: Performance optimization and mobile polish ready for implementation
 - Multi-league support: NBA, NCAA, EuroLeague with parallel fetching and client-side filtering
-- BaseAdapter pattern established for shared infrastructure (will extend with getGameDetails method)
-- GameDetails interface: Separate from Game for on-demand fetch (team stats, player stats, historical)
-- Modal overlay pattern: Maintains SSE connection, multiple dismissal methods (X, click outside, ESC, back)
-- Promise.allSettled ensures fault-tolerant multi-API aggregation
-- League filter pills with live game counts and active state styling
-- Timezone handling via Intl.DateTimeFormat (auto-detects user timezone, handles DST)
-- Test infrastructure in place: Jest + React Testing Library (141 tests passing)
-- TDD workflow established and working (RED-GREEN pattern)
+- BaseAdapter pattern: Shared infrastructure for all league adapters
+- GameDetails interface: On-demand fetch for team stats, player stats, historical matchup
+- Modal overlay pattern: Maintains SSE connection during detail view
+- Test infrastructure: Jest + React Testing Library, Lighthouse CI for performance
+- TDD workflow: RED-GREEN pattern with automated verification
 - Error handling: ErrorBoundary, StaleDataBanner for graceful degradation
-- Mobile-first responsive design (1/2/3 column grid)
-- Card-based layout per CONTEXT.md locked decisions
-- Live/halftime game sorting implemented
-- Team fouls display with optional field pattern
-- 45 requirements mapped to 5 coarse-granularity phases
+- Mobile-first responsive design: 1/2/3 column grid with card-based layout
+- Performance targets: Sub-1s desktop load, sub-2s mobile load, CLS < 0.1
+- 45 requirements mapped across 5 phases with 19 total plans
 
 ---
 

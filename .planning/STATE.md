@@ -30,7 +30,7 @@ progress:
 ## Current Position
 
 **Phase:** 04 - Game Details & Statistics
-**Plan:** 02 of 05 in progress
+**Plan:** 03 of 05 in progress
 **Status:** Executing
 
 **Progress:**
@@ -38,7 +38,7 @@ progress:
 [██████████] 100% Phase 1: Foundation & Infrastructure (3/3 plans)
 [██████████] 100% Phase 2: Live Scores Display (4/4 plans)
 [██████████] 100% Phase 3: Multi-League Schedule (2/2 plans)
-[████░░░░░░] 40% Phase 4: Game Details & Statistics (2/5 plans)
+[██████░░░░] 60% Phase 4: Game Details & Statistics (3/5 plans)
 ```
 
 ---
@@ -67,8 +67,9 @@ progress:
 | Phase 03 P02 | 1393s | 3 | 10 | ✓ Complete |
 | Phase 04 P00 | 841s | 3 | 9 | ✓ Complete |
 | Phase 04 P01 | 1271s | 3 | 16 | ✓ Complete |
-| Phase 04 P02 | 586 | 3 tasks | 7 files |
-| Phase 04 P04 | 959 | 3 tasks | 9 files |
+| Phase 04 P02 | 586s | 3 | 7 | ✓ Complete |
+| Phase 04 P03 | 1303s | 3 | 7 | ✓ Complete |
+| Phase 04 P04 | 959s | 3 | 9 | ✓ Complete |
 
 ## Accumulated Context
 
@@ -76,6 +77,10 @@ progress:
 
 | Decision | Rationale | Date |
 |----------|-----------|------|
+| TanStack Table for player stats sorting | Built-in sortUndefined handling for DNP players; getSortedRowModel provides efficient sorting | 2026-03-12 |
+| Unified player table with visual divider | Single table maintains sort consistency across teams; divider separates home from away | 2026-03-12 |
+| Made-attempted format without percentage | Display as "8-15" string matches basketball scoreboard conventions; avoids precision issues | 2026-03-12 |
+| Player name format #jerseyNumber lastName | Compact format "#23 James" matches live broadcast graphics conventions | 2026-03-12 |
 | Custom table component for team stats | Side-by-side comparison is fixed layout with 10 rows; TanStack Table adds unnecessary complexity | 2026-03-12 |
 | Full word labels for rebounds | Avoid abbreviations (OREB/DREB/TREB) for better accessibility; users unfamiliar with basketball can understand | 2026-03-12 |
 | Turnovers use reverse comparison | Lower turnover count is better performance; reversed comparison logic for proper bold highlighting | 2026-03-12 |
@@ -147,26 +152,30 @@ None currently - roadmap approved and ready for planning.
 
 ### What Just Happened
 
-Completed Phase 04 Plan 02: Team Statistics Display
-- Defined TeamStats interface with all 10 required stats (FG%, 3P%, FT%, AST, TO, OREB, DREB, TREB, STL, BLK)
-- Created ShootingStat interface for made-attempted-percentage format
-- Populated realistic mock data for all 3 league adapters (NBA, NCAA, EuroLeague)
-- Built TeamStatsTable component with side-by-side comparison format
-- Implemented conditional bold highlighting (higher for most stats, lower for turnovers)
-- Used full word labels for rebounds (not abbreviations)
-- Integrated TeamStatsTable into GameDetailModal
+Completed Phase 04 Plan 03: Player Statistics Display
+- Defined PlayerStats interface with all 12 required fields (jersey, name, minutes, points, rebounds, assists, shooting stats)
+- Populated realistic mock player rosters for all 3 league adapters (10-12 players per team including DNP players)
+- Installed @tanstack/react-table for sortable columns
+- Built PlayerStatsTable component with sortable columns for all stats
+- Implemented default sort by points descending (highest scorers first)
+- Used made-attempted format for shooting stats (e.g., "8-15")
+- Player names display as "#jerseyNumber lastName" format (e.g., "#23 James")
+- Visual divider separates home and away teams in unified table
+- DNP players included with 0:00 minutes and zero stats
+- Horizontal scroll wrapper for mobile devices
+- Integrated PlayerStatsTable into GameDetailModal below team stats
 - All 3 tasks followed TDD RED-GREEN cycle
-- Fixed test selectors to use React Testing Library best practices
-- 210 tests passing (7 component tests + 1 integration test for team stats)
-- 3 integration tests deferred (Plans 03-04 features)
-- 3 commits: 5e1935e, 6b632bf, b5009c3
-- Duration: 586 seconds (10 minutes)
-- Requirements completed: STAT-01 (team shooting statistics), STAT-02 (turnovers and defensive stats)
+- 51 tests passing (28 type tests + 10 component tests + 13 integration tests)
+- 3 commits: ac48acc, ceb9c8a, 84e333e
+- Duration: 1303 seconds (22 minutes)
+- Requirements completed: STAT-03 (individual player statistics), STAT-04 (player points, rebounds, assists)
 
 ### Next Actions
 
-1. Execute Phase 04 Plan 03: Implement PlayerStatsTable component with sortable columns
-2. Execute Phase 04 Plan 04: Implement HistoricalMatchup component with last 5 meetings
+1. Phase 04 is 60% complete (3/5 plans)
+2. Plans 01-03 complete: Modal infrastructure, team stats, player stats
+3. Plan 04 already complete: Historical matchup display
+4. Ready for Phase 5 or additional polish
 3. PlayerStats and HistoricalMatchup interfaces ready to be populated
 
 ### Context for Next Session

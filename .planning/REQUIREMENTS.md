@@ -48,7 +48,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **STAT-02**: User can view turnovers for each team
 - [ ] **STAT-03**: User can view individual player statistics during live games
 - [ ] **STAT-04**: User can see player points, rebounds, and assists
-- [ ] **STAT-05**: User can access player statistics by expanding game details
+- [x] **STAT-05**: User can access player statistics by expanding game details
 
 ### Home Page & Navigation
 
@@ -161,11 +161,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STAT-02 | Phase 4 | Pending |
 | STAT-03 | Phase 4 | Pending |
 | STAT-04 | Phase 4 | Pending |
-| STAT-05 | Phase 4 | Pending |
+| STAT-05 | Phase 4 | Complete |
 | NAV-01 | Phase 2 | Pending |
 | NAV-02 | Phase 2 | Pending |
 | NAV-03 | Phase 2 | Complete |
-| NAV-04 | Phase 2 | Pending |
+| NAV-04 | Phase 2 | Complete |
 | PERF-01 | Phase 5 | Pending |
 | PERF-02 | Phase 5 | Pending |
 | PERF-03 | Phase 1 | Complete |

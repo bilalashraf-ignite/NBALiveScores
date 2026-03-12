@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-03-12T14:48:24Z"
+last_updated: "2026-03-12T14:57:45.628Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 14
-  completed_plans: 10
-  percent: 71
+  completed_plans: 11
+  percent: 79
 ---
 
 # Project State: Basketball Live Scores
@@ -30,15 +30,15 @@ progress:
 ## Current Position
 
 **Phase:** 04 - Game Details & Statistics
-**Plan:** 01 of 05 complete
+**Plan:** 02 of 05 in progress
 **Status:** Executing
 
 **Progress:**
-[█████████████████████████] 56%
+[████████░░] 79%
 [██████████] 100% Phase 1: Foundation & Infrastructure (3/3 plans)
 [██████████] 100% Phase 2: Live Scores Display (4/4 plans)
 [██████████] 100% Phase 3: Multi-League Schedule (2/2 plans)
-[██░░░░░░░░] 20% Phase 4: Game Details & Statistics (1/5 plans)
+[████░░░░░░] 40% Phase 4: Game Details & Statistics (2/5 plans)
 ```
 
 ---
@@ -66,6 +66,7 @@ progress:
 | Phase 03 P01 | 1903s | 3 | 13 | ✓ Complete |
 | Phase 03 P02 | 1393s | 3 | 10 | ✓ Complete |
 | Phase 04 P00 | 841s | 3 | 9 | ✓ Complete |
+| Phase 04 P01 | 1271s | 3 | 16 | ✓ Complete |
 
 ## Accumulated Context
 
@@ -73,6 +74,11 @@ progress:
 
 | Decision | Rationale | Date |
 |----------|-----------|------|
+| Modal overlay pattern maintains SSE connection | Modal renders as overlay (not new page) to avoid unmounting home page and breaking SSE connection | 2026-03-12 |
+| GameDetails as separate interface from Game | On-demand fetch requires distinct type with extended data (team stats, player stats, historical matchup) | 2026-03-12 |
+| Radix UI Dialog for modal accessibility | Built-in focus trap, ARIA compliance, keyboard navigation, and controlled state management | 2026-03-12 |
+| Only LIVE/FINAL games clickable | SCHEDULED games have no stats to display; click behavior restricted to games with available details | 2026-03-12 |
+| Placeholder types for future plans | TeamStats, PlayerStats, HistoricalMatchup defined as empty interfaces to enable type checking while deferring implementation | 2026-03-12 |
 | Created Wave 0 test scaffold for Phase 04 | 9 RED test files document expected behaviors for all components, enabling automated verification in Plans 01-04 | 2026-03-12 |
 | Intl.DateTimeFormat for timezone handling | Browser-native API handles DST transitions automatically, no external library needed | 2026-03-11 |
 | Filter pills instead of dropdown | Pills show game counts inline, better UX for 4 leagues, mobile-friendly | 2026-03-11 |
@@ -136,22 +142,25 @@ None currently - roadmap approved and ready for planning.
 
 ### What Just Happened
 
-Completed Phase 04 Plan 00: Test Scaffold (Wave 0)
-- Created 9 RED test files covering all Phase 04 components
-- Test coverage: types (6 tests), adapters (3 tests), hooks (10 tests), components (47 tests), integration (11 tests)
-- Total: 77 RED tests documenting expected behaviors
-- All tests fail as expected (types/components not implemented yet)
-- Nyquist compliance achieved: automated verification available for every task in Plans 01-04
-- 3 commits: fead1f7, b5f60b4, e5de490
-- Duration: 841 seconds (14 minutes)
-- Committed SUMMARY.md, STATE.md, ROADMAP.md updates
+Completed Phase 04 Plan 01: Game Details Modal Infrastructure
+- Built complete modal infrastructure for game details display
+- Created GameDetails data model with placeholder types (TeamStats, PlayerStats, HistoricalMatchup)
+- Implemented useGameDetails hook for on-demand data fetching
+- Created GameDetailModal with Radix Dialog (accessible, controlled state)
+- Integrated modal with GameCard (clickable for LIVE/FINAL games) and home page
+- All 3 tasks followed TDD RED-GREEN-REFACTOR cycle
+- 43 tests passing (18 GameCard + 18 hooks/components + 7 integration)
+- 4 integration tests deferred (Plans 02-04 features)
+- 4 commits: 99dd83e, f534bbd, bcecb06, 2189743
+- Duration: 1271 seconds (21 minutes)
+- Requirements completed: NAV-04 (click game card), STAT-05 (on-demand stats loading infrastructure)
 
 ### Next Actions
 
-1. Execute Phase 04 Plan 01: Implement GameDetails types and adapter methods
-2. Execute Phase 04 Plan 02: Implement hooks and modal component
-3. Execute Phase 04 Plan 03: Implement stats tables
-4. Execute Phase 04 Plan 04: Implement historical matchup and integration
+1. Execute Phase 04 Plan 02: Implement TeamStatsTable component with 10 stats
+2. Execute Phase 04 Plan 03: Implement PlayerStatsTable component with sortable columns
+3. Execute Phase 04 Plan 04: Implement HistoricalMatchup component with last 5 meetings
+4. All placeholder types ready to be populated with full data structures
 
 ### Context for Next Session
 
@@ -167,6 +176,7 @@ Completed Phase 04 Plan 00: Test Scaffold (Wave 0)
 - Phase 2 complete: SSE streaming, UI components, home page with real-time updates, team fouls display
 - Phase 3 complete: Multi-league adapter architecture, league filtering UI, timezone-aware scheduling
 - Phase 4 context complete: Game detail modal structure, team/player stats display, historical matchup data
+- Phase 4 Plan 01 complete: Modal infrastructure with Radix Dialog, on-demand fetch, browser history integration
 - Multi-league support: NBA, NCAA, EuroLeague with parallel fetching and client-side filtering
 - BaseAdapter pattern established for shared infrastructure (will extend with getGameDetails method)
 - GameDetails interface: Separate from Game for on-demand fetch (team stats, player stats, historical)

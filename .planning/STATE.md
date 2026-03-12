@@ -133,25 +133,24 @@ None currently - roadmap approved and ready for planning.
 
 ### What Just Happened
 
-Completed Phase 03 Plan 02: League Filtering and Timezone Display
-- Created LeagueFilter component with pills UI for All, NBA, NCAA, EuroLeague
-- Implemented dynamic game count calculation and active state styling
-- Created GameTime component using Intl.DateTimeFormat for timezone conversion
-- Auto-detects user timezone and locale for 12h/24h format preference
-- Handles DST transitions automatically via browser API
-- Updated GameList with selectedLeague prop and filtering logic
-- Integrated GameTime component in GameCard for SCHEDULED games
-- Added league filter state management on home page
-- All work completed with TDD (RED-GREEN pattern)
-- 3 tasks completed, 3 commits made, 10 files (4 created, 6 modified)
-- All tests passing (141/141)
-- 23 new tests added (LeagueFilter, GameTime, filtering, integration)
+Completed Phase 04 context gathering via /gsd:discuss-phase 4
+- Discussed 4 implementation areas through 12 total questions
+- Area 1: Game detail page structure (modal overlay, dismissal methods, SSE behavior)
+- Area 2: Team statistics display (10 stats, side-by-side format, bold highlighting)
+- Area 3: Player statistics display (full box score, sortable columns, jersey numbers)
+- Area 4: Historical matchup data (last 5 meetings, season series, all-time record)
+- Key decision: Modal overlay (not new page) to maintain SSE connection
+- Key decision: Mock data strategy for Phase 4 (defer real API integration)
+- Key decision: LIVE and FINAL games only (SCHEDULED has no stats)
+- Key decision: Separate GameDetails interface for on-demand fetch
+- Documented all locked decisions in 04-CONTEXT.md (406 lines)
+- Committed context to git (1523a62)
 
 ### Next Actions
 
-1. Phase 3 complete (2/2 plans)
-2. Plan Phase 4 (next feature set per ROADMAP.md)
-3. Optional: User acceptance testing for league filter UI
+1. Phase 4 context complete, ready for planning
+2. Run `/gsd:plan-phase 4` to create executable plans
+3. Phase 3 remains fully verified (2/2 plans, 4/4 success criteria)
 
 ### Context for Next Session
 
@@ -159,15 +158,18 @@ Completed Phase 03 Plan 02: League Filtering and Timezone Display
 - Read `.planning/STATE.md` (this file) for current position
 - Read `.planning/ROADMAP.md` for phase structure
 - Read `.planning/REQUIREMENTS.md` for detailed requirements
-- Current phase: Phase 3 complete (2/2 plans)
-- Next step: Plan Phase 4 (next feature set)
+- Current phase: Phase 4 context captured, ready for planning
+- Next step: Run `/gsd:plan-phase 4` to create executable plans
 
 **Critical context:**
 - Phase 1 complete: Database schema, Redis caching, Vercel deployment, GitHub Actions CI
 - Phase 2 complete: SSE streaming, UI components, home page with real-time updates, team fouls display
 - Phase 3 complete: Multi-league adapter architecture, league filtering UI, timezone-aware scheduling
+- Phase 4 context complete: Game detail modal structure, team/player stats display, historical matchup data
 - Multi-league support: NBA, NCAA, EuroLeague with parallel fetching and client-side filtering
-- BaseAdapter pattern established for shared infrastructure
+- BaseAdapter pattern established for shared infrastructure (will extend with getGameDetails method)
+- GameDetails interface: Separate from Game for on-demand fetch (team stats, player stats, historical)
+- Modal overlay pattern: Maintains SSE connection, multiple dismissal methods (X, click outside, ESC, back)
 - Promise.allSettled ensures fault-tolerant multi-API aggregation
 - League filter pills with live game counts and active state styling
 - Timezone handling via Intl.DateTimeFormat (auto-detects user timezone, handles DST)

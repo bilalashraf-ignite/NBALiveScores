@@ -132,21 +132,76 @@ export interface TeamStats {
 
 /**
  * Player statistics for a game.
- * Placeholder for Plan 03 - will be fully defined with all player fields.
+ * Includes all specified stats with made-attempted format for shooting stats.
  */
 export interface PlayerStats {
-  // Will be populated in Plan 03 with:
-  // jerseyNumber, lastName, firstName, minutes, points,
-  // fieldGoals, threePointers, freeThrows, rebounds, assists, steals, blocks
+  /** Player's jersey number (e.g., "23") */
+  jerseyNumber: string;
+  /** Player's last name (e.g., "James") */
+  lastName: string;
+  /** Player's first name (for full name display) */
+  firstName: string;
+  /** Minutes played in MM:SS format (e.g., "32:15" or "0:00" for DNP) */
+  minutes: string;
+  /** Total points scored */
+  points: number;
+  /** Field goals (2-point + 3-point) made and attempted */
+  fieldGoals: { made: number; attempted: number };
+  /** Three-pointers made and attempted */
+  threePointers: { made: number; attempted: number };
+  /** Free throws made and attempted */
+  freeThrows: { made: number; attempted: number };
+  /** Total rebounds (offensive + defensive) */
+  rebounds: number;
+  /** Assists */
+  assists: number;
+  /** Steals */
+  steals: number;
+  /** Blocks */
+  blocks: number;
 }
 
 /**
  * Historical matchup data between two teams.
- * Placeholder for Plan 04 - will be fully defined with matchup history.
+ * Shows last 5 meetings, season series record, and all-time head-to-head record.
+ * All fields are optional to support graceful degradation when data unavailable.
  */
 export interface HistoricalMatchup {
-  // Will be populated in Plan 04 with:
-  // lastFiveMeetings, seasonSeries, allTimeRecord, averageCombinedPoints
+  /** Last 5 meetings between the two teams (most recent first) */
+  lastFiveMeetings?: Array<{
+    /** ISO date format "2024-12-15" */
+    date: string;
+    /** Home team name */
+    homeTeam: string;
+    /** Away team name */
+    awayTeam: string;
+    /** Home team score */
+    homeScore: number;
+    /** Away team score */
+    awayScore: number;
+    /** Which team won the matchup */
+    winner: 'home' | 'away';
+  }>;
+  /** Current season series record (wins/losses from one team's perspective) */
+  seasonSeries?: {
+    /** Season wins for one team */
+    wins: number;
+    /** Season losses for one team */
+    losses: number;
+    /** Which team leads the season series */
+    leader: 'home' | 'away' | 'tied';
+  };
+  /** All-time head-to-head record (wins/losses from one team's perspective) */
+  allTimeRecord?: {
+    /** All-time wins for one team */
+    wins: number;
+    /** All-time losses for one team */
+    losses: number;
+    /** Which team leads all-time */
+    leader: 'home' | 'away';
+  };
+  /** Average combined points per matchup across history */
+  averageCombinedPoints?: number;
 }
 
 /**

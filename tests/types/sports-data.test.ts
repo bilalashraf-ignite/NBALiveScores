@@ -283,7 +283,7 @@ describe('PlayerStats interface (RED TEST)', () => {
 
 describe('HistoricalMatchup interface (RED TEST)', () => {
   it('should have all optional fields defined', () => {
-    // This test will FAIL because HistoricalMatchup type doesn't exist yet
+    // This test will FAIL because HistoricalMatchup type doesn't fully exist yet
     const mockHistoricalMatchup: HistoricalMatchup = {
       lastFiveMeetings: [
         {
@@ -317,14 +317,23 @@ describe('HistoricalMatchup interface (RED TEST)', () => {
     };
 
     expect(mockHistoricalMatchup.lastFiveMeetings).toHaveLength(2);
+    expect(mockHistoricalMatchup.lastFiveMeetings![0].date).toBe('2026-02-15');
+    expect(mockHistoricalMatchup.lastFiveMeetings![0].homeTeam).toBe('Lakers');
+    expect(mockHistoricalMatchup.lastFiveMeetings![0].awayTeam).toBe('Warriors');
+    expect(mockHistoricalMatchup.lastFiveMeetings![0].homeScore).toBe(120);
+    expect(mockHistoricalMatchup.lastFiveMeetings![0].awayScore).toBe(115);
     expect(mockHistoricalMatchup.lastFiveMeetings![0].winner).toBe('home');
     expect(mockHistoricalMatchup.seasonSeries?.wins).toBe(2);
+    expect(mockHistoricalMatchup.seasonSeries?.losses).toBe(1);
+    expect(mockHistoricalMatchup.seasonSeries?.leader).toBe('home');
     expect(mockHistoricalMatchup.allTimeRecord?.wins).toBe(45);
+    expect(mockHistoricalMatchup.allTimeRecord?.losses).toBe(32);
+    expect(mockHistoricalMatchup.allTimeRecord?.leader).toBe('home');
     expect(mockHistoricalMatchup.averageCombinedPoints).toBe(228);
   });
 
   it('should allow empty lastFiveMeetings for fallback scenario', () => {
-    // This test will FAIL because HistoricalMatchup type doesn't exist yet
+    // This test will FAIL because HistoricalMatchup type doesn't fully exist yet
     const mockHistoricalMatchup: HistoricalMatchup = {
       lastFiveMeetings: [],
       seasonSeries: undefined,
@@ -334,5 +343,237 @@ describe('HistoricalMatchup interface (RED TEST)', () => {
 
     expect(mockHistoricalMatchup.lastFiveMeetings).toHaveLength(0);
     expect(mockHistoricalMatchup.seasonSeries).toBeUndefined();
+  });
+
+  it('should accept 5 meetings for full historical data', () => {
+    // Test with exactly 5 meetings (the max we display)
+    const mockHistoricalMatchup: HistoricalMatchup = {
+      lastFiveMeetings: [
+        { date: '2026-03-01', homeTeam: 'Lakers', awayTeam: 'Celtics', homeScore: 105, awayScore: 112, winner: 'away' },
+        { date: '2026-01-15', homeTeam: 'Celtics', awayTeam: 'Lakers', homeScore: 98, awayScore: 95, winner: 'home' },
+        { date: '2025-12-10', homeTeam: 'Lakers', awayTeam: 'Celtics', homeScore: 110, awayScore: 108, winner: 'home' },
+        { date: '2025-11-22', homeTeam: 'Celtics', awayTeam: 'Lakers', homeScore: 102, awayScore: 100, winner: 'home' },
+        { date: '2025-10-30', homeTeam: 'Lakers', awayTeam: 'Celtics', homeScore: 115, awayScore: 113, winner: 'home' }
+      ],
+      seasonSeries: {
+        wins: 2,
+        losses: 1,
+        leader: 'home'
+      },
+      allTimeRecord: {
+        wins: 163,
+        losses: 127,
+        leader: 'away'
+      },
+      averageCombinedPoints: 208
+    };
+
+    expect(mockHistoricalMatchup.lastFiveMeetings).toHaveLength(5);
+    expect(mockHistoricalMatchup.lastFiveMeetings![0].date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('should allow tied season series', () => {
+    const mockHistoricalMatchup: HistoricalMatchup = {
+      lastFiveMeetings: [
+        { date: '2026-02-01', homeTeam: 'Duke', awayTeam: 'UNC', homeScore: 78, awayScore: 80, winner: 'away' },
+        { date: '2026-01-10', homeTeam: 'UNC', awayTeam: 'Duke', homeScore: 72, awayScore: 75, winner: 'away' }
+      ],
+      seasonSeries: {
+        wins: 1,
+        losses: 1,
+        leader: 'tied'
+      },
+      allTimeRecord: {
+        wins: 145,
+        losses: 115,
+        leader: 'away'
+      },
+      averageCombinedPoints: 150
+    };
+
+    expect(mockHistoricalMatchup.seasonSeries?.leader).toBe('tied');
+    expect(mockHistoricalMatchup.seasonSeries?.wins).toBe(1);
+    expect(mockHistoricalMatchup.seasonSeries?.losses).toBe(1);
+  });
+});
+
+// ============================================================================
+// PLAN 04-03 Task 1 RED TESTS - Adapter getGameDetails with PlayerStats
+// ============================================================================
+
+describe('BalldontlieAdapter.getGameDetails with PlayerStats (RED TEST)', () => {
+  it('should return GameDetails with player stats for both teams', async () => {
+    const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
+    const adapter = BalldontlieAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('nba-1');
+
+    expect(gameDetails).toBeDefined();
+    expect(gameDetails.playerStats).toBeDefined();
+    expect(gameDetails.playerStats.home).toBeDefined();
+    expect(gameDetails.playerStats.away).toBeDefined();
+    expect(Array.isArray(gameDetails.playerStats.home)).toBe(true);
+    expect(Array.isArray(gameDetails.playerStats.away)).toBe(true);
+  });
+
+  it('should return 10-12 players per team', async () => {
+    const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
+    const adapter = BalldontlieAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('nba-1');
+
+    expect(gameDetails.playerStats.home.length).toBeGreaterThanOrEqual(10);
+    expect(gameDetails.playerStats.home.length).toBeLessThanOrEqual(12);
+    expect(gameDetails.playerStats.away.length).toBeGreaterThanOrEqual(10);
+    expect(gameDetails.playerStats.away.length).toBeLessThanOrEqual(12);
+  });
+
+  it('should include realistic NBA star players (Lakers vs Celtics)', async () => {
+    const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
+    const adapter = BalldontlieAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('nba-1');
+
+    // Check for LeBron James on home team (Lakers)
+    const lebron = gameDetails.playerStats.home.find(
+      (p) => p.lastName === 'James' && p.jerseyNumber === '23'
+    );
+    expect(lebron).toBeDefined();
+    expect(lebron?.firstName).toBe('LeBron');
+    expect(lebron?.points).toBeGreaterThanOrEqual(20);
+    expect(lebron?.minutes).not.toBe('0:00');
+
+    // Check for Jayson Tatum on away team (Celtics)
+    const tatum = gameDetails.playerStats.away.find(
+      (p) => p.lastName === 'Tatum' && p.jerseyNumber === '0'
+    );
+    expect(tatum).toBeDefined();
+    expect(tatum?.firstName).toBe('Jayson');
+    expect(tatum?.points).toBeGreaterThanOrEqual(20);
+  });
+
+  it('should include at least one DNP player with 0:00 minutes', async () => {
+    const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
+    const adapter = BalldontlieAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('nba-1');
+
+    const allPlayers = [
+      ...gameDetails.playerStats.home,
+      ...gameDetails.playerStats.away,
+    ];
+    const dnpPlayers = allPlayers.filter((p) => p.minutes === '0:00');
+
+    expect(dnpPlayers.length).toBeGreaterThanOrEqual(1);
+
+    // DNP players should have zero stats
+    dnpPlayers.forEach((dnp) => {
+      expect(dnp.points).toBe(0);
+      expect(dnp.fieldGoals.made).toBe(0);
+      expect(dnp.fieldGoals.attempted).toBe(0);
+      expect(dnp.rebounds).toBe(0);
+      expect(dnp.assists).toBe(0);
+    });
+  });
+
+  it('should have realistic stat distributions (starters vs bench)', async () => {
+    const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
+    const adapter = BalldontlieAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('nba-1');
+
+    const allPlayers = [
+      ...gameDetails.playerStats.home,
+      ...gameDetails.playerStats.away,
+    ];
+
+    // Filter out DNP players for this test
+    const activePlayers = allPlayers.filter((p) => p.minutes !== '0:00');
+
+    // At least 8 players (4 per team) should have significant minutes
+    const startersOrRegulars = activePlayers.filter((p) => {
+      const [mins] = p.minutes.split(':').map(Number);
+      return mins >= 25;
+    });
+    expect(startersOrRegulars.length).toBeGreaterThanOrEqual(8);
+
+    // Check points distribution (stars should score more)
+    const highScorers = activePlayers.filter((p) => p.points >= 20);
+    expect(highScorers.length).toBeGreaterThanOrEqual(2); // At least 2 star players
+  });
+
+  it('should have shooting stats with made-attempted structure', async () => {
+    const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
+    const adapter = BalldontlieAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('nba-1');
+
+    const player = gameDetails.playerStats.home[0];
+
+    expect(player.fieldGoals).toHaveProperty('made');
+    expect(player.fieldGoals).toHaveProperty('attempted');
+    expect(player.threePointers).toHaveProperty('made');
+    expect(player.threePointers).toHaveProperty('attempted');
+    expect(player.freeThrows).toHaveProperty('made');
+    expect(player.freeThrows).toHaveProperty('attempted');
+
+    // made should never exceed attempted
+    expect(player.fieldGoals.made).toBeLessThanOrEqual(
+      player.fieldGoals.attempted
+    );
+    expect(player.threePointers.made).toBeLessThanOrEqual(
+      player.threePointers.attempted
+    );
+    expect(player.freeThrows.made).toBeLessThanOrEqual(
+      player.freeThrows.attempted
+    );
+  });
+});
+
+describe('NcaaAdapter.getGameDetails with PlayerStats (RED TEST)', () => {
+  it('should return GameDetails with player stats for NCAA game', async () => {
+    const { NcaaAdapter } = await import('@/lib/adapters/ncaa-adapter');
+    const adapter = NcaaAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('ncaa-1');
+
+    expect(gameDetails.playerStats.home).toBeDefined();
+    expect(gameDetails.playerStats.away).toBeDefined();
+    expect(gameDetails.playerStats.home.length).toBeGreaterThanOrEqual(10);
+    expect(gameDetails.playerStats.away.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it('should include at least one DNP player', async () => {
+    const { NcaaAdapter } = await import('@/lib/adapters/ncaa-adapter');
+    const adapter = NcaaAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('ncaa-1');
+
+    const allPlayers = [
+      ...gameDetails.playerStats.home,
+      ...gameDetails.playerStats.away,
+    ];
+    const dnpPlayers = allPlayers.filter((p) => p.minutes === '0:00');
+
+    expect(dnpPlayers.length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe('EuroLeagueAdapter.getGameDetails with PlayerStats (RED TEST)', () => {
+  it('should return GameDetails with player stats for EuroLeague game', async () => {
+    const { EuroLeagueAdapter } = await import('@/lib/adapters/euroleague-adapter');
+    const adapter = EuroLeagueAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('euroleague-1');
+
+    expect(gameDetails.playerStats.home).toBeDefined();
+    expect(gameDetails.playerStats.away).toBeDefined();
+    expect(gameDetails.playerStats.home.length).toBeGreaterThanOrEqual(10);
+    expect(gameDetails.playerStats.away.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it('should include at least one DNP player', async () => {
+    const { EuroLeagueAdapter } = await import('@/lib/adapters/euroleague-adapter');
+    const adapter = EuroLeagueAdapter.getInstance();
+    const gameDetails = await adapter.getGameDetails('euroleague-1');
+
+    const allPlayers = [
+      ...gameDetails.playerStats.home,
+      ...gameDetails.playerStats.away,
+    ];
+    const dnpPlayers = allPlayers.filter((p) => p.minutes === '0:00');
+
+    expect(dnpPlayers.length).toBeGreaterThanOrEqual(1);
   });
 });

@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-03-12T14:57:45.628Z"
+last_updated: "2026-03-12T15:15:09.896Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 14
-  completed_plans: 11
-  percent: 79
+  completed_plans: 12
+  percent: 86
 ---
 
 # Project State: Basketball Live Scores
@@ -34,7 +34,7 @@ progress:
 **Status:** Executing
 
 **Progress:**
-[████████░░] 79%
+[█████████░] 86%
 [██████████] 100% Phase 1: Foundation & Infrastructure (3/3 plans)
 [██████████] 100% Phase 2: Live Scores Display (4/4 plans)
 [██████████] 100% Phase 3: Multi-League Schedule (2/2 plans)
@@ -67,6 +67,7 @@ progress:
 | Phase 03 P02 | 1393s | 3 | 10 | ✓ Complete |
 | Phase 04 P00 | 841s | 3 | 9 | ✓ Complete |
 | Phase 04 P01 | 1271s | 3 | 16 | ✓ Complete |
+| Phase 04 P02 | 586 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ progress:
 
 | Decision | Rationale | Date |
 |----------|-----------|------|
+| Custom table component for team stats | Side-by-side comparison is fixed layout with 10 rows; TanStack Table adds unnecessary complexity | 2026-03-12 |
+| Full word labels for rebounds | Avoid abbreviations (OREB/DREB/TREB) for better accessibility; users unfamiliar with basketball can understand | 2026-03-12 |
+| Turnovers use reverse comparison | Lower turnover count is better performance; reversed comparison logic for proper bold highlighting | 2026-03-12 |
 | Modal overlay pattern maintains SSE connection | Modal renders as overlay (not new page) to avoid unmounting home page and breaking SSE connection | 2026-03-12 |
 | GameDetails as separate interface from Game | On-demand fetch requires distinct type with extended data (team stats, player stats, historical matchup) | 2026-03-12 |
 | Radix UI Dialog for modal accessibility | Built-in focus trap, ARIA compliance, keyboard navigation, and controlled state management | 2026-03-12 |
@@ -142,25 +146,27 @@ None currently - roadmap approved and ready for planning.
 
 ### What Just Happened
 
-Completed Phase 04 Plan 01: Game Details Modal Infrastructure
-- Built complete modal infrastructure for game details display
-- Created GameDetails data model with placeholder types (TeamStats, PlayerStats, HistoricalMatchup)
-- Implemented useGameDetails hook for on-demand data fetching
-- Created GameDetailModal with Radix Dialog (accessible, controlled state)
-- Integrated modal with GameCard (clickable for LIVE/FINAL games) and home page
-- All 3 tasks followed TDD RED-GREEN-REFACTOR cycle
-- 43 tests passing (18 GameCard + 18 hooks/components + 7 integration)
-- 4 integration tests deferred (Plans 02-04 features)
-- 4 commits: 99dd83e, f534bbd, bcecb06, 2189743
-- Duration: 1271 seconds (21 minutes)
-- Requirements completed: NAV-04 (click game card), STAT-05 (on-demand stats loading infrastructure)
+Completed Phase 04 Plan 02: Team Statistics Display
+- Defined TeamStats interface with all 10 required stats (FG%, 3P%, FT%, AST, TO, OREB, DREB, TREB, STL, BLK)
+- Created ShootingStat interface for made-attempted-percentage format
+- Populated realistic mock data for all 3 league adapters (NBA, NCAA, EuroLeague)
+- Built TeamStatsTable component with side-by-side comparison format
+- Implemented conditional bold highlighting (higher for most stats, lower for turnovers)
+- Used full word labels for rebounds (not abbreviations)
+- Integrated TeamStatsTable into GameDetailModal
+- All 3 tasks followed TDD RED-GREEN cycle
+- Fixed test selectors to use React Testing Library best practices
+- 210 tests passing (7 component tests + 1 integration test for team stats)
+- 3 integration tests deferred (Plans 03-04 features)
+- 3 commits: 5e1935e, 6b632bf, b5009c3
+- Duration: 586 seconds (10 minutes)
+- Requirements completed: STAT-01 (team shooting statistics), STAT-02 (turnovers and defensive stats)
 
 ### Next Actions
 
-1. Execute Phase 04 Plan 02: Implement TeamStatsTable component with 10 stats
-2. Execute Phase 04 Plan 03: Implement PlayerStatsTable component with sortable columns
-3. Execute Phase 04 Plan 04: Implement HistoricalMatchup component with last 5 meetings
-4. All placeholder types ready to be populated with full data structures
+1. Execute Phase 04 Plan 03: Implement PlayerStatsTable component with sortable columns
+2. Execute Phase 04 Plan 04: Implement HistoricalMatchup component with last 5 meetings
+3. PlayerStats and HistoricalMatchup interfaces ready to be populated
 
 ### Context for Next Session
 

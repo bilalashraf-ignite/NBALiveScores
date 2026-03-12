@@ -5,9 +5,21 @@
 
 import { render, screen } from '@testing-library/react';
 import { HistoricalMatchup } from '@/components/historical-matchup';
-import type { HistoricalMatchup as HistoricalMatchupType } from '@/types/sports-data';
+import type { HistoricalMatchup as HistoricalMatchupType, Team } from '@/types/sports-data';
 
 describe('HistoricalMatchup component (RED TEST)', () => {
+  const mockHomeTeam: Team = {
+    id: 'lal',
+    name: 'Los Angeles Lakers',
+    abbreviation: 'LAL'
+  };
+
+  const mockAwayTeam: Team = {
+    id: 'bos',
+    name: 'Boston Celtics',
+    abbreviation: 'BOS'
+  };
+
   const mockHistoricalData: HistoricalMatchupType = {
     lastFiveMeetings: [
       {
@@ -66,14 +78,14 @@ describe('HistoricalMatchup component (RED TEST)', () => {
 
   it('should display "Last 5 Meetings" heading when data available', () => {
     // This test will FAIL because HistoricalMatchup component doesn't exist yet
-    render(<HistoricalMatchup data={mockHistoricalData} />);
+    render(<HistoricalMatchup data={mockHistoricalData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
     expect(screen.getByText(/Last 5 Meetings/i)).toBeInTheDocument();
   });
 
   it('should display all 5 meetings in list', () => {
     // This test will FAIL because HistoricalMatchup component doesn't exist yet
-    render(<HistoricalMatchup data={mockHistoricalData} />);
+    render(<HistoricalMatchup data={mockHistoricalData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
     // Check that all 5 meetings are rendered
     const meetings = screen.getAllByTestId(/meeting-/);
@@ -82,7 +94,7 @@ describe('HistoricalMatchup component (RED TEST)', () => {
 
   it('should format dates correctly', () => {
     // This test will FAIL because HistoricalMatchup component doesn't exist yet
-    render(<HistoricalMatchup data={mockHistoricalData} />);
+    render(<HistoricalMatchup data={mockHistoricalData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
     // Check for formatted date (e.g., "Feb 15, 2026")
     expect(screen.getByText(/Feb 15, 2026/i)).toBeInTheDocument();
@@ -91,16 +103,19 @@ describe('HistoricalMatchup component (RED TEST)', () => {
 
   it('should display scores for each meeting', () => {
     // This test will FAIL because HistoricalMatchup component doesn't exist yet
-    render(<HistoricalMatchup data={mockHistoricalData} />);
+    render(<HistoricalMatchup data={mockHistoricalData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
-    // Check for score displays
-    expect(screen.getByText(/120-115/)).toBeInTheDocument();
-    expect(screen.getByText(/108-112/)).toBeInTheDocument();
+    // Check that first meeting's team names and scores appear
+    const firstMeeting = screen.getByTestId('meeting-0');
+    expect(firstMeeting).toHaveTextContent('Lakers');
+    expect(firstMeeting).toHaveTextContent('120');
+    expect(firstMeeting).toHaveTextContent('Warriors');
+    expect(firstMeeting).toHaveTextContent('115');
   });
 
   it('should indicate winner for each meeting', () => {
     // This test will FAIL because HistoricalMatchup component doesn't exist yet
-    render(<HistoricalMatchup data={mockHistoricalData} />);
+    render(<HistoricalMatchup data={mockHistoricalData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
     // Check for winner indicators (could be bold, colored, or text like "W"/"L")
     const winnerElements = screen.getAllByTestId(/winner-indicator/);
@@ -109,7 +124,7 @@ describe('HistoricalMatchup component (RED TEST)', () => {
 
   it('should display season series summary', () => {
     // This test will FAIL because HistoricalMatchup component doesn't exist yet
-    render(<HistoricalMatchup data={mockHistoricalData} />);
+    render(<HistoricalMatchup data={mockHistoricalData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
     // Check for season series text like "Lakers lead series 2-1"
     expect(screen.getByText(/2-1/)).toBeInTheDocument();
@@ -118,7 +133,7 @@ describe('HistoricalMatchup component (RED TEST)', () => {
 
   it('should display all-time record summary', () => {
     // This test will FAIL because HistoricalMatchup component doesn't exist yet
-    render(<HistoricalMatchup data={mockHistoricalData} />);
+    render(<HistoricalMatchup data={mockHistoricalData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
     // Check for all-time record text like "Lakers lead 45-32 all-time"
     expect(screen.getByText(/45-32/)).toBeInTheDocument();
@@ -127,7 +142,7 @@ describe('HistoricalMatchup component (RED TEST)', () => {
 
   it('should display average combined points', () => {
     // This test will FAIL because HistoricalMatchup component doesn't exist yet
-    render(<HistoricalMatchup data={mockHistoricalData} />);
+    render(<HistoricalMatchup data={mockHistoricalData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
     expect(screen.getByText(/228/)).toBeInTheDocument();
     expect(screen.getByText(/average/i)).toBeInTheDocument();
@@ -135,7 +150,16 @@ describe('HistoricalMatchup component (RED TEST)', () => {
 
   it('should show fallback message when data is null', () => {
     // This test will FAIL because HistoricalMatchup component doesn't exist yet
-    render(<HistoricalMatchup data={null} />);
+    render(<HistoricalMatchup data={null} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
+
+    expect(
+      screen.getByText(/Historical data unavailable/i)
+    ).toBeInTheDocument();
+  });
+
+  it('should show fallback message when data is undefined', () => {
+    // This test will FAIL because HistoricalMatchup component doesn't exist yet
+    render(<HistoricalMatchup data={undefined} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
     expect(
       screen.getByText(/Historical data unavailable/i)
@@ -151,10 +175,46 @@ describe('HistoricalMatchup component (RED TEST)', () => {
       averageCombinedPoints: undefined
     };
 
-    render(<HistoricalMatchup data={emptyData} />);
+    render(<HistoricalMatchup data={emptyData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
 
     expect(
       screen.getByText(/Historical data unavailable/i)
     ).toBeInTheDocument();
+  });
+
+  it('should show fallback message when lastFiveMeetings is undefined', () => {
+    // This test will FAIL because HistoricalMatchup component doesn't exist yet
+    const noMeetingsData: HistoricalMatchupType = {
+      lastFiveMeetings: undefined,
+      seasonSeries: {
+        wins: 2,
+        losses: 1,
+        leader: 'home'
+      },
+      allTimeRecord: undefined,
+      averageCombinedPoints: undefined
+    };
+
+    render(<HistoricalMatchup data={noMeetingsData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
+
+    expect(
+      screen.getByText(/Historical data unavailable/i)
+    ).toBeInTheDocument();
+  });
+
+  it('should display season series as tied when appropriate', () => {
+    // Test tied season series scenario
+    const tiedData: HistoricalMatchupType = {
+      ...mockHistoricalData,
+      seasonSeries: {
+        wins: 1,
+        losses: 1,
+        leader: 'tied'
+      }
+    };
+
+    render(<HistoricalMatchup data={tiedData} homeTeam={mockHomeTeam} awayTeam={mockAwayTeam} />);
+
+    expect(screen.getByText(/Tied 1-1/)).toBeInTheDocument();
   });
 });

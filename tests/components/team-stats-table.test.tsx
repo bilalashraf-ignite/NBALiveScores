@@ -79,16 +79,13 @@ describe('TeamStatsTable component (RED TEST)', () => {
     );
 
     // FG: 35-70, 50.0%
-    expect(screen.getByText(/35-70/)).toBeInTheDocument();
-    expect(screen.getByText(/50\.0%/)).toBeInTheDocument();
+    expect(screen.getByText('35-70, 50.0%')).toBeInTheDocument();
 
     // 3P: 10-25, 40.0%
-    expect(screen.getByText(/10-25/)).toBeInTheDocument();
-    expect(screen.getByText(/40\.0%/)).toBeInTheDocument();
+    expect(screen.getByText('10-25, 40.0%')).toBeInTheDocument();
 
     // FT: 15-18, 83.3%
-    expect(screen.getByText(/15-18/)).toBeInTheDocument();
-    expect(screen.getByText(/83\.3%/)).toBeInTheDocument();
+    expect(screen.getByText('15-18, 83.3%')).toBeInTheDocument();
   });
 
   it('should use full words for rebound labels (not abbreviations)', () => {
@@ -109,7 +106,7 @@ describe('TeamStatsTable component (RED TEST)', () => {
 
   it('should bold the better stat value', () => {
     // This test will FAIL because TeamStatsTable component doesn't exist yet
-    const { container } = render(
+    render(
       <TeamStatsTable
         homeStats={mockHomeStats}
         awayStats={mockAwayStats}
@@ -119,17 +116,17 @@ describe('TeamStatsTable component (RED TEST)', () => {
     );
 
     // Home has better FG% (50.0 > 48.5)
-    const homeFieldGoalCell = container.querySelector('td:has-text("35-70, 50.0%")');
+    const homeFieldGoalCell = screen.getByText('35-70, 50.0%');
     expect(homeFieldGoalCell).toHaveClass('font-bold');
 
     // Away has better FT% (87.5 > 83.3)
-    const awayFreeThrowCell = container.querySelector('td:has-text("14-16, 87.5%")');
+    const awayFreeThrowCell = screen.getByText('14-16, 87.5%');
     expect(awayFreeThrowCell).toHaveClass('font-bold');
   });
 
   it('should handle tied stats (no bold when equal)', () => {
     // This test will FAIL because TeamStatsTable component doesn't exist yet
-    const { container } = render(
+    render(
       <TeamStatsTable
         homeStats={mockHomeStats}
         awayStats={mockAwayStats}
@@ -139,8 +136,8 @@ describe('TeamStatsTable component (RED TEST)', () => {
     );
 
     // 3P% is tied at 40.0%
-    const home3PCell = container.querySelector('td:has-text("10-25, 40.0%")');
-    const away3PCell = container.querySelector('td:has-text("12-30, 40.0%")');
+    const home3PCell = screen.getByText('10-25, 40.0%');
+    const away3PCell = screen.getByText('12-30, 40.0%');
 
     expect(home3PCell).not.toHaveClass('font-bold');
     expect(away3PCell).not.toHaveClass('font-bold');
@@ -148,7 +145,7 @@ describe('TeamStatsTable component (RED TEST)', () => {
 
   it('should handle turnovers comparison (lower is better)', () => {
     // This test will FAIL because TeamStatsTable component doesn't exist yet
-    const { container } = render(
+    render(
       <TeamStatsTable
         homeStats={mockHomeStats}
         awayStats={mockAwayStats}
@@ -159,8 +156,18 @@ describe('TeamStatsTable component (RED TEST)', () => {
 
     // Home has 10 turnovers, away has 12
     // Lower is better, so home should be bold
-    const homeTurnoversCell = container.querySelector('td:has-text("10")');
-    expect(homeTurnoversCell).toHaveClass('font-bold');
+    // Find the turnovers row by label first, then check the home cell
+    const turnoversLabel = screen.getByText('Turnovers');
+    const turnoversRow = turnoversLabel.closest('tr');
+    const cells = turnoversRow?.querySelectorAll('td');
+
+    // First cell is home stats (10)
+    expect(cells?.[0]).toHaveTextContent('10');
+    expect(cells?.[0]).toHaveClass('font-bold');
+
+    // Third cell is away stats (12)
+    expect(cells?.[2]).toHaveTextContent('12');
+    expect(cells?.[2]).not.toHaveClass('font-bold');
   });
 
   it('should display team names in table header', () => {

@@ -5,6 +5,7 @@ import { useGameDetails } from '@/hooks/use-game-details';
 import { useModalHistory } from '@/hooks/use-modal-history';
 import { GameDetailSkeleton } from './game-detail-skeleton';
 import { TeamStatsTable } from './team-stats-table';
+import { PlayerStatsTable } from './player-stats-table';
 import { HistoricalMatchup } from './historical-matchup';
 import type { League } from '@/types/sports-data';
 
@@ -143,11 +144,19 @@ export function GameDetailModal({
                   )}
                 </div>
 
-                {/* Placeholder section for player stats (Plan 03) */}
-                <div className="space-y-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    <strong>Player statistics</strong> coming in Plan 03
-                  </p>
+                {/* Player Statistics Section */}
+                <div>
+                  <h2 className="text-xl font-bold mt-6 mb-4">Player Statistics</h2>
+                  {data.playerStats && data.playerStats.home && data.playerStats.away ? (
+                    <PlayerStatsTable
+                      homeStats={data.playerStats.home}
+                      awayStats={data.playerStats.away}
+                      homeTeam={data.homeTeam}
+                      awayTeam={data.awayTeam}
+                    />
+                  ) : (
+                    <p className="text-gray-600 dark:text-gray-400">Player statistics unavailable</p>
+                  )}
                 </div>
 
                 {/* Historical Matchup Section */}

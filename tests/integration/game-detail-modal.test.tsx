@@ -381,8 +381,56 @@ describe('Game Detail Modal Integration (RED TEST)', () => {
 
       await waitFor(() => {
         const modal = screen.getByRole('dialog');
+        // Check for historical matchup section heading
+        expect(modal).toHaveTextContent(/Historical Matchup/i);
         expect(modal).toHaveTextContent(/Last 5 Meetings/i);
-        expect(modal).toHaveTextContent('120-115');
+        // Check for scores (team names and scores appear separately)
+        expect(modal).toHaveTextContent('120');
+        expect(modal).toHaveTextContent('115');
+      });
+    }
+  });
+
+  it('should display season series summary in modal', async () => {
+    const user = userEvent.setup();
+
+    render(<HomePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Lakers')).toBeInTheDocument();
+    });
+
+    const gameCard = screen.getByText('Lakers').closest('div[role="button"]');
+    if (gameCard) {
+      await user.click(gameCard);
+
+      await waitFor(() => {
+        const modal = screen.getByRole('dialog');
+        // Check for season series text
+        expect(modal).toHaveTextContent(/Season series:/i);
+        expect(modal).toHaveTextContent(/leads 2-1/i);
+      });
+    }
+  });
+
+  it('should display all-time record summary in modal', async () => {
+    const user = userEvent.setup();
+
+    render(<HomePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Lakers')).toBeInTheDocument();
+    });
+
+    const gameCard = screen.getByText('Lakers').closest('div[role="button"]');
+    if (gameCard) {
+      await user.click(gameCard);
+
+      await waitFor(() => {
+        const modal = screen.getByRole('dialog');
+        // Check for all-time record text
+        expect(modal).toHaveTextContent(/All-time:/i);
+        expect(modal).toHaveTextContent(/45-32/i);
       });
     }
   });

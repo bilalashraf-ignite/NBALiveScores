@@ -4,6 +4,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useGameDetails } from '@/hooks/use-game-details';
 import { useModalHistory } from '@/hooks/use-modal-history';
 import { GameDetailSkeleton } from './game-detail-skeleton';
+import { TeamStatsTable } from './team-stats-table';
 import type { League } from '@/types/sports-data';
 
 interface GameDetailModalProps {
@@ -126,11 +127,23 @@ export function GameDetailModal({
                   </div>
                 </div>
 
+                {/* Team Statistics Section */}
+                <div>
+                  <h2 className="text-xl font-bold mt-6 mb-4">Team Statistics</h2>
+                  {data.teamStats && data.teamStats.home && data.teamStats.away ? (
+                    <TeamStatsTable
+                      homeStats={data.teamStats.home}
+                      awayStats={data.teamStats.away}
+                      homeTeam={data.homeTeam}
+                      awayTeam={data.awayTeam}
+                    />
+                  ) : (
+                    <p className="text-gray-600 dark:text-gray-400">Team statistics unavailable</p>
+                  )}
+                </div>
+
                 {/* Placeholder sections for future plans */}
                 <div className="space-y-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    <strong>Team statistics</strong> coming in Plan 02
-                  </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     <strong>Player statistics</strong> coming in Plan 03
                   </p>

@@ -172,8 +172,62 @@ export class EuroLeagueAdapter extends BaseAdapter implements SportsDataAdapter 
           home: [],
           away: []
         },
-        // Placeholder empty object - will be populated in Plan 04
-        historicalMatchup: {} as HistoricalMatchup
+        // Mock historical matchup data: Real Madrid vs Barcelona rivalry
+        historicalMatchup: {
+          lastFiveMeetings: [
+            {
+              date: '2026-03-08',
+              homeTeam: 'Real Madrid',
+              awayTeam: 'Barcelona',
+              homeScore: 85,
+              awayScore: 82,
+              winner: 'home'
+            },
+            {
+              date: '2026-02-12',
+              homeTeam: 'Barcelona',
+              awayTeam: 'Real Madrid',
+              homeScore: 90,
+              awayScore: 88,
+              winner: 'home'
+            },
+            {
+              date: '2025-12-20',
+              homeTeam: 'Real Madrid',
+              awayTeam: 'Barcelona',
+              homeScore: 78,
+              awayScore: 81,
+              winner: 'away'
+            },
+            {
+              date: '2025-11-05',
+              homeTeam: 'Barcelona',
+              awayTeam: 'Real Madrid',
+              homeScore: 75,
+              awayScore: 79,
+              winner: 'away'
+            },
+            {
+              date: '2025-10-15',
+              homeTeam: 'Real Madrid',
+              awayTeam: 'Barcelona',
+              homeScore: 92,
+              awayScore: 89,
+              winner: 'home'
+            }
+          ],
+          seasonSeries: {
+            wins: 2,
+            losses: 0,
+            leader: 'away'
+          },
+          allTimeRecord: {
+            wins: 98,
+            losses: 85,
+            leader: 'home'
+          },
+          averageCombinedPoints: 165
+        }
       };
 
       return mockDetails;

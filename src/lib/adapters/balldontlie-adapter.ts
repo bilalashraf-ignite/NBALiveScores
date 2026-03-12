@@ -303,8 +303,62 @@ export class BalldontlieAdapter extends BaseAdapter implements SportsDataAdapter
           home: [],
           away: []
         },
-        // Placeholder empty object - will be populated in Plan 04
-        historicalMatchup: {} as HistoricalMatchup
+        // Mock historical matchup data: Lakers vs Celtics rivalry
+        historicalMatchup: {
+          lastFiveMeetings: [
+            {
+              date: '2026-03-01',
+              homeTeam: 'Los Angeles Lakers',
+              awayTeam: 'Boston Celtics',
+              homeScore: 105,
+              awayScore: 112,
+              winner: 'away'
+            },
+            {
+              date: '2026-01-15',
+              homeTeam: 'Boston Celtics',
+              awayTeam: 'Los Angeles Lakers',
+              homeScore: 98,
+              awayScore: 95,
+              winner: 'home'
+            },
+            {
+              date: '2025-12-10',
+              homeTeam: 'Los Angeles Lakers',
+              awayTeam: 'Boston Celtics',
+              homeScore: 110,
+              awayScore: 108,
+              winner: 'home'
+            },
+            {
+              date: '2025-11-22',
+              homeTeam: 'Boston Celtics',
+              awayTeam: 'Los Angeles Lakers',
+              homeScore: 102,
+              awayScore: 100,
+              winner: 'home'
+            },
+            {
+              date: '2025-10-30',
+              homeTeam: 'Los Angeles Lakers',
+              awayTeam: 'Boston Celtics',
+              homeScore: 115,
+              awayScore: 113,
+              winner: 'home'
+            }
+          ],
+          seasonSeries: {
+            wins: 2,
+            losses: 1,
+            leader: 'home'
+          },
+          allTimeRecord: {
+            wins: 163,
+            losses: 127,
+            leader: 'away'
+          },
+          averageCombinedPoints: 208
+        }
       };
 
       return mockDetails;

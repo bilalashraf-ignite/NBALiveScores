@@ -174,8 +174,62 @@ export class NcaaAdapter extends BaseAdapter implements SportsDataAdapter {
           home: [],
           away: []
         },
-        // Placeholder empty object - will be populated in Plan 04
-        historicalMatchup: {} as HistoricalMatchup
+        // Mock historical matchup data: Duke vs UNC rivalry
+        historicalMatchup: {
+          lastFiveMeetings: [
+            {
+              date: '2026-02-22',
+              homeTeam: 'Duke Blue Devils',
+              awayTeam: 'UNC Tar Heels',
+              homeScore: 78,
+              awayScore: 80,
+              winner: 'away'
+            },
+            {
+              date: '2026-01-18',
+              homeTeam: 'UNC Tar Heels',
+              awayTeam: 'Duke Blue Devils',
+              homeScore: 72,
+              awayScore: 75,
+              winner: 'away'
+            },
+            {
+              date: '2025-12-05',
+              homeTeam: 'Duke Blue Devils',
+              awayTeam: 'UNC Tar Heels',
+              homeScore: 82,
+              awayScore: 77,
+              winner: 'home'
+            },
+            {
+              date: '2025-03-15',
+              homeTeam: 'UNC Tar Heels',
+              awayTeam: 'Duke Blue Devils',
+              homeScore: 68,
+              awayScore: 70,
+              winner: 'away'
+            },
+            {
+              date: '2025-02-08',
+              homeTeam: 'Duke Blue Devils',
+              awayTeam: 'UNC Tar Heels',
+              homeScore: 73,
+              awayScore: 69,
+              winner: 'home'
+            }
+          ],
+          seasonSeries: {
+            wins: 1,
+            losses: 1,
+            leader: 'tied'
+          },
+          allTimeRecord: {
+            wins: 145,
+            losses: 115,
+            leader: 'away'
+          },
+          averageCombinedPoints: 150
+        }
       };
 
       return mockDetails;

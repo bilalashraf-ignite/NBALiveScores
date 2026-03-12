@@ -4,11 +4,12 @@ import { GameTime } from './game-time'
 
 interface GameCardProps {
   game: Game
+  onClick?: () => void
 }
 
 /**
  * Individual game card displaying comprehensive game information.
- * 
+ *
  * Layout decisions (from CONTEXT.md):
  * - Card-based design with shadows/borders (not list or grid)
  * - Status badge in top-right corner
@@ -17,10 +18,30 @@ interface GameCardProps {
  * - Game context (period, time) shown only for LIVE/HALFTIME
  * - Scheduled time shown only for SCHEDULED games
  * - Mobile-first spacing with comfortable tap targets
+ * - Clickable for LIVE/FINAL games to open detail modal (Phase 4)
  */
-export function GameCard({ game }: GameCardProps) {
+export function GameCard({ game, onClick }: GameCardProps) {
+  // Determine if game details can be shown (only for LIVE or FINAL games)
+  const canShowDetails = game.state === GameState.LIVE || game.state === GameState.FINAL;
+
+  // Handle keyboard accessibility (Enter/Space keys)
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (canShowDetails && onClick && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      onClick();
+    }
+  };
+
   return (
-    <div className="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <div
+      className={`relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm ${
+        canShowDetails ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
+      }`}
+      onClick={canShowDetails ? onClick : undefined}
+      role={canShowDetails ? 'button' : undefined}
+      tabIndex={canShowDetails ? 0 : undefined}
+      onKeyDown={canShowDetails ? handleKeyDown : undefined}
+    >
       {/* Status badge - top-right corner */}
       <div className="absolute right-4 top-4">
         <StatusBadge status={game.state} />

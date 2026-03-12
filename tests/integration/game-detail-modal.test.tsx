@@ -117,10 +117,10 @@ describe('Game Detail Modal Integration (RED TEST)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useSSE as jest.Mock).mockReturnValue({
-      games: [mockLiveGame],
-      loading: false,
+      data: [mockLiveGame],
+      isConnected: true,
       error: null,
-      isStale: false
+      reconnect: jest.fn()
     });
 
     // Mock fetch for game details

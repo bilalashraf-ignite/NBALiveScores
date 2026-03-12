@@ -6,6 +6,7 @@ interface GameListProps {
   games: Game[];
   selectedLeague?: League | 'all';
   lastUpdated?: Date;
+  onGameClick?: (gameId: string, league: League) => void;
 }
 
 /**
@@ -14,7 +15,7 @@ interface GameListProps {
  * Sorting logic: Live/Halftime games first (user's primary intent), then others.
  * Pattern source: RESEARCH.md Code Example - Responsive Game Card Grid, Pattern 7 (League Filtering)
  */
-export function GameList({ games, selectedLeague = 'all', lastUpdated }: GameListProps) {
+export function GameList({ games, selectedLeague = 'all', lastUpdated, onGameClick }: GameListProps) {
   // Filter by selected league
   const filteredGames = selectedLeague === 'all'
     ? games
@@ -58,7 +59,11 @@ export function GameList({ games, selectedLeague = 'all', lastUpdated }: GameLis
       {/* Responsive grid layout */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {sortedGames.map((game) => (
-          <GameCard key={`${game.league}-${game.id}`} game={game} />
+          <GameCard
+            key={`${game.league}-${game.id}`}
+            game={game}
+            onClick={onGameClick ? () => onGameClick(game.id, game.league) : undefined}
+          />
         ))}
       </div>
     </div>

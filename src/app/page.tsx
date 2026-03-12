@@ -9,6 +9,7 @@ import { LeagueFilter } from '@/components/league-filter';
 import { GameCardSkeleton } from '@/components/game-card-skeleton';
 import { StaleDataBanner } from '@/components/stale-data-banner';
 import { ErrorFallback } from '@/components/error-fallback';
+import { GameDetailModal } from '@/components/game-detail-modal';
 
 /**
  * Home page integrating SSE streaming with game display and error handling.
@@ -26,6 +27,8 @@ export default function HomePage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedLeague, setSelectedLeague] = useState<League | 'all'>('all');
+  const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
+  const [selectedGameLeague, setSelectedGameLeague] = useState<League | null>(null);
 
   // SSE connection for live updates
   const { data: games, isConnected, error, reconnect } = useSSE<Game[]>({
@@ -55,6 +58,12 @@ export default function HomePage() {
       console.error('Manual refresh error:', err);
       setIsRefreshing(false);
     }
+  }, []);
+
+  // Game click handler (NAV-04) - opens game detail modal
+  const handleGameClick = useCallback((gameId: string, league: League) => {
+    setSelectedGameId(gameId);
+    setSelectedGameLeague(league);
   }, []);
 
   return (
@@ -102,11 +111,27 @@ export default function HomePage() {
             games={games}
             selectedLeague={selectedLeague}
             lastUpdated={lastUpdated || undefined}
+            onGameClick={handleGameClick}
           />
         )}
 
         {/* Error state - handled by ErrorBoundary */}
         {/* If error thrown during render, ErrorFallback shown automatically */}
+
+        {/* Game detail modal (NAV-04, STAT-05) */}
+        {selectedGameId && selectedGameLeague && (
+          <GameDetailModal
+            gameId={selectedGameId}
+            league={selectedGameLeague}
+            open={true}
+            onOpenChange={(open) => {
+              if (!open) {
+                setSelectedGameId(null);
+                setSelectedGameLeague(null);
+              }
+            }}
+          />
+        )}
       </div>
     </ErrorBoundary>
   );

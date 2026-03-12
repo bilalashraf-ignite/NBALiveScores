@@ -22,8 +22,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **HIST-01**: User can view final scores for completed games
 - [x] **HIST-02**: User can access game results with date and time of completion
-- [ ] **HIST-03**: User can view historical head-to-head matchup data between teams
-- [ ] **HIST-04**: User can see last 5 meetings between two teams with outcomes
+- [x] **HIST-03**: User can view historical head-to-head matchup data between teams
+- [x] **HIST-04**: User can see last 5 meetings between two teams with outcomes
 
 ### Leagues & Teams
 
@@ -144,8 +144,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIVE-08 | Phase 2 | Complete |
 | HIST-01 | Phase 2 | Pending |
 | HIST-02 | Phase 2 | Pending |
-| HIST-03 | Phase 4 | Pending |
-| HIST-04 | Phase 4 | Pending |
+| HIST-03 | Phase 4 | Complete |
+| HIST-04 | Phase 4 | Complete |
 | LEAGUE-01 | Phase 2 | Pending |
 | LEAGUE-02 | Phase 3 | Complete |
 | LEAGUE-03 | Phase 3 | Complete |

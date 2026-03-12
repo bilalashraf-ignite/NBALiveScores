@@ -1,5 +1,5 @@
 import { BaseAdapter } from './base-adapter';
-import type { Game, GameState, League } from '@/types/sports-data';
+import type { Game, GameState, League, GameDetails, TeamStats, PlayerStats, HistoricalMatchup } from '@/types/sports-data';
 import type { SportsDataAdapter } from './sports-api-adapter';
 import { CACHE_TTL, cache } from '@/lib/cache';
 
@@ -99,5 +99,66 @@ export class NcaaAdapter extends BaseAdapter implements SportsDataAdapter {
    */
   async getScheduledGames(league: string, date: Date): Promise<Game[]> {
     return [];
+  }
+
+  /**
+   * Fetch detailed game information including team stats, player stats, and historical matchup.
+   *
+   * Phase 4 Plan 01: Returns mock data. Real API integration deferred per CONTEXT.md locked decision.
+   *
+   * @param gameId - Game identifier
+   * @param league - League identifier (must be 'NCAA')
+   * @returns Promise resolving to detailed game information
+   */
+  async getGameDetails(gameId: string, league: League): Promise<GameDetails> {
+    try {
+      // Return mock GameDetails data for UI development
+      const mockDetails: GameDetails = {
+        gameId,
+        league: 'NCAA',
+        homeTeam: {
+          id: 'duke',
+          name: 'Duke Blue Devils',
+          abbreviation: 'DUKE',
+          logoUrl: undefined
+        },
+        awayTeam: {
+          id: 'unc',
+          name: 'UNC Tar Heels',
+          abbreviation: 'UNC',
+          logoUrl: undefined
+        },
+        status: 'live' as GameState,
+        score: {
+          home: 72,
+          away: 68
+        },
+        gameContext: {
+          period: 2,
+          timeRemaining: '3:45',
+          possession: 'away'
+        },
+        teamFouls: {
+          home: 4,
+          away: 3
+        },
+        // Placeholder empty objects - will be populated in Plan 02
+        teamStats: {
+          home: {} as TeamStats,
+          away: {} as TeamStats
+        },
+        // Placeholder empty arrays - will be populated in Plan 03
+        playerStats: {
+          home: [],
+          away: []
+        },
+        // Placeholder empty object - will be populated in Plan 04
+        historicalMatchup: {} as HistoricalMatchup
+      };
+
+      return mockDetails;
+    } catch (error) {
+      this.handleError(error, 'fetching game details');
+    }
   }
 }

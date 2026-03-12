@@ -1,4 +1,4 @@
-import { Game, GameState, Team, Score, League } from '@/types/sports-data';
+import { Game, GameState, Team, Score, League, GameDetails, TeamStats, PlayerStats, HistoricalMatchup } from '@/types/sports-data';
 import { SportsDataAdapter } from './sports-api-adapter';
 import { BaseAdapter } from './base-adapter';
 
@@ -225,6 +225,69 @@ export class BalldontlieAdapter extends BaseAdapter implements SportsDataAdapter
         return GameState.CANCELLED;
       default:
         return GameState.SCHEDULED; // Default fallback
+    }
+  }
+
+  /**
+   * Fetch detailed game information including team stats, player stats, and historical matchup.
+   *
+   * Note: Phase 4 Plan 01 returns mock data. Real API integration deferred per CONTEXT.md locked decision.
+   *
+   * @param gameId - Game identifier
+   * @param league - League identifier (must be 'NBA')
+   * @returns Promise resolving to detailed game information
+   */
+  async getGameDetails(gameId: string, league: League): Promise<GameDetails> {
+    try {
+      // Return mock GameDetails data for UI development
+      // Real API integration will be added when API keys are configured
+
+      const mockDetails: GameDetails = {
+        gameId,
+        league: 'NBA',
+        homeTeam: {
+          id: 'team-lal',
+          name: 'Los Angeles Lakers',
+          abbreviation: 'LAL',
+          logoUrl: undefined
+        },
+        awayTeam: {
+          id: 'team-bos',
+          name: 'Boston Celtics',
+          abbreviation: 'BOS',
+          logoUrl: undefined
+        },
+        status: GameState.LIVE,
+        score: {
+          home: 98,
+          away: 95
+        },
+        gameContext: {
+          period: 3,
+          timeRemaining: '8:42',
+          possession: 'home'
+        },
+        teamFouls: {
+          home: 3,
+          away: 2
+        },
+        // Placeholder empty objects - will be populated in Plan 02
+        teamStats: {
+          home: {} as TeamStats,
+          away: {} as TeamStats
+        },
+        // Placeholder empty arrays - will be populated in Plan 03
+        playerStats: {
+          home: [],
+          away: []
+        },
+        // Placeholder empty object - will be populated in Plan 04
+        historicalMatchup: {} as HistoricalMatchup
+      };
+
+      return mockDetails;
+    } catch (error) {
+      this.handleError(error, 'fetching game details');
     }
   }
 }

@@ -1,4 +1,4 @@
-import type { League } from '@/types/sports-data';
+import type { League, GameDetails } from '@/types/sports-data';
 import { cache } from '@/lib/cache';
 
 /**
@@ -63,4 +63,14 @@ export abstract class BaseAdapter {
     const message = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`[${this.league}] ${context}: ${message}`);
   }
+
+  /**
+   * Fetch detailed game information including team stats, player stats, and historical matchup.
+   * Called on-demand when user opens game detail modal.
+   *
+   * @param gameId - Game identifier
+   * @param league - League identifier
+   * @returns Promise resolving to detailed game information
+   */
+  abstract getGameDetails(gameId: string, league: League): Promise<GameDetails>;
 }

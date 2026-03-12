@@ -89,3 +89,80 @@ export interface Game {
   /** Team fouls count (optional - not all APIs provide this data) */
   teamFouls?: TeamFouls;
 }
+
+/**
+ * Game context information (period, time, possession).
+ * Used for live game state display.
+ */
+export interface GameContext {
+  /** Current period/quarter (1-4, or 5+ for overtime) */
+  period: number;
+  /** Time remaining in current period (e.g., "5:32") */
+  timeRemaining: string;
+  /** Which team currently has possession */
+  possession: 'home' | 'away';
+}
+
+/**
+ * Team statistics for a game.
+ * Placeholder for Plan 02 - will be fully defined with all 10 stats.
+ */
+export interface TeamStats {
+  // Will be populated in Plan 02 with:
+  // fieldGoals, threePointers, freeThrows, assists, turnovers,
+  // reboundsOffensive, reboundsDefensive, reboundsTotal, steals, blocks
+}
+
+/**
+ * Player statistics for a game.
+ * Placeholder for Plan 03 - will be fully defined with all player fields.
+ */
+export interface PlayerStats {
+  // Will be populated in Plan 03 with:
+  // jerseyNumber, lastName, firstName, minutes, points,
+  // fieldGoals, threePointers, freeThrows, rebounds, assists, steals, blocks
+}
+
+/**
+ * Historical matchup data between two teams.
+ * Placeholder for Plan 04 - will be fully defined with matchup history.
+ */
+export interface HistoricalMatchup {
+  // Will be populated in Plan 04 with:
+  // lastFiveMeetings, seasonSeries, allTimeRecord, averageCombinedPoints
+}
+
+/**
+ * Detailed game information fetched on-demand when user opens game modal.
+ * Extends basic Game data with team stats, player stats, and historical matchup data.
+ */
+export interface GameDetails {
+  /** Game identifier */
+  gameId: string;
+  /** League this game belongs to */
+  league: League;
+  /** Home team information */
+  homeTeam: Team;
+  /** Away team information */
+  awayTeam: Team;
+  /** Game status (live, final, etc.) */
+  status: GameState;
+  /** Current score */
+  score: Score;
+  /** Optional game context (period, time, possession) for live games */
+  gameContext?: GameContext;
+  /** Optional team fouls */
+  teamFouls?: TeamFouls;
+  /** Team statistics for both teams */
+  teamStats: {
+    home: TeamStats;
+    away: TeamStats;
+  };
+  /** Player statistics for both teams */
+  playerStats: {
+    home: PlayerStats[];
+    away: PlayerStats[];
+  };
+  /** Historical matchup data */
+  historicalMatchup: HistoricalMatchup;
+}

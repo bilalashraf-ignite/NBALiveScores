@@ -118,7 +118,13 @@ Plans:
 4. User experiences ad-free or minimal advertising interface with clean, scannable layout
 5. User experiences reduced polling frequency on cellular connections to conserve data
 
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Load time optimization with code splitting, Next.js Image, system fonts
+- [ ] 05-02-PLAN.md — Mobile touch targets, pull-to-refresh, haptic feedback, swipe gestures
+- [ ] 05-03-PLAN.md — Layout shift prevention with dimension-matched skeletons, fixed-width badges, scroll lock
+- [ ] 05-04-PLAN.md — Cellular data conservation with network detection and adaptive SSE frequency
 
 ---
 
@@ -130,7 +136,7 @@ Plans:
 | 2. Live Scores Display | 4/4 | Complete | 2026-03-11 |
 | 3. Multi-League & Schedule | 0/2 | Not started | - |
 | 4. Game Details & Statistics | 0/4 | Not started | - |
-| 5. Performance & Polish | 0/? | Not started | - |
+| 5. Performance & Polish | 0/4 | Not started | - |
 
 ---
 
@@ -143,4 +149,4 @@ Plans:
 ---
 
 *Created: 2026-03-10*
-*Last updated: 2026-03-12*
+*Last updated: 2026-03-13*

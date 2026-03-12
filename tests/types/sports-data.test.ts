@@ -404,8 +404,8 @@ describe('HistoricalMatchup interface (RED TEST)', () => {
 describe('BalldontlieAdapter.getGameDetails with PlayerStats (RED TEST)', () => {
   it('should return GameDetails with player stats for both teams', async () => {
     const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
-    const adapter = BalldontlieAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('nba-1');
+    const adapter = new BalldontlieAdapter();
+    const gameDetails = await adapter.getGameDetails('nba-1', 'NBA');
 
     expect(gameDetails).toBeDefined();
     expect(gameDetails.playerStats).toBeDefined();
@@ -417,8 +417,8 @@ describe('BalldontlieAdapter.getGameDetails with PlayerStats (RED TEST)', () => 
 
   it('should return 10-12 players per team', async () => {
     const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
-    const adapter = BalldontlieAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('nba-1');
+    const adapter = new BalldontlieAdapter();
+    const gameDetails = await adapter.getGameDetails('nba-1', 'NBA');
 
     expect(gameDetails.playerStats.home.length).toBeGreaterThanOrEqual(10);
     expect(gameDetails.playerStats.home.length).toBeLessThanOrEqual(12);
@@ -428,8 +428,8 @@ describe('BalldontlieAdapter.getGameDetails with PlayerStats (RED TEST)', () => 
 
   it('should include realistic NBA star players (Lakers vs Celtics)', async () => {
     const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
-    const adapter = BalldontlieAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('nba-1');
+    const adapter = new BalldontlieAdapter();
+    const gameDetails = await adapter.getGameDetails('nba-1', 'NBA');
 
     // Check for LeBron James on home team (Lakers)
     const lebron = gameDetails.playerStats.home.find(
@@ -451,8 +451,8 @@ describe('BalldontlieAdapter.getGameDetails with PlayerStats (RED TEST)', () => 
 
   it('should include at least one DNP player with 0:00 minutes', async () => {
     const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
-    const adapter = BalldontlieAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('nba-1');
+    const adapter = new BalldontlieAdapter();
+    const gameDetails = await adapter.getGameDetails('nba-1', 'NBA');
 
     const allPlayers = [
       ...gameDetails.playerStats.home,
@@ -474,8 +474,8 @@ describe('BalldontlieAdapter.getGameDetails with PlayerStats (RED TEST)', () => 
 
   it('should have realistic stat distributions (starters vs bench)', async () => {
     const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
-    const adapter = BalldontlieAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('nba-1');
+    const adapter = new BalldontlieAdapter();
+    const gameDetails = await adapter.getGameDetails('nba-1', 'NBA');
 
     const allPlayers = [
       ...gameDetails.playerStats.home,
@@ -499,8 +499,8 @@ describe('BalldontlieAdapter.getGameDetails with PlayerStats (RED TEST)', () => 
 
   it('should have shooting stats with made-attempted structure', async () => {
     const { BalldontlieAdapter } = await import('@/lib/adapters/balldontlie-adapter');
-    const adapter = BalldontlieAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('nba-1');
+    const adapter = new BalldontlieAdapter();
+    const gameDetails = await adapter.getGameDetails('nba-1', 'NBA');
 
     const player = gameDetails.playerStats.home[0];
 
@@ -527,8 +527,8 @@ describe('BalldontlieAdapter.getGameDetails with PlayerStats (RED TEST)', () => 
 describe('NcaaAdapter.getGameDetails with PlayerStats (RED TEST)', () => {
   it('should return GameDetails with player stats for NCAA game', async () => {
     const { NcaaAdapter } = await import('@/lib/adapters/ncaa-adapter');
-    const adapter = NcaaAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('ncaa-1');
+    const adapter = new NcaaAdapter();
+    const gameDetails = await adapter.getGameDetails('ncaa-1', 'NCAA');
 
     expect(gameDetails.playerStats.home).toBeDefined();
     expect(gameDetails.playerStats.away).toBeDefined();
@@ -538,8 +538,8 @@ describe('NcaaAdapter.getGameDetails with PlayerStats (RED TEST)', () => {
 
   it('should include at least one DNP player', async () => {
     const { NcaaAdapter } = await import('@/lib/adapters/ncaa-adapter');
-    const adapter = NcaaAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('ncaa-1');
+    const adapter = new NcaaAdapter();
+    const gameDetails = await adapter.getGameDetails('ncaa-1', 'NCAA');
 
     const allPlayers = [
       ...gameDetails.playerStats.home,
@@ -554,8 +554,8 @@ describe('NcaaAdapter.getGameDetails with PlayerStats (RED TEST)', () => {
 describe('EuroLeagueAdapter.getGameDetails with PlayerStats (RED TEST)', () => {
   it('should return GameDetails with player stats for EuroLeague game', async () => {
     const { EuroLeagueAdapter } = await import('@/lib/adapters/euroleague-adapter');
-    const adapter = EuroLeagueAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('euroleague-1');
+    const adapter = new EuroLeagueAdapter();
+    const gameDetails = await adapter.getGameDetails('euroleague-1', 'EuroLeague');
 
     expect(gameDetails.playerStats.home).toBeDefined();
     expect(gameDetails.playerStats.away).toBeDefined();
@@ -565,8 +565,8 @@ describe('EuroLeagueAdapter.getGameDetails with PlayerStats (RED TEST)', () => {
 
   it('should include at least one DNP player', async () => {
     const { EuroLeagueAdapter } = await import('@/lib/adapters/euroleague-adapter');
-    const adapter = EuroLeagueAdapter.getInstance();
-    const gameDetails = await adapter.getGameDetails('euroleague-1');
+    const adapter = new EuroLeagueAdapter();
+    const gameDetails = await adapter.getGameDetails('euroleague-1', 'EuroLeague');
 
     const allPlayers = [
       ...gameDetails.playerStats.home,

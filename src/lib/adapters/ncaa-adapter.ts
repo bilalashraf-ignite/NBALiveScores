@@ -169,10 +169,298 @@ export class NcaaAdapter extends BaseAdapter implements SportsDataAdapter {
             blocks: 2
           }
         },
-        // Placeholder empty arrays - will be populated in Plan 03
+        // Mock player stats: Duke (home) vs UNC (away)
         playerStats: {
-          home: [],
-          away: []
+          home: [
+            // Duke starters
+            {
+              jerseyNumber: '5',
+              lastName: 'Filipowski',
+              firstName: 'Kyle',
+              minutes: '32:15',
+              points: 22,
+              fieldGoals: { made: 8, attempted: 14 },
+              threePointers: { made: 2, attempted: 5 },
+              freeThrows: { made: 4, attempted: 6 },
+              rebounds: 10,
+              assists: 3,
+              steals: 1,
+              blocks: 2
+            },
+            {
+              jerseyNumber: '2',
+              lastName: 'Proctor',
+              firstName: 'Tyrese',
+              minutes: '30:45',
+              points: 18,
+              fieldGoals: { made: 7, attempted: 13 },
+              threePointers: { made: 2, attempted: 4 },
+              freeThrows: { made: 2, attempted: 2 },
+              rebounds: 4,
+              assists: 6,
+              steals: 3,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '15',
+              lastName: 'Roach',
+              firstName: 'Jeremy',
+              minutes: '28:30',
+              points: 14,
+              fieldGoals: { made: 5, attempted: 10 },
+              threePointers: { made: 2, attempted: 6 },
+              freeThrows: { made: 2, attempted: 4 },
+              rebounds: 3,
+              assists: 4,
+              steals: 2,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '0',
+              lastName: 'McCain',
+              firstName: 'Jared',
+              minutes: '26:20',
+              points: 11,
+              fieldGoals: { made: 4, attempted: 9 },
+              threePointers: { made: 2, attempted: 5 },
+              freeThrows: { made: 1, attempted: 2 },
+              rebounds: 5,
+              assists: 2,
+              steals: 1,
+              blocks: 1
+            },
+            {
+              jerseyNumber: '1',
+              lastName: 'Mitchell',
+              firstName: 'Mark',
+              minutes: '24:15',
+              points: 7,
+              fieldGoals: { made: 3, attempted: 6 },
+              threePointers: { made: 0, attempted: 1 },
+              freeThrows: { made: 1, attempted: 2 },
+              rebounds: 7,
+              assists: 1,
+              steals: 0,
+              blocks: 0
+            },
+            // Duke bench
+            {
+              jerseyNumber: '11',
+              lastName: 'Young',
+              firstName: 'TJ',
+              minutes: '16:45',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 2 },
+              threePointers: { made: 0, attempted: 1 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 1,
+              assists: 1,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '12',
+              lastName: 'Schutt',
+              firstName: 'Ryan',
+              minutes: '12:30',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 1 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '3',
+              lastName: 'Power',
+              firstName: 'Sean',
+              minutes: '8:15',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            // DNP
+            {
+              jerseyNumber: '4',
+              lastName: 'Blakes',
+              firstName: 'Jaylen',
+              minutes: '0:00',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '23',
+              lastName: 'Stewart',
+              firstName: 'Caleb',
+              minutes: '0:00',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            }
+          ],
+          away: [
+            // UNC starters
+            {
+              jerseyNumber: '1',
+              lastName: 'Bacot',
+              firstName: 'Armando',
+              minutes: '33:20',
+              points: 20,
+              fieldGoals: { made: 8, attempted: 14 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 4, attempted: 6 },
+              rebounds: 12,
+              assists: 2,
+              steals: 1,
+              blocks: 2
+            },
+            {
+              jerseyNumber: '5',
+              lastName: 'Cadeau',
+              firstName: 'Elliot',
+              minutes: '31:45',
+              points: 16,
+              fieldGoals: { made: 6, attempted: 11 },
+              threePointers: { made: 2, attempted: 4 },
+              freeThrows: { made: 2, attempted: 4 },
+              rebounds: 3,
+              assists: 7,
+              steals: 2,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '2',
+              lastName: 'Davis',
+              firstName: 'RJ',
+              minutes: '29:30',
+              points: 14,
+              fieldGoals: { made: 5, attempted: 12 },
+              threePointers: { made: 2, attempted: 6 },
+              freeThrows: { made: 2, attempted: 2 },
+              rebounds: 5,
+              assists: 3,
+              steals: 1,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '4',
+              lastName: 'Ingram',
+              firstName: 'Harrison',
+              minutes: '27:15',
+              points: 11,
+              fieldGoals: { made: 4, attempted: 10 },
+              threePointers: { made: 1, attempted: 5 },
+              freeThrows: { made: 2, attempted: 2 },
+              rebounds: 6,
+              assists: 1,
+              steals: 1,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '10',
+              lastName: 'Trimble',
+              firstName: 'Seth',
+              minutes: '25:40',
+              points: 7,
+              fieldGoals: { made: 3, attempted: 8 },
+              threePointers: { made: 1, attempted: 3 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 4,
+              assists: 2,
+              steals: 0,
+              blocks: 0
+            },
+            // UNC bench
+            {
+              jerseyNumber: '3',
+              lastName: 'Jackson',
+              firstName: 'Cormac',
+              minutes: '18:20',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 2 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '14',
+              lastName: 'Washington',
+              firstName: 'Jalen',
+              minutes: '14:45',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 1 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '13',
+              lastName: 'High',
+              firstName: 'Zayden',
+              minutes: '10:30',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            // DNP
+            {
+              jerseyNumber: '0',
+              lastName: 'Withers',
+              firstName: 'Jalen',
+              minutes: '0:00',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '15',
+              lastName: 'Wojcik',
+              firstName: 'Jared',
+              minutes: '0:00',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            }
+          ]
         },
         // Mock historical matchup data: Duke vs UNC rivalry
         historicalMatchup: {

@@ -167,10 +167,298 @@ export class EuroLeagueAdapter extends BaseAdapter implements SportsDataAdapter 
             blocks: 3
           }
         },
-        // Placeholder empty arrays - will be populated in Plan 03
+        // Mock player stats: Real Madrid (home) vs Barcelona (away)
         playerStats: {
-          home: [],
-          away: []
+          home: [
+            // Real Madrid starters
+            {
+              jerseyNumber: '7',
+              lastName: 'Campazzo',
+              firstName: 'Facundo',
+              minutes: '32:45',
+              points: 18,
+              fieldGoals: { made: 7, attempted: 13 },
+              threePointers: { made: 3, attempted: 7 },
+              freeThrows: { made: 1, attempted: 2 },
+              rebounds: 3,
+              assists: 8,
+              steals: 2,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '13',
+              lastName: 'Yabusele',
+              firstName: 'Guerschon',
+              minutes: '30:30',
+              points: 16,
+              fieldGoals: { made: 6, attempted: 12 },
+              threePointers: { made: 2, attempted: 5 },
+              freeThrows: { made: 2, attempted: 3 },
+              rebounds: 9,
+              assists: 2,
+              steals: 1,
+              blocks: 2
+            },
+            {
+              jerseyNumber: '3',
+              lastName: 'Hezonja',
+              firstName: 'Mario',
+              minutes: '28:20',
+              points: 14,
+              fieldGoals: { made: 5, attempted: 11 },
+              threePointers: { made: 2, attempted: 6 },
+              freeThrows: { made: 2, attempted: 2 },
+              rebounds: 5,
+              assists: 3,
+              steals: 1,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '23',
+              lastName: 'Llull',
+              firstName: 'Sergio',
+              minutes: '26:15',
+              points: 12,
+              fieldGoals: { made: 4, attempted: 9 },
+              threePointers: { made: 2, attempted: 5 },
+              freeThrows: { made: 2, attempted: 3 },
+              rebounds: 2,
+              assists: 4,
+              steals: 1,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '22',
+              lastName: 'Tavares',
+              firstName: 'Walter',
+              minutes: '24:40',
+              points: 10,
+              fieldGoals: { made: 5, attempted: 8 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 1 },
+              rebounds: 8,
+              assists: 1,
+              steals: 0,
+              blocks: 2
+            },
+            // Real Madrid bench
+            {
+              jerseyNumber: '1',
+              lastName: 'Causeur',
+              firstName: 'Fabien',
+              minutes: '18:25',
+              points: 8,
+              fieldGoals: { made: 3, attempted: 6 },
+              threePointers: { made: 1, attempted: 3 },
+              freeThrows: { made: 1, attempted: 1 },
+              rebounds: 2,
+              assists: 2,
+              steals: 1,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '5',
+              lastName: 'Rudy',
+              firstName: 'Fernandez',
+              minutes: '15:30',
+              points: 5,
+              fieldGoals: { made: 2, attempted: 5 },
+              threePointers: { made: 0, attempted: 2 },
+              freeThrows: { made: 1, attempted: 1 },
+              rebounds: 3,
+              assists: 1,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '9',
+              lastName: 'Deck',
+              firstName: 'Gabriel',
+              minutes: '12:45',
+              points: 2,
+              fieldGoals: { made: 0, attempted: 3 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 2, attempted: 2 },
+              rebounds: 1,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            // DNP
+            {
+              jerseyNumber: '10',
+              lastName: 'Alocen',
+              firstName: 'Carlos',
+              minutes: '0:00',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '20',
+              lastName: 'Ndiaye',
+              firstName: 'Ibou',
+              minutes: '0:00',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            }
+          ],
+          away: [
+            // Barcelona starters
+            {
+              jerseyNumber: '33',
+              lastName: 'Mirotic',
+              firstName: 'Nikola',
+              minutes: '33:20',
+              points: 21,
+              fieldGoals: { made: 8, attempted: 15 },
+              threePointers: { made: 3, attempted: 8 },
+              freeThrows: { made: 2, attempted: 3 },
+              rebounds: 7,
+              assists: 2,
+              steals: 1,
+              blocks: 1
+            },
+            {
+              jerseyNumber: '1',
+              lastName: 'Satoransky',
+              firstName: 'Tomas',
+              minutes: '31:15',
+              points: 15,
+              fieldGoals: { made: 5, attempted: 10 },
+              threePointers: { made: 2, attempted: 4 },
+              freeThrows: { made: 3, attempted: 4 },
+              rebounds: 4,
+              assists: 7,
+              steals: 2,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '24',
+              lastName: 'Laprovittola',
+              firstName: 'Nicolas',
+              minutes: '29:45',
+              points: 13,
+              fieldGoals: { made: 4, attempted: 9 },
+              threePointers: { made: 2, attempted: 5 },
+              freeThrows: { made: 3, attempted: 4 },
+              rebounds: 3,
+              assists: 5,
+              steals: 1,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '44',
+              lastName: 'Vesely',
+              firstName: 'Jan',
+              minutes: '27:30',
+              points: 11,
+              fieldGoals: { made: 5, attempted: 8 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 1, attempted: 2 },
+              rebounds: 9,
+              assists: 1,
+              steals: 0,
+              blocks: 2
+            },
+            {
+              jerseyNumber: '9',
+              lastName: 'Higgins',
+              firstName: 'Cory',
+              minutes: '26:10',
+              points: 10,
+              fieldGoals: { made: 3, attempted: 8 },
+              threePointers: { made: 1, attempted: 3 },
+              freeThrows: { made: 3, attempted: 3 },
+              rebounds: 2,
+              assists: 3,
+              steals: 0,
+              blocks: 0
+            },
+            // Barcelona bench
+            {
+              jerseyNumber: '23',
+              lastName: 'Abrines',
+              firstName: 'Alex',
+              minutes: '19:45',
+              points: 7,
+              fieldGoals: { made: 3, attempted: 7 },
+              threePointers: { made: 0, attempted: 3 },
+              freeThrows: { made: 1, attempted: 1 },
+              rebounds: 3,
+              assists: 1,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '7',
+              lastName: 'Paulí',
+              firstName: 'Joel',
+              minutes: '16:20',
+              points: 3,
+              fieldGoals: { made: 1, attempted: 4 },
+              threePointers: { made: 0, attempted: 1 },
+              freeThrows: { made: 1, attempted: 1 },
+              rebounds: 4,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '14',
+              lastName: 'Nnaji',
+              firstName: 'Chimezie',
+              minutes: '13:30',
+              points: 2,
+              fieldGoals: { made: 1, attempted: 3 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 1,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            // DNP
+            {
+              jerseyNumber: '11',
+              lastName: 'Sanli',
+              firstName: 'Sertac',
+              minutes: '0:00',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            },
+            {
+              jerseyNumber: '55',
+              lastName: 'Parker',
+              firstName: 'Jabari',
+              minutes: '0:00',
+              points: 0,
+              fieldGoals: { made: 0, attempted: 0 },
+              threePointers: { made: 0, attempted: 0 },
+              freeThrows: { made: 0, attempted: 0 },
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0
+            }
+          ]
         },
         // Mock historical matchup data: Real Madrid vs Barcelona rivalry
         historicalMatchup: {

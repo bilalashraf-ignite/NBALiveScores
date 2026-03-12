@@ -6,9 +6,21 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PlayerStatsTable } from '@/components/player-stats-table';
-import type { PlayerStats } from '@/types/sports-data';
+import type { PlayerStats, Team } from '@/types/sports-data';
 
 describe('PlayerStatsTable component (RED TEST)', () => {
+  const mockHomeTeam: Team = {
+    id: 'lal',
+    name: 'Los Angeles Lakers',
+    abbreviation: 'LAL'
+  };
+
+  const mockAwayTeam: Team = {
+    id: 'gsw',
+    name: 'Golden State Warriors',
+    abbreviation: 'GSW'
+  };
+
   const mockHomePlayerStats: PlayerStats[] = [
     {
       jerseyNumber: '23',
@@ -91,12 +103,15 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
     const columns = ['Player', 'MIN', 'PTS', 'FG', '3P', 'FT', 'REB', 'AST', 'STL', 'BLK'];
     columns.forEach(column => {
-      expect(screen.getByText(column)).toBeInTheDocument();
+      // Use regex pattern to handle potential sort indicators
+      expect(screen.getByText(new RegExp(column))).toBeInTheDocument();
     });
   });
 
@@ -106,6 +121,8 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
@@ -125,10 +142,12 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
-    const ptsHeader = screen.getByText('PTS');
+    const ptsHeader = screen.getByText(/PTS/);
 
     // Click once to sort ascending
     await user.click(ptsHeader);
@@ -149,6 +168,8 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
@@ -169,6 +190,8 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
@@ -188,6 +211,8 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
@@ -202,6 +227,8 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
@@ -216,6 +243,8 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
@@ -230,6 +259,8 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
@@ -243,11 +274,13 @@ describe('PlayerStatsTable component (RED TEST)', () => {
       <PlayerStatsTable
         homeStats={mockHomePlayerStats}
         awayStats={mockAwayPlayerStats}
+        homeTeam={mockHomeTeam}
+        awayTeam={mockAwayTeam}
       />
     );
 
     // Default sort by PTS desc, should show descending indicator
-    const ptsHeader = screen.getByText('PTS');
+    const ptsHeader = screen.getByText(/PTS/);
     expect(ptsHeader.textContent).toMatch(/▼|↓/);
   });
 });

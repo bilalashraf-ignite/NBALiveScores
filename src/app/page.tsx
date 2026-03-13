@@ -11,6 +11,7 @@ import { GameCardSkeleton } from '@/components/game-card-skeleton';
 import { StaleDataBanner } from '@/components/stale-data-banner';
 import { ErrorFallback } from '@/components/error-fallback';
 import { GameDetailSkeleton } from '@/components/game-detail-skeleton';
+import { PullToRefresh } from '@/components/pull-to-refresh';
 
 // Lazy load GameDetailModal with skeleton fallback
 // ssr: false because modal uses browser-only APIs (window.history in useModalHistory hook)
@@ -115,12 +116,14 @@ export default function HomePage() {
 
         {/* Game list - show when data available */}
         {games && (
-          <GameList
-            games={games}
-            selectedLeague={selectedLeague}
-            lastUpdated={lastUpdated || undefined}
-            onGameClick={handleGameClick}
-          />
+          <PullToRefresh onRefresh={handleManualRefresh}>
+            <GameList
+              games={games}
+              selectedLeague={selectedLeague}
+              lastUpdated={lastUpdated || undefined}
+              onGameClick={handleGameClick}
+            />
+          </PullToRefresh>
         )}
 
         {/* Error state - handled by ErrorBoundary */}

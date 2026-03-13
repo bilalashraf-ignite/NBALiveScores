@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { Game, GameState } from '@/types/sports-data'
 import { StatusBadge } from './status-badge'
 import { GameTime } from './game-time'
+import { useHapticFeedback } from '@/hooks/useHapticFeedback'
 
 interface GameCardProps {
   game: Game
@@ -29,10 +30,22 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
   // Determine if game details can be shown (only for LIVE or FINAL games)
   const canShowDetails = game.state === GameState.LIVE || game.state === GameState.FINAL;
 
+  // Haptic feedback
+  const { trigger } = useHapticFeedback();
+
+  // Handle click with haptic feedback
+  const handleClick = () => {
+    if (canShowDetails && onClick) {
+      trigger('nudge'); // Subtle tap confirmation
+      onClick();
+    }
+  };
+
   // Handle keyboard accessibility (Enter/Space keys)
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (canShowDetails && onClick && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
+      trigger('nudge');
       onClick();
     }
   };
@@ -42,7 +55,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
       className={`relative min-h-[120px] rounded-lg border border-gray-200 bg-white p-6 shadow-sm ${
         canShowDetails ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
       }`}
-      onClick={canShowDetails ? onClick : undefined}
+      onClick={handleClick}
       role={canShowDetails ? 'button' : undefined}
       tabIndex={canShowDetails ? 0 : undefined}
       onKeyDown={canShowDetails ? handleKeyDown : undefined}

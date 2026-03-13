@@ -90,7 +90,7 @@ export default function HomePage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header with manual refresh button */}
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-foreground">Live Basketball Scores</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Live Basketball Scores</h1>
           <button
             onClick={handleManualRefresh}
             disabled={isRefreshing}

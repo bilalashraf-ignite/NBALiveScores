@@ -93,7 +93,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
               </div>
             )}
             <div>
-              <div className="font-semibold text-foreground">{game.homeTeam.name}</div>
+              <div className="font-semibold text-gray-900 dark:text-gray-100">{game.homeTeam.name}</div>
               {/* Season record - placeholder for Phase 4 when team data model expanded */}
             </div>
           </div>
@@ -106,7 +106,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
               />
             )}
             {/* Score */}
-            <div className="score-display text-3xl font-bold text-foreground">
+            <div className="score-display text-3xl font-bold text-gray-900 dark:text-gray-100">
               {game.score.home}
             </div>
           </div>
@@ -133,7 +133,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
               </div>
             )}
             <div>
-              <div className="font-semibold text-foreground">{game.awayTeam.name}</div>
+              <div className="font-semibold text-gray-900 dark:text-gray-100">{game.awayTeam.name}</div>
               {/* Season record - placeholder for Phase 4 when team data model expanded */}
             </div>
           </div>
@@ -146,7 +146,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
               />
             )}
             {/* Score */}
-            <div className="score-display text-3xl font-bold text-foreground">
+            <div className="score-display text-3xl font-bold text-gray-900 dark:text-gray-100">
               {game.score.away}
             </div>
           </div>
@@ -155,7 +155,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
 
       {/* Game context section - only show for live/halftime games */}
       {(game.state === GameState.LIVE || game.state === GameState.HALFTIME) && (
-        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">
+        <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300">
           {/* Quarter and time */}
           {game.period && (
             <span>
@@ -173,7 +173,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
 
       {/* Scheduled game time - only show for scheduled games */}
       {game.state === GameState.SCHEDULED && (
-        <div className="mt-4 border-t border-gray-100 pt-4 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">
+        <div className="mt-4 border-t border-gray-200 pt-4 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300">
           {/* <GameTime scheduledTime={game.scheduledTime} format="full" /> */}
         </div>
       )}

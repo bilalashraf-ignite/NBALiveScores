@@ -37,7 +37,7 @@ const mockGame: Game = {
 
 describe('GameCard', () => {
   it('displays team names, abbreviations, and scores', () => {
-    render(<GameCard game={mockGame} />)
+    render(<GameCard game={mockGame} index={0} />)
     
     expect(screen.getByText('Los Angeles Lakers')).toBeInTheDocument()
     expect(screen.getByText('Golden State Warriors')).toBeInTheDocument()
@@ -46,21 +46,21 @@ describe('GameCard', () => {
   })
 
   it('shows status badge in top-right corner', () => {
-    render(<GameCard game={mockGame} />)
+    render(<GameCard game={mockGame} index={0} />)
     
     // StatusBadge should render with LIVE text
     expect(screen.getByText('LIVE')).toBeInTheDocument()
   })
 
   it('displays quarter/period and time remaining when available', () => {
-    render(<GameCard game={mockGame} />)
+    render(<GameCard game={mockGame} index={0} />)
     
     expect(screen.getByText(/Q3/)).toBeInTheDocument()
     expect(screen.getByText(/5:32/)).toBeInTheDocument()
   })
 
   it('shows possession indicator highlighting team with possession', () => {
-    const { container } = render(<GameCard game={mockGame} />)
+    const { container } = render(<GameCard game={mockGame} index={0} />)
     
     // Possession indicator should be present (green dot)
     const possessionIndicators = container.querySelectorAll('[title="Possession"]')
@@ -77,7 +77,7 @@ describe('GameCard', () => {
       awayTeam: { ...mockGame.awayTeam, logoUrl: undefined }
     }
     
-    render(<GameCard game={minimalGame} />)
+    render(<GameCard game={minimalGame} index={0} />)
     
     // Should still render without crashing
     expect(screen.getByText('Los Angeles Lakers')).toBeInTheDocument()
@@ -91,7 +91,7 @@ describe('GameCard', () => {
       awayTeam: { ...mockGame.awayTeam, logoUrl: undefined }
     }
     
-    const { container } = render(<GameCard game={gameWithoutLogos} />)
+    const { container } = render(<GameCard game={gameWithoutLogos} index={0} />)
     
     // Should show abbreviations as fallback
     expect(screen.getByText('LAL')).toBeInTheDocument()
@@ -99,13 +99,14 @@ describe('GameCard', () => {
   })
 
   it('displays team logos when logoUrl is provided', () => {
-    render(<GameCard game={mockGame} />)
-    
+    render(<GameCard game={mockGame} index={0} />)
+
     const images = screen.getAllByRole('img')
     expect(images.length).toBe(2)
-    expect(images[0]).toHaveAttribute('src', 'https://example.com/lal.png')
+    // Next.js Image component transforms URLs to /_next/image?url=...
+    expect(images[0]).toHaveAttribute('src', expect.stringContaining('lal.png'))
     expect(images[0]).toHaveAttribute('alt', 'Los Angeles Lakers')
-    expect(images[1]).toHaveAttribute('src', 'https://example.com/gsw.png')
+    expect(images[1]).toHaveAttribute('src', expect.stringContaining('gsw.png'))
     expect(images[1]).toHaveAttribute('alt', 'Golden State Warriors')
   })
 
@@ -118,7 +119,7 @@ describe('GameCard', () => {
       possession: undefined
     }
 
-    render(<GameCard game={scheduledGame} />)
+    render(<GameCard game={scheduledGame} index={0} />)
 
     // Should render GameTime component
     expect(screen.getByTestId('game-time')).toBeInTheDocument()
@@ -132,7 +133,7 @@ describe('GameCard', () => {
       timeRemaining: '5:32'
     }
     
-    render(<GameCard game={scheduledGame} />)
+    render(<GameCard game={scheduledGame} index={0} />)
     
     // Period and time should not be shown for scheduled games
     expect(screen.queryByText(/Q3/)).not.toBeInTheDocument()
@@ -140,7 +141,7 @@ describe('GameCard', () => {
   })
 
   it('shows game context for LIVE games', () => {
-    render(<GameCard game={mockGame} />)
+    render(<GameCard game={mockGame} index={0} />)
     
     // Live game should show period and time
     expect(screen.getByText(/Q3/)).toBeInTheDocument()
@@ -154,7 +155,7 @@ describe('GameCard', () => {
       period: 2
     }
 
-    render(<GameCard game={halftimeGame} />)
+    render(<GameCard game={halftimeGame} index={0} />)
 
     // Halftime game should show period
     expect(screen.getByText(/Q2/)).toBeInTheDocument()
@@ -170,7 +171,7 @@ describe('GameCard', () => {
       }
     }
 
-    render(<GameCard game={gameWithFouls} />)
+    render(<GameCard game={gameWithFouls} index={0} />)
 
     // Should display "Fouls: 3-2"
     expect(screen.getByText('Fouls: 3-2')).toBeInTheDocument()
@@ -186,7 +187,7 @@ describe('GameCard', () => {
       }
     }
 
-    render(<GameCard game={gameWithFouls} />)
+    render(<GameCard game={gameWithFouls} index={0} />)
 
     // Should display "Fouls: 4-5"
     expect(screen.getByText('Fouls: 4-5')).toBeInTheDocument()
@@ -199,7 +200,7 @@ describe('GameCard', () => {
       teamFouls: undefined
     }
 
-    render(<GameCard game={gameWithoutFouls} />)
+    render(<GameCard game={gameWithoutFouls} index={0} />)
 
     // Should NOT display fouls text
     expect(screen.queryByText(/Fouls:/)).not.toBeInTheDocument()
@@ -215,7 +216,7 @@ describe('GameCard', () => {
       }
     }
 
-    render(<GameCard game={finalGame} />)
+    render(<GameCard game={finalGame} index={0} />)
 
     // Should NOT display fouls for final games
     expect(screen.queryByText(/Fouls:/)).not.toBeInTheDocument()
@@ -231,7 +232,7 @@ describe('GameCard', () => {
       }
     }
 
-    render(<GameCard game={gameWithFouls} />)
+    render(<GameCard game={gameWithFouls} index={0} />)
 
     // Should display exact format
     expect(screen.getByText('Fouls: 0-6')).toBeInTheDocument()
@@ -243,7 +244,7 @@ describe('GameCard', () => {
       state: GameState.LIVE,
     }
 
-    render(<GameCard game={liveGame} />)
+    render(<GameCard game={liveGame} index={0} />)
 
     // Should NOT render GameTime for live games
     expect(screen.queryByTestId('game-time')).not.toBeInTheDocument()
@@ -255,7 +256,7 @@ describe('GameCard', () => {
       state: GameState.FINAL,
     }
 
-    render(<GameCard game={finalGame} />)
+    render(<GameCard game={finalGame} index={0} />)
 
     // Should NOT render GameTime for final games
     expect(screen.queryByTestId('game-time')).not.toBeInTheDocument()

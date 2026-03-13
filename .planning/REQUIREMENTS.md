@@ -75,7 +75,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### User Experience
 
 - [x] **UX-01**: User sees clean, scannable layout with minimal visual clutter
-- [ ] **UX-02**: User experiences ad-free or minimal advertising interface
+- [x] **UX-02**: User experiences ad-free or minimal advertising interface
 - [x] **UX-03**: User sees graceful error messages (not blank screens) when API fails
 - [x] **UX-04**: User sees cached data with timestamp when live updates are unavailable
 - [x] **UX-05**: User sees loading indicators during data fetches
@@ -176,7 +176,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOB-03 | Phase 5 | Complete |
 | MOB-04 | Phase 5 | Complete |
 | UX-01 | Phase 2 | Pending |
-| UX-02 | Phase 5 | Pending |
+| UX-02 | Phase 5 | Complete |
 | UX-03 | Phase 2 | Pending |
 | UX-04 | Phase 2 | Pending |
 | UX-05 | Phase 2 | Complete |

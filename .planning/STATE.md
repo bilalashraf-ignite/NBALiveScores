@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-last_updated: "2026-03-13T12:12:23.094Z"
+last_updated: "2026-03-13T12:23:15.699Z"
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 19
-  completed_plans: 17
-  percent: 89
+  completed_plans: 19
+  percent: 100
 ---
 
 # Project State: Basketball Live Scores
@@ -34,7 +34,7 @@ progress:
 **Status:** Planning complete
 
 **Progress:**
-[█████████░] 89%
+[██████████] 100%
 [██████████] 100% Phase 1: Foundation & Infrastructure (3/3 plans)
 [██████████] 100% Phase 2: Live Scores Display (4/4 plans)
 [██████████] 100% Phase 3: Multi-League Schedule (2/2 plans)
@@ -74,6 +74,8 @@ progress:
 | Phase 05 P01 | 470 | 3 tasks | 5 files |
 | Phase 05 P02 | 513 | 3 tasks | 8 files |
 | Phase 05 P00 | 1161 | 4 tasks | 15 files |
+| Phase 05 P03 | 286 | 3 tasks | 5 files |
+| Phase 05 P04 | 342 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -81,6 +83,10 @@ progress:
 
 | Decision | Rationale | Date |
 |----------|-----------|------|
+| Dynamic scrollbar width calculation for scroll lock | Scrollbar width varies by OS (0-17px); dynamic calculation prevents page jump on all platforms | 2026-03-13 |
+| score-display utility class (min-width: 80px) | Centralizes score spacing pattern for 3-digit scores, reusable across components | 2026-03-13 |
+| min-w-[100px] for StatusBadge | SCHEDULED is longest badge text; centering shorter badges prevents layout shift on state changes | 2026-03-13 |
+| min-h-[120px] for GameCardSkeleton | Matches GameCard dimensions exactly to prevent CLS during skeleton → content transition | 2026-03-13 |
 | web-haptics library for cross-browser vibration | Graceful degradation when haptics not supported, covers all interaction types | 2026-03-13 |
 | 80px pull-to-refresh threshold | Comfortable pull distance, not too sensitive, matches native app feel | 2026-03-13 |
 | 100px swipe-to-close modal threshold | Slightly larger than pull-to-refresh, prevents accidental closes during scrolling | 2026-03-13 |

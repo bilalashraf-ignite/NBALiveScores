@@ -67,9 +67,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Mobile Experience
 
-- [ ] **MOB-01**: User can access site on mobile devices with responsive design
-- [ ] **MOB-02**: User can interact with touch-friendly tap targets and controls
-- [ ] **MOB-03**: User sees readable text sizes on small screens without zooming
+- [x] **MOB-01**: User can access site on mobile devices with responsive design
+- [x] **MOB-02**: User can interact with touch-friendly tap targets and controls
+- [x] **MOB-03**: User sees readable text sizes on small screens without zooming
 - [ ] **MOB-04**: User experiences optimized mobile performance (reduced polling on cellular)
 
 ### User Experience
@@ -171,9 +171,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERF-03 | Phase 1 | Complete |
 | PERF-04 | Phase 1 | Complete |
 | PERF-05 | Phase 5 | Pending |
-| MOB-01 | Phase 5 | Pending |
-| MOB-02 | Phase 5 | Pending |
-| MOB-03 | Phase 5 | Pending |
+| MOB-01 | Phase 5 | Complete |
+| MOB-02 | Phase 5 | Complete |
+| MOB-03 | Phase 5 | Complete |
 | MOB-04 | Phase 5 | Pending |
 | UX-01 | Phase 2 | Pending |
 | UX-02 | Phase 5 | Pending |

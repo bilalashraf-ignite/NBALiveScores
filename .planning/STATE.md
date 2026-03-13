@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-last_updated: "2026-03-13T12:01:24.592Z"
+last_updated: "2026-03-13T12:02:53.335Z"
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 19
-  completed_plans: 15
-  percent: 79
+  completed_plans: 16
+  percent: 84
 ---
 
 # Project State: Basketball Live Scores
@@ -34,7 +34,7 @@ progress:
 **Status:** Planning complete
 
 **Progress:**
-[████████░░] 79%
+[████████░░] 84%
 [██████████] 100% Phase 1: Foundation & Infrastructure (3/3 plans)
 [██████████] 100% Phase 2: Live Scores Display (4/4 plans)
 [██████████] 100% Phase 3: Multi-League Schedule (2/2 plans)
@@ -72,6 +72,7 @@ progress:
 | Phase 04 P03 | 1303s | 3 | 7 | ✓ Complete |
 | Phase 04 P04 | 959s | 3 | 9 | ✓ Complete |
 | Phase 05 P01 | 470 | 3 tasks | 5 files |
+| Phase 05 P02 | 513 | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ progress:
 
 | Decision | Rationale | Date |
 |----------|-----------|------|
+| web-haptics library for cross-browser vibration | Graceful degradation when haptics not supported, covers all interaction types | 2026-03-13 |
+| 80px pull-to-refresh threshold | Comfortable pull distance, not too sensitive, matches native app feel | 2026-03-13 |
+| 100px swipe-to-close modal threshold | Slightly larger than pull-to-refresh, prevents accidental closes during scrolling | 2026-03-13 |
 | System fonts only for Phase 5 | -apple-system, Segoe UI stack provides zero network cost, instant rendering, native feel | 2026-03-12 |
 | 48x48px touch targets (Material Design) | More generous than Apple's 44px, better for users with larger fingers | 2026-03-12 |
 | Pull-to-refresh and swipe gestures | Full mobile-native experience users expect from native sports apps | 2026-03-12 |

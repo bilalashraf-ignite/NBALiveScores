@@ -60,8 +60,8 @@ export function GameDetailModal({
             Detailed information about the basketball game including scores, team statistics, player statistics, and historical matchup data.
           </Dialog.Description>
 
-          {/* Close button (X) */}
-          <Dialog.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-gray-100 data-[state=open]:text-gray-500 dark:ring-offset-gray-950 dark:focus:ring-gray-300 dark:data-[state=open]:bg-gray-800 dark:data-[state=open]:text-gray-400">
+          {/* Close button (X) - Material Design 48x48px touch target */}
+          <Dialog.Close className="absolute right-4 top-4 h-12 w-12 flex items-center justify-center rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-gray-100 data-[state=open]:text-gray-500 dark:ring-offset-gray-950 dark:focus:ring-gray-300 dark:data-[state=open]:bg-gray-800 dark:data-[state=open]:text-gray-400">
             <svg
               className="h-6 w-6"
               fill="none"

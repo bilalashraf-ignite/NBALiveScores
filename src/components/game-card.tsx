@@ -19,6 +19,9 @@ interface GameCardProps {
  * - Scheduled time shown only for SCHEDULED games
  * - Mobile-first spacing with comfortable tap targets
  * - Clickable for LIVE/FINAL games to open detail modal (Phase 4)
+ *
+ * Material Design touch target minimum: 48x48px
+ * https://m2.material.io/develop/web/supporting/touch-target
  */
 export function GameCard({ game, onClick }: GameCardProps) {
   // Determine if game details can be shown (only for LIVE or FINAL games)
@@ -34,7 +37,7 @@ export function GameCard({ game, onClick }: GameCardProps) {
 
   return (
     <div
-      className={`relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm ${
+      className={`relative min-h-[120px] rounded-lg border border-gray-200 bg-white p-6 shadow-sm ${
         canShowDetails ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
       }`}
       onClick={canShowDetails ? onClick : undefined}

@@ -11,6 +11,7 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
+    "lighthouse": "lhci autorun",
     "prisma:generate": "prisma generate"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "react-error-boundary": "^6.1.1"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

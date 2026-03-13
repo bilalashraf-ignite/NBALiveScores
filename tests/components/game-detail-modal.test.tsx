@@ -263,4 +263,26 @@ describe('GameDetailModal component (RED TEST)', () => {
 
     expect(useModalHistory).toHaveBeenCalledWith(true, expect.any(Function));
   });
+
+  // TODO (05-02): Add scroll lock and swipe-to-close tests when implementing mobile gestures
+  // describe('Scroll Lock', () => {
+  //   it('Locks body scroll when modal opens', () => {
+  //     // Verify document.body.style.position is 'fixed' when open=true
+  //     // Verify document.body.style.paddingRight is set (scrollbar compensation)
+  //   });
+  //
+  //   it('Restores scroll position when modal closes', () => {
+  //     // Set window.scrollY = 500
+  //     // Spy on window.scrollTo
+  //     // Open then close modal
+  //     // Verify scrollTo called with (0, 500)
+  //   });
+  //
+  //   it('Handles swipe-to-close gesture', () => {
+  //     // Simulate touchStart at clientY: 100
+  //     // Simulate touchMove to clientY: 220 (120px swipe exceeds 100px threshold)
+  //     // Simulate touchEnd
+  //     // Verify onOpenChange called with false
+  //   });
+  // });
 });

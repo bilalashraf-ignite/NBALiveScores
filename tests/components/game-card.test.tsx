@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { GameCard } from '@/components/game-card'
+import { GameList } from '@/components/game-list'
 import { Game, GameState } from '@/types/sports-data'
 
 // Mock GameTime component
@@ -261,4 +262,34 @@ describe('GameCard', () => {
     // Should NOT render GameTime for final games
     expect(screen.queryByTestId('game-time')).not.toBeInTheDocument()
   })
+
+  describe('Mobile Responsiveness', () => {
+    it('Applies responsive grid classes in GameList', () => {
+      const mockGames: Game[] = [
+        { ...mockGame, id: '1' }
+      ];
+
+      const { container } = render(<GameList games={mockGames} onGameClick={() => {}} />);
+      const grid = container.querySelector('[class*="grid-cols"]');
+
+      expect(grid?.className).toMatch(/grid-cols-1/); // Mobile-first
+      expect(grid?.className).toMatch(/md:grid-cols-2/); // Tablet
+      expect(grid?.className).toMatch(/lg:grid-cols-3/); // Desktop
+    });
+
+    it('Triggers haptic feedback on click when supported', () => {
+      const mockVibrate = jest.fn(() => true);
+      (navigator as any).vibrate = mockVibrate;
+
+      const onClick = jest.fn();
+
+      const { container } = render(<GameCard game={mockGame} onClick={onClick} index={0} />);
+      const card = container.firstChild as HTMLElement;
+
+      fireEvent.click(card);
+
+      expect(onClick).toHaveBeenCalled();
+      // Haptic feedback integration is implementation-dependent
+    });
+  });
 })

@@ -237,4 +237,17 @@ describe('useSSE', () => {
     // Verify new connection with new URL
     expect(EventSource).toHaveBeenCalledWith('/api/scores/other');
   });
+
+  // TODO (05-04): Add adaptive frequency tests when implementing cellular data optimization
+  // describe('Adaptive Frequency', () => {
+  //   it('Uses 10s frequency on WiFi/4G', () => {
+  //     // Mock navigator.connection with effectiveType: '4g'
+  //     // Verify URL includes frequency=10000 parameter
+  //   });
+  //
+  //   it('Uses 20s frequency on 2G/3G', () => {
+  //     // Mock navigator.connection with effectiveType: '3g'
+  //     // Verify URL includes frequency=20000 parameter
+  //   });
+  // });
 });

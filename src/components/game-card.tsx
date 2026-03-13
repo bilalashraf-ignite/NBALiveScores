@@ -1,13 +1,13 @@
-import Image from 'next/image'
-import { Game, GameState } from '@/types/sports-data'
-import { StatusBadge } from './status-badge'
-import { GameTime } from './game-time'
-import { useHapticFeedback } from '@/hooks/useHapticFeedback'
+import Image from "next/image";
+import { Game, GameState } from "@/types/sports-data";
+import { StatusBadge } from "./status-badge";
+import { GameTime } from "./game-time";
+import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 
 interface GameCardProps {
-  game: Game
-  index: number
-  onClick?: () => void
+  game: Game;
+  index: number;
+  onClick?: () => void;
 }
 
 /**
@@ -28,7 +28,8 @@ interface GameCardProps {
  */
 export function GameCard({ game, index, onClick }: GameCardProps) {
   // Determine if game details can be shown (only for LIVE or FINAL games)
-  const canShowDetails = game.state === GameState.LIVE || game.state === GameState.FINAL;
+  const canShowDetails =
+    game.state === GameState.LIVE || game.state === GameState.FINAL;
 
   // Haptic feedback
   const { trigger } = useHapticFeedback();
@@ -36,27 +37,31 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
   // Handle click with haptic feedback
   const handleClick = () => {
     if (canShowDetails && onClick) {
-      trigger('nudge'); // Subtle tap confirmation
+      trigger("nudge"); // Subtle tap confirmation
       onClick();
     }
   };
 
   // Handle keyboard accessibility (Enter/Space keys)
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (canShowDetails && onClick && (event.key === 'Enter' || event.key === ' ')) {
+    if (
+      canShowDetails &&
+      onClick &&
+      (event.key === "Enter" || event.key === " ")
+    ) {
       event.preventDefault();
-      trigger('nudge');
+      trigger("nudge");
       onClick();
     }
   };
 
   return (
     <div
-      className={`relative min-h-[120px] rounded-lg border border-gray-200 bg-white p-6 shadow-sm ${
-        canShowDetails ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
+      className={`relative min-h-[120px] rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 ${
+        canShowDetails ? "cursor-pointer hover:shadow-md transition-shadow" : ""
       }`}
       onClick={handleClick}
-      role={canShowDetails ? 'button' : undefined}
+      role={canShowDetails ? "button" : undefined}
       tabIndex={canShowDetails ? 0 : undefined}
       onKeyDown={canShowDetails ? handleKeyDown : undefined}
     >
@@ -83,22 +88,27 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
                 className="h-10 w-10"
               />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-600">
+              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                 {game.homeTeam.abbreviation}
               </div>
             )}
             <div>
-              <div className="font-semibold">{game.homeTeam.name}</div>
+              <div className="font-semibold text-foreground">{game.homeTeam.name}</div>
               {/* Season record - placeholder for Phase 4 when team data model expanded */}
             </div>
           </div>
           <div className="flex items-center gap-3">
             {/* Possession indicator */}
-            {game.possession === 'home' && (
-              <div className="h-3 w-3 rounded-full bg-green-500" title="Possession" />
+            {game.possession === "home" && (
+              <div
+                className="h-3 w-3 rounded-full bg-green-500"
+                title="Possession"
+              />
             )}
             {/* Score */}
-            <div className="score-display text-3xl font-bold">{game.score.home}</div>
+            <div className="score-display text-3xl font-bold text-foreground">
+              {game.score.home}
+            </div>
           </div>
         </div>
 
@@ -118,48 +128,55 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
                 className="h-10 w-10"
               />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-600">
+              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                 {game.awayTeam.abbreviation}
               </div>
             )}
             <div>
-              <div className="font-semibold">{game.awayTeam.name}</div>
+              <div className="font-semibold text-foreground">{game.awayTeam.name}</div>
               {/* Season record - placeholder for Phase 4 when team data model expanded */}
             </div>
           </div>
           <div className="flex items-center gap-3">
             {/* Possession indicator */}
-            {game.possession === 'away' && (
-              <div className="h-3 w-3 rounded-full bg-green-500" title="Possession" />
+            {game.possession === "away" && (
+              <div
+                className="h-3 w-3 rounded-full bg-green-500"
+                title="Possession"
+              />
             )}
             {/* Score */}
-            <div className="score-display text-3xl font-bold">{game.score.away}</div>
+            <div className="score-display text-3xl font-bold text-foreground">
+              {game.score.away}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Game context section - only show for live/halftime games */}
       {(game.state === GameState.LIVE || game.state === GameState.HALFTIME) && (
-        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4 text-sm text-gray-600">
+        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">
           {/* Quarter and time */}
           {game.period && (
             <span>
-              Q{game.period} {game.timeRemaining || ''}
+              Q{game.period} {game.timeRemaining || ""}
             </span>
           )}
           {/* Team fouls - show if available */}
           {game.teamFouls && (
-            <span>Fouls: {game.teamFouls.home}-{game.teamFouls.away}</span>
+            <span>
+              Fouls: {game.teamFouls.home}-{game.teamFouls.away}
+            </span>
           )}
         </div>
       )}
 
       {/* Scheduled game time - only show for scheduled games */}
       {game.state === GameState.SCHEDULED && (
-        <div className="mt-4 border-t border-gray-100 pt-4 text-sm text-gray-600">
-          <GameTime scheduledTime={game.scheduledTime} format="full" />
+        <div className="mt-4 border-t border-gray-100 pt-4 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">
+          {/* <GameTime scheduledTime={game.scheduledTime} format="full" /> */}
         </div>
       )}
     </div>
-  )
+  );
 }

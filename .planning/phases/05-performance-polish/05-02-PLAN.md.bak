@@ -1,0 +1,418 @@
+---
+phase: 05-performance-polish
+plan: 02
+type: execute
+wave: 1
+depends_on: []
+files_modified:
+  - src/components/game-card.tsx
+  - src/components/game-list.tsx
+  - src/components/game-detail-modal.tsx
+  - src/components/pull-to-refresh.tsx
+  - src/hooks/useHapticFeedback.ts
+  - src/app/page.tsx
+  - package.json
+autonomous: true
+requirements:
+  - MOB-01
+  - MOB-02
+  - MOB-03
+must_haves:
+  truths:
+    - "User can tap any interactive element with minimum 48x48px hit area"
+    - "User can pull down on home page to manually refresh scores"
+    - "User feels subtle haptic feedback on tap, refresh, and modal actions"
+    - "User sees readable 16px text on mobile without zooming"
+  artifacts:
+    - path: "src/components/pull-to-refresh.tsx"
+      provides: "Pull-to-refresh gesture component"
+      min_lines: 80
+    - path: "src/hooks/useHapticFeedback.ts"
+      provides: "Haptic feedback hook"
+      exports: ["useHapticFeedback"]
+    - path: "src/components/game-card.tsx"
+      provides: "48x48px minimum touch targets"
+      contains: "min-h-[48px]"
+    - path: "src/components/game-detail-modal.tsx"
+      provides: "Swipe-to-close gesture"
+      contains: "touchstart|touchmove|touchend"
+  key_links:
+    - from: "src/app/page.tsx"
+      to: "src/components/pull-to-refresh.tsx"
+      via: "wraps game list"
+      pattern: "PullToRefresh.*GameList"
+    - from: "src/components/pull-to-refresh.tsx"
+      to: "src/hooks/useHapticFeedback.ts"
+      via: "trigger on refresh"
+      pattern: "trigger\\('success'\\)"
+---
+
+<objective>
+Optimize mobile experience with Material Design 48x48px touch targets, native gestures (pull-to-refresh, swipe-to-close), and haptic feedback.
+
+Purpose: Meet MOB-01, MOB-02, MOB-03 requirements for mobile-friendly interactions
+Output: Touch-optimized components, pull-to-refresh, haptic feedback, swipe gestures
+</objective>
+
+<execution_context>
+@/Users/bilalashraf/.claude/get-shit-done/workflows/execute-plan.md
+@/Users/bilalashraf/.claude/get-shit-done/templates/summary.md
+</execution_context>
+
+<context>
+@.planning/PROJECT.md
+@.planning/ROADMAP.md
+@.planning/STATE.md
+@.planning/phases/05-performance-polish/05-CONTEXT.md
+@.planning/phases/05-performance-polish/05-RESEARCH.md
+
+<interfaces>
+<!-- Current implementations to enhance -->
+
+From src/components/game-card.tsx (lines 36-44):
+```tsx
+<div
+  className={`relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm ${
+    canShowDetails ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
+  }`}
+  onClick={canShowDetails ? onClick : undefined}
+  role={canShowDetails ? 'button' : undefined}
+  tabIndex={canShowDetails ? 0 : undefined}
+  onKeyDown={canShowDetails ? handleKeyDown : undefined}
+>
+```
+
+From src/hooks/useSSE.ts (lines 21-26):
+```tsx
+export interface UseSSEOptions {
+  /** URL of the SSE endpoint to connect to */
+  url: string;
+  /** Whether the connection should be active (default: true) */
+  enabled?: boolean;
+}
+```
+
+From src/app/page.tsx (usage of GameList):
+```tsx
+<GameList games={games} onGameClick={handleGameClick} />
+```
+</interfaces>
+</context>
+
+<tasks>
+
+<task type="auto">
+  <name>Task 1: Enforce 48x48px touch targets and mobile typography</name>
+  <files>
+    src/components/game-card.tsx
+    src/components/game-list.tsx
+    src/components/game-detail-modal.tsx
+  </files>
+  <action>
+Apply Material Design 48x48px minimum touch target sizing to all interactive elements:
+
+1. Update GameCard (src/components/game-card.tsx):
+   - Add `min-h-[120px]` to outer div (line 36) to ensure card meets minimum height
+   - Entire card is clickable, so full height counts as touch target
+   - Verify padding maintains comfortable spacing on mobile (p-6 = 24px is good)
+   - Base font size already 16px (Tailwind default), no changes needed for typography
+
+2. Update GameDetailModal close button (src/components/game-detail-modal.tsx):
+   - Change close button (line 64) to `h-12 w-12` (48px × 48px)
+   - Add `flex items-center justify-center` to center the X icon
+   - Keep existing focus ring and accessibility classes
+   - Icon itself can be smaller (h-6 w-6) within 48px hit area
+
+3. Update GameList responsive grid (src/components/game-list.tsx):
+   - Verify grid uses `grid-cols-1` on mobile (single column for max width)
+   - Add `md:grid-cols-2 lg:grid-cols-3` for tablet/desktop breakpoints
+   - Gap-4 provides adequate spacing between touch targets
+
+4. Add comment documenting Material Design standard:
+   ```tsx
+   // Material Design touch target minimum: 48x48px
+   // https://m2.material.io/develop/web/supporting/touch-target
+   ```
+
+Why 48x48px: Material Design standard (more generous than Apple's 44px), accommodates users with larger fingers or motor impairments
+Why entire card height: Card is single interactive element, full height provides generous touch area
+Why base 16px font: Default readable size on mobile, no zoom required, respects user's browser settings
+
+Note: Existing spacing (p-6, gap-4) already provides adequate separation. No changes needed for text sizes - Tailwind defaults are mobile-friendly.
+  </action>
+  <verify>
+    <automated>
+# Verify touch target sizing
+grep -n "min-h-\[120px\]" src/components/game-card.tsx
+grep -n "h-12 w-12" src/components/game-detail-modal.tsx
+
+# Verify responsive grid
+grep -n "grid-cols-1.*md:grid-cols-2.*lg:grid-cols-3" src/components/game-list.tsx
+
+# Run type check
+npm run type-check
+
+# Run tests
+npm test -- --testPathPattern="game-card|game-list|game-detail-modal"
+    </automated>
+  </verify>
+  <done>
+GameCard has min-h-[120px] for adequate touch target, GameDetailModal close button is 48x48px, GameList uses mobile-first single column with responsive breakpoints, comments document Material Design standard, type check passes, tests pass
+  </done>
+</task>
+
+<task type="auto">
+  <name>Task 2: Implement pull-to-refresh and haptic feedback</name>
+  <files>
+    src/components/pull-to-refresh.tsx
+    src/hooks/useHapticFeedback.ts
+    package.json
+  </files>
+  <action>
+Create mobile-native pull-to-refresh gesture and haptic feedback system:
+
+1. Install web-haptics library:
+   ```bash
+   npm install web-haptics
+   ```
+
+2. Create haptic feedback hook (src/hooks/useHapticFeedback.ts):
+   ```tsx
+   import { WebHaptics } from 'web-haptics';
+
+   export function useHapticFeedback() {
+     const trigger = (pattern: 'success' | 'nudge' | 'error' | 'buzz') => {
+       if (!WebHaptics.isSupported) return; // Graceful degradation
+       WebHaptics.trigger(pattern);
+     };
+
+     return { trigger };
+   }
+   ```
+
+   Why web-haptics: Cross-browser vibration patterns, graceful fallback when not supported
+   Why these patterns: success (refresh complete), nudge (tap), error (failure), buzz (generic)
+
+3. Create pull-to-refresh component (src/components/pull-to-refresh.tsx):
+   - Accept `onRefresh` callback and `children` props
+   - Track touch events: onTouchStart (capture startY), onTouchMove (track distance), onTouchEnd (trigger if threshold met)
+   - Threshold: 80px pull distance triggers refresh
+   - Only activate at scroll position 0 (top of page)
+   - Visual feedback: Show "↓ Pull to refresh" / "↻ Release to refresh" indicator
+   - Call haptic feedback on successful refresh trigger
+   - Prevent default browser pull-to-refresh with `e.preventDefault()` and `overscroll-behavior-y-contain`
+   - Add loading spinner during refresh
+
+   Implementation pattern from RESEARCH.md Pattern 6:
+   ```tsx
+   const handleTouchStart = (e: TouchEvent) => {
+     if (window.scrollY === 0) {
+       setStartY(e.touches[0].clientY);
+     }
+   };
+
+   const handleTouchMove = (e: TouchEvent) => {
+     if (startY === 0) return;
+     const distance = e.touches[0].clientY - startY;
+     if (distance > 0) {
+       setPullDistance(distance);
+       e.preventDefault(); // Prevent default browser refresh
+     }
+   };
+
+   const handleTouchEnd = () => {
+     if (pullDistance > threshold) {
+       onRefresh();
+       trigger('success'); // Haptic feedback
+     }
+     setPullDistance(0);
+     setStartY(0);
+   };
+   ```
+
+Why 80px threshold: Comfortable pull distance, not too sensitive, matches native app feel
+Why only at scrollY === 0: Prevents conflict with normal scrolling
+Why preventDefault: Overrides browser's default pull-to-refresh to use custom implementation
+  </action>
+  <verify>
+    <automated>
+# Verify web-haptics installed
+npm list web-haptics
+
+# Verify hook exports
+grep -n "export function useHapticFeedback" src/hooks/useHapticFeedback.ts
+
+# Verify component created
+test -f src/components/pull-to-refresh.tsx && echo "Component exists"
+
+# Run type check
+npm run type-check
+
+# Run tests
+npm test
+    </automated>
+  </verify>
+  <done>
+web-haptics library installed, useHapticFeedback hook created with graceful fallback, PullToRefresh component created with 80px threshold, touch event handlers, visual feedback indicator, haptic trigger on refresh, type check passes
+  </done>
+</task>
+
+<task type="auto">
+  <name>Task 3: Integrate pull-to-refresh and add swipe-to-close modal</name>
+  <files>
+    src/app/page.tsx
+    src/components/game-detail-modal.tsx
+    src/components/game-card.tsx
+  </files>
+  <action>
+Integrate pull-to-refresh with home page and add swipe-to-close to modal:
+
+1. Update home page (src/app/page.tsx):
+   - Import PullToRefresh component
+   - Wrap GameList with PullToRefresh:
+     ```tsx
+     <PullToRefresh onRefresh={handleManualRefresh}>
+       <GameList games={games} onGameClick={handleGameClick} />
+     </PullToRefresh>
+     ```
+   - handleManualRefresh already exists (calls /api/scores/refresh)
+   - PullToRefresh manages its own loading state
+
+2. Add swipe-to-close gesture to GameDetailModal (src/components/game-detail-modal.tsx):
+   - Track touch events on Dialog.Content
+   - Similar pattern to pull-to-refresh but vertical swipe down
+   - Threshold: 100px swipe down closes modal
+   - Call onOpenChange(false) when threshold met
+   - Add haptic feedback on close
+   - Smooth animation on swipe (transform: translateY)
+
+   Implementation:
+   ```tsx
+   const [swipeDistance, setSwipeDistance] = useState(0);
+   const [swipeStartY, setSwipeStartY] = useState(0);
+   const { trigger } = useHapticFeedback();
+
+   const handleSwipeStart = (e: React.TouchEvent) => {
+     setSwipeStartY(e.touches[0].clientY);
+   };
+
+   const handleSwipeMove = (e: React.TouchEvent) => {
+     if (swipeStartY === 0) return;
+     const distance = e.touches[0].clientY - swipeStartY;
+     if (distance > 0) { // Only track downward swipes
+       setSwipeDistance(distance);
+     }
+   };
+
+   const handleSwipeEnd = () => {
+     if (swipeDistance > 100) {
+       trigger('nudge');
+       onOpenChange(false);
+     }
+     setSwipeDistance(0);
+     setSwipeStartY(0);
+   };
+   ```
+
+   Apply handlers to Dialog.Content:
+   ```tsx
+   <Dialog.Content
+     onTouchStart={handleSwipeStart}
+     onTouchMove={handleSwipeMove}
+     onTouchEnd={handleSwipeEnd}
+     style={{ transform: `translateY(${Math.min(swipeDistance, 100)}px)` }}
+     ...
+   ```
+
+3. Add haptic feedback to GameCard tap (src/components/game-card.tsx):
+   - Import useHapticFeedback
+   - Call `trigger('nudge')` in onClick handler
+   - Subtle feedback confirms tap registration
+
+Why 100px modal threshold: Slightly larger than pull-to-refresh, prevents accidental closes
+Why transform during swipe: Provides visual feedback, card follows finger
+Why nudge pattern: Subtle confirmation without being intrusive
+  </action>
+  <verify>
+    <automated>
+# Verify imports and integration
+grep -n "PullToRefresh" src/app/page.tsx
+grep -n "onTouchStart\|onTouchMove\|onTouchEnd" src/components/game-detail-modal.tsx
+grep -n "useHapticFeedback" src/components/game-card.tsx
+
+# Run full test suite
+npm test
+
+# Type check
+npm run type-check
+    </automated>
+  </verify>
+  <done>
+Home page wraps GameList with PullToRefresh component, GameDetailModal implements swipe-to-close with 100px threshold and visual feedback, GameCard triggers haptic feedback on tap, all gestures integrated with useHapticFeedback hook, type check passes, tests pass
+  </done>
+</task>
+
+</tasks>
+
+<verification>
+## Overall Verification
+
+Run full test suite:
+```bash
+npm test
+```
+
+Manual mobile testing (Chrome DevTools mobile emulation or real device):
+1. Touch target verification:
+   - Tap game cards - should register easily
+   - Tap modal close button - should register easily
+   - No double-tap required, no missed taps
+
+2. Pull-to-refresh gesture:
+   - Swipe down from top of home page
+   - Verify "Pull to refresh" indicator appears
+   - Pull past threshold, verify refresh triggers
+   - Verify haptic feedback on release
+   - Verify scores reload
+
+3. Swipe-to-close modal:
+   - Open game detail modal
+   - Swipe down from anywhere on modal
+   - Verify modal follows finger
+   - Swipe past threshold, verify modal closes
+   - Verify haptic feedback on close
+
+4. Typography verification:
+   - Text should be readable without pinch-zoom
+   - Base font size 16px maintained
+   - Comfortable spacing on mobile
+
+Expected outcomes:
+- All interactive elements meet 48x48px minimum
+- Pull-to-refresh feels native and responsive
+- Swipe-to-close modal feels smooth
+- Haptic feedback subtle and appropriate
+- No layout issues on mobile breakpoints
+</verification>
+
+<success_criteria>
+1. All interactive elements have minimum 48x48px touch targets
+2. PullToRefresh component created with 80px threshold and haptic feedback
+3. GameDetailModal implements swipe-to-close with 100px threshold
+4. useHapticFeedback hook created with graceful degradation
+5. GameList uses mobile-first single column responsive grid
+6. GameCard triggers haptic feedback on tap
+7. All tests pass
+8. Manual testing confirms smooth, native-feeling gestures
+9. Typography remains readable at 16px base on mobile
+</success_criteria>
+
+<output>
+After completion, create `.planning/phases/05-performance-polish/05-02-SUMMARY.md` documenting:
+- Touch target sizes implemented
+- Pull-to-refresh gesture behavior
+- Swipe-to-close modal implementation
+- Haptic feedback patterns used
+- Mobile responsive grid configuration
+- Any deviations or issues encountered
+</output>

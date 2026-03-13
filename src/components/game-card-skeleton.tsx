@@ -11,34 +11,34 @@
  */
 export function GameCardSkeleton() {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm min-h-[120px]">
+    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm min-h-[120px] dark:border-gray-700 dark:bg-gray-800">
       <div className="space-y-4">
         {/* Status badge skeleton - top-right */}
         <div className="flex justify-end">
-          <div className="h-6 w-16 animate-pulse rounded-full bg-gray-200"></div>
+          <div className="h-6 w-16 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"></div>
         </div>
 
         {/* Home team skeleton */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200"></div>
-            <div className="h-5 w-32 animate-pulse rounded bg-gray-200"></div>
+            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-5 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
           </div>
-          <div className="h-10 min-w-[80px] animate-pulse rounded bg-gray-200"></div>
+          <div className="h-10 min-w-[80px] animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
 
         {/* Away team skeleton */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200"></div>
-            <div className="h-5 w-28 animate-pulse rounded bg-gray-200"></div>
+            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-5 w-28 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
           </div>
-          <div className="h-10 min-w-[80px] animate-pulse rounded bg-gray-200"></div>
+          <div className="h-10 min-w-[80px] animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
 
         {/* Game context skeleton */}
-        <div className="mt-4 border-t border-gray-100 pt-4">
-          <div className="h-4 w-24 animate-pulse rounded bg-gray-200"></div>
+        <div className="mt-4 border-t border-gray-100 pt-4 dark:border-gray-700">
+          <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
       </div>
     </div>

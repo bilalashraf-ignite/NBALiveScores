@@ -165,17 +165,17 @@ export function GameDetailModal({
                   <div className="flex items-center justify-center gap-4">
                     {/* Away team */}
                     <div className="flex-1 text-right">
-                      <p className="text-lg font-semibold">{data.awayTeam.name}</p>
-                      <p className="text-3xl font-bold">{data.score.away}</p>
+                      <p className="text-lg font-semibold text-foreground">{data.awayTeam.name}</p>
+                      <p className="text-3xl font-bold text-foreground">{data.score.away}</p>
                     </div>
 
                     {/* VS divider */}
-                    <div className="text-gray-500">VS</div>
+                    <div className="text-gray-500 dark:text-gray-400">VS</div>
 
                     {/* Home team */}
                     <div className="flex-1 text-left">
-                      <p className="text-lg font-semibold">{data.homeTeam.name}</p>
-                      <p className="text-3xl font-bold">{data.score.home}</p>
+                      <p className="text-lg font-semibold text-foreground">{data.homeTeam.name}</p>
+                      <p className="text-3xl font-bold text-foreground">{data.score.home}</p>
                     </div>
                   </div>
 
@@ -192,7 +192,7 @@ export function GameDetailModal({
                   )}
 
                   {/* Status */}
-                  <div className="mt-1 text-sm font-medium uppercase tracking-wide text-gray-500">
+                  <div className="mt-1 text-sm font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     {data.status}
                   </div>
                 </div>

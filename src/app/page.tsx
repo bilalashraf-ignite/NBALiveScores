@@ -90,11 +90,11 @@ export default function HomePage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header with manual refresh button */}
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Live Basketball Scores</h1>
+          <h1 className="text-3xl font-bold text-foreground">Live Basketball Scores</h1>
           <button
             onClick={handleManualRefresh}
             disabled={isRefreshing}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            className="min-h-[48px] rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
             title="Refresh scores"
           >
             {isRefreshing ? '↻ Refreshing...' : '↻ Refresh'}
@@ -117,7 +117,7 @@ export default function HomePage() {
 
         {/* Network indicator - show when on slow cellular connection */}
         {(effectiveType === '2g' || effectiveType === '3g' || effectiveType === 'slow-2g') && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-800">
+          <div className="mb-4 flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
             <span title="Reduced update frequency to save data">📶 Data saver active</span>
           </div>
         )}

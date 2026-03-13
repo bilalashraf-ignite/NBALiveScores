@@ -58,10 +58,11 @@ export function GameList({ games, selectedLeague = 'all', lastUpdated, onGameCli
 
       {/* Responsive grid layout */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {sortedGames.map((game) => (
+        {sortedGames.map((game, index) => (
           <GameCard
             key={`${game.league}-${game.id}`}
             game={game}
+            index={index}
             onClick={onGameClick ? () => onGameClick(game.id, game.league) : undefined}
           />
         ))}

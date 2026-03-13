@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useSSE } from '@/hooks/useSSE';
 import { Game, League } from '@/types/sports-data';
@@ -9,7 +10,14 @@ import { LeagueFilter } from '@/components/league-filter';
 import { GameCardSkeleton } from '@/components/game-card-skeleton';
 import { StaleDataBanner } from '@/components/stale-data-banner';
 import { ErrorFallback } from '@/components/error-fallback';
-import { GameDetailModal } from '@/components/game-detail-modal';
+import { GameDetailSkeleton } from '@/components/game-detail-skeleton';
+
+// Lazy load GameDetailModal with skeleton fallback
+// ssr: false because modal uses browser-only APIs (window.history in useModalHistory hook)
+const GameDetailModal = dynamic(() => import('@/components/game-detail-modal').then(mod => ({ default: mod.GameDetailModal })), {
+  loading: () => <GameDetailSkeleton />,
+  ssr: false,
+});
 
 /**
  * Home page integrating SSE streaming with game display and error handling.

@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useSSE } from '@/hooks/useSSE';
+import { useNetworkType } from '@/hooks/useNetworkType';
 import { Game, League } from '@/types/sports-data';
 import { GameList } from '@/components/game-list';
 import { LeagueFilter } from '@/components/league-filter';
@@ -25,10 +26,15 @@ const GameDetailModal = dynamic(() => import('@/components/game-detail-modal').t
  *
  * Features:
  * - SSE connection for live score updates (LIVE-07)
+ * - Adaptive frequency based on network type (MOB-04)
  * - Loading skeletons during initial load (UX-05)
  * - Stale data warning when disconnected (UX-04)
  * - Manual refresh capability (LIVE-08)
  * - Error boundary for graceful error handling (UX-03)
+ *
+ * Ad-free interface per UX-02 requirement.
+ * No third-party ad networks, no sponsored content, no pop-ups.
+ * Clean focus on live game scores.
  *
  * Pattern source: RESEARCH.md Pattern 2 (SSE) + Pattern 4 (Error Boundary)
  */
@@ -39,9 +45,13 @@ export default function HomePage() {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [selectedGameLeague, setSelectedGameLeague] = useState<League | null>(null);
 
-  // SSE connection for live updates
+  // Network type detection for adaptive frequency
+  const { effectiveType } = useNetworkType();
+
+  // SSE connection for live updates with adaptive frequency
   const { data: games, isConnected, error, reconnect } = useSSE<Game[]>({
     url: '/api/scores/live',
+    adaptiveFrequency: true, // Enable cellular detection
   });
 
   // Update timestamp when new data arrives
@@ -103,6 +113,13 @@ export default function HomePage() {
         {/* Stale data warning - show when disconnected but have cached data */}
         {!isConnected && games && lastUpdated && (
           <StaleDataBanner lastUpdated={lastUpdated} onRefresh={handleManualRefresh} />
+        )}
+
+        {/* Network indicator - show when on slow cellular connection */}
+        {(effectiveType === '2g' || effectiveType === '3g' || effectiveType === 'slow-2g') && (
+          <div className="mb-4 flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-800">
+            <span title="Reduced update frequency to save data">📶 Data saver active</span>
+          </div>
         )}
 
         {/* Loading state - show skeletons while waiting for initial data */}

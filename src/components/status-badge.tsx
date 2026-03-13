@@ -49,7 +49,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   const { color, animate, label } = config[status]
 
   return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${color} ${animate}`}>
+    <span className={`inline-flex items-center justify-center min-w-[100px] rounded-full border px-2.5 py-0.5 text-xs font-semibold ${color} ${animate}`}>
       {label}
     </span>
   )

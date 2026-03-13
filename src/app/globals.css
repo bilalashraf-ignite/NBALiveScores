@@ -30,3 +30,9 @@ body {
                'Helvetica Neue', Arial, sans-serif,
                'Apple Color Emoji', 'Segoe UI Emoji';
 }
+
+/* Reserve space for dynamic content to prevent CLS */
+.score-display {
+  min-width: 80px;
+  text-align: right;
+}

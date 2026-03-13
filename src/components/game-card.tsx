@@ -98,7 +98,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
               <div className="h-3 w-3 rounded-full bg-green-500" title="Possession" />
             )}
             {/* Score */}
-            <div className="text-3xl font-bold">{game.score.home}</div>
+            <div className="score-display text-3xl font-bold">{game.score.home}</div>
           </div>
         </div>
 
@@ -133,7 +133,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
               <div className="h-3 w-3 rounded-full bg-green-500" title="Possession" />
             )}
             {/* Score */}
-            <div className="text-3xl font-bold">{game.score.away}</div>
+            <div className="score-display text-3xl font-bold">{game.score.away}</div>
           </div>
         </div>
       </div>

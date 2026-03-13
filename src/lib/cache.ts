@@ -24,6 +24,15 @@ let redis: Redis | null = null
 function getRedisClient() {
   if (!redis && process.env.REDIS_URL) {
     redis = new Redis(process.env.REDIS_URL)
+
+    // Handle connection errors gracefully (don't crash on Redis unavailable)
+    redis.on('error', (err) => {
+      console.warn('Redis connection error (cache disabled):', err.message)
+    })
+
+    redis.on('connect', () => {
+      console.log('Redis cache connected')
+    })
   }
   return redis
 }

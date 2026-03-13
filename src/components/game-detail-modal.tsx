@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useGameDetails } from '@/hooks/use-game-details';
 import { useModalHistory } from '@/hooks/use-modal-history';
@@ -43,6 +43,32 @@ export function GameDetailModal({
 
   // Fetch game details on-demand when modal opens
   const { data, loading, error } = useGameDetails(gameId, league, open);
+
+  // Scroll lock with scrollbar compensation to prevent page jump
+  useEffect(() => {
+    if (!open) return;
+
+    // Calculate scrollbar width (varies by OS/browser: 0-17px)
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    // Store original scroll position
+    const scrollY = window.scrollY;
+
+    // Lock scroll with compensation
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+    return () => {
+      // Restore scroll
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.paddingRight = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, [open]);
 
   // Integrate with browser history for back button support
   useModalHistory(open, () => onOpenChange(false));

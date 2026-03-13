@@ -1,9 +1,11 @@
+import Image from 'next/image'
 import { Game, GameState } from '@/types/sports-data'
 import { StatusBadge } from './status-badge'
 import { GameTime } from './game-time'
 
 interface GameCardProps {
   game: Game
+  index: number
   onClick?: () => void
 }
 
@@ -23,7 +25,7 @@ interface GameCardProps {
  * Material Design touch target minimum: 48x48px
  * https://m2.material.io/develop/web/supporting/touch-target
  */
-export function GameCard({ game, onClick }: GameCardProps) {
+export function GameCard({ game, index, onClick }: GameCardProps) {
   // Determine if game details can be shown (only for LIVE or FINAL games)
   const canShowDetails = game.state === GameState.LIVE || game.state === GameState.FINAL;
 
@@ -57,10 +59,15 @@ export function GameCard({ game, onClick }: GameCardProps) {
           <div className="flex items-center gap-3">
             {/* Team logo with fallback */}
             {game.homeTeam.logoUrl ? (
-              <img 
-                src={game.homeTeam.logoUrl} 
-                alt={game.homeTeam.name} 
-                className="h-10 w-10" 
+              <Image
+                src={game.homeTeam.logoUrl}
+                alt={game.homeTeam.name}
+                width={40}
+                height={40}
+                loading={index < 3 ? "eager" : "lazy"}
+                placeholder="blur"
+                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZTVlN2ViIi8+PC9zdmc+"
+                className="h-10 w-10"
               />
             ) : (
               <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-600">
@@ -87,10 +94,15 @@ export function GameCard({ game, onClick }: GameCardProps) {
           <div className="flex items-center gap-3">
             {/* Team logo with fallback */}
             {game.awayTeam.logoUrl ? (
-              <img 
-                src={game.awayTeam.logoUrl} 
-                alt={game.awayTeam.name} 
-                className="h-10 w-10" 
+              <Image
+                src={game.awayTeam.logoUrl}
+                alt={game.awayTeam.name}
+                width={40}
+                height={40}
+                loading={index < 3 ? "eager" : "lazy"}
+                placeholder="blur"
+                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZTVlN2ViIi8+PC9zdmc+"
+                className="h-10 w-10"
               />
             ) : (
               <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-600">

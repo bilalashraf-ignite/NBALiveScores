@@ -90,7 +90,7 @@ describe('useSSE', () => {
       expect(result.current.isConnected).toBe(true);
     });
 
-    expect(EventSource).toHaveBeenCalledWith('/api/scores/live');
+    expect(EventSource).toHaveBeenCalledWith('/api/scores/live?frequency=10000');
   });
 
   it('should receive and parse SSE messages', async () => {
@@ -234,8 +234,8 @@ describe('useSSE', () => {
     // Verify old connection was closed
     expect(firstInstance.readyState).toBe(MockEventSource.CLOSED);
 
-    // Verify new connection with new URL
-    expect(EventSource).toHaveBeenCalledWith('/api/scores/other');
+    // Verify new connection with new URL (includes default frequency)
+    expect(EventSource).toHaveBeenCalledWith('/api/scores/other?frequency=10000');
   });
 
   // TODO (05-04): Add adaptive frequency tests when implementing cellular data optimization

@@ -16,13 +16,16 @@
  * ```
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useNetworkType } from './useNetworkType';
 
 export interface UseSSEOptions {
   /** URL of the SSE endpoint to connect to */
   url: string;
   /** Whether the connection should be active (default: true) */
   enabled?: boolean;
+  /** Enable adaptive frequency based on network type (default: false) */
+  adaptiveFrequency?: boolean;
 }
 
 export interface UseSSEReturn<T> {
@@ -39,12 +42,32 @@ export interface UseSSEReturn<T> {
 /**
  * Hook to manage an SSE connection with automatic cleanup.
  *
+ * Adaptive frequency reduces bandwidth on cellular connections:
+ * - WiFi/4G: 10 second updates (baseline)
+ * - 2G/3G: 20 second updates (50% reduction)
+ * - Detects network changes and adjusts immediately
+ *
  * @template T - The type of data expected from the SSE endpoint
  * @param options - Configuration for the SSE connection
  * @returns Connection state and controls
  */
 export function useSSE<T>(options: UseSSEOptions): UseSSEReturn<T> {
-  const { url, enabled = true } = options;
+  const { url, enabled = true, adaptiveFrequency = false } = options;
+
+  const { effectiveType } = useNetworkType();
+
+  // Calculate update frequency based on network
+  const frequency = useMemo(() => {
+    if (!adaptiveFrequency) return 10000; // Default 10s
+
+    // Cellular (2G/3G): 20s (50% reduction)
+    if (['slow-2g', '2g', '3g'].includes(effectiveType)) {
+      return 20000;
+    }
+
+    // WiFi/4G: 10s
+    return 10000;
+  }, [adaptiveFrequency, effectiveType]);
 
   // State management
   const [data, setData] = useState<T | null>(null);
@@ -70,7 +93,7 @@ export function useSSE<T>(options: UseSSEOptions): UseSSEReturn<T> {
     }
 
     try {
-      const eventSource = new EventSource(url);
+      const eventSource = new EventSource(`${url}?frequency=${frequency}`);
       eventSourceRef.current = eventSource;
 
       // Connection opened successfully
@@ -98,7 +121,7 @@ export function useSSE<T>(options: UseSSEOptions): UseSSEReturn<T> {
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
     }
-  }, [url, enabled]);
+  }, [url, enabled, frequency]);
 
   /**
    * Manually reconnect to the SSE endpoint.

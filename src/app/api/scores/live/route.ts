@@ -60,10 +60,12 @@ async function fetchAllLeagues(): Promise<{
 }
 
 /**
- * Async generator that yields game updates every 15 seconds.
+ * Async generator that yields game updates at client-specified frequency.
  * Fetches from all three leagues in parallel on each update.
+ *
+ * @param frequency - Update interval in milliseconds (clamped to 5s-60s range)
  */
-async function* scoreUpdates() {
+async function* scoreUpdates(frequency: number) {
   const encoder = new TextEncoder();
 
   while (true) {
@@ -80,14 +82,14 @@ async function* scoreUpdates() {
         yield encoder.encode(errorData);
       }
 
-      // Wait 15 seconds before next update
-      await new Promise(resolve => setTimeout(resolve, 15000));
+      // Wait for client-specified frequency before next update
+      await new Promise(resolve => setTimeout(resolve, frequency));
     } catch (error) {
       console.error('Error fetching live games:', error);
       // Send empty array on error (graceful degradation)
       const data = `data: ${JSON.stringify([])}\n\n`;
       yield encoder.encode(data);
-      await new Promise(resolve => setTimeout(resolve, 15000));
+      await new Promise(resolve => setTimeout(resolve, frequency));
     }
   }
 }
@@ -114,12 +116,22 @@ function iteratorToStream(iterator: AsyncGenerator<Uint8Array>) {
  * GET handler for SSE endpoint.
  * Returns a streaming response with proper SSE headers.
  *
+ * Query params:
+ *   ?frequency=<ms> - Update interval (default: 15000, clamped to 5000-60000)
+ *
  * Usage from client:
- *   const eventSource = new EventSource('/api/scores/live');
+ *   const eventSource = new EventSource('/api/scores/live?frequency=10000');
  *   eventSource.onmessage = (e) => console.log(JSON.parse(e.data));
  */
-export async function GET() {
-  const stream = iteratorToStream(scoreUpdates());
+export async function GET(request: Request) {
+  // Extract frequency from query params
+  const { searchParams } = new URL(request.url);
+  const rawFrequency = parseInt(searchParams.get('frequency') || '15000');
+
+  // Clamp to safe range: 5s-60s (prevents abuse and staleness)
+  const frequency = Math.max(5000, Math.min(rawFrequency, 60000));
+
+  const stream = iteratorToStream(scoreUpdates(frequency));
 
   return new Response(stream, {
     headers: {

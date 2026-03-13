@@ -1,6 +1,8 @@
 /**
- * Loading skeleton matching GameCard structure.
- * 
+ * Loading skeleton that exactly matches GameCard dimensions.
+ * Critical: Dimensions must match to prevent CLS (Cumulative Layout Shift).
+ * Any changes to GameCard layout must be reflected here.
+ *
  * Design rationale (from RESEARCH.md):
  * - Matches GameCard dimensions exactly to prevent layout shift
  * - Pulse animation on individual elements (not parent) for performance
@@ -9,7 +11,7 @@
  */
 export function GameCardSkeleton() {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm min-h-[120px]">
       <div className="space-y-4">
         {/* Status badge skeleton - top-right */}
         <div className="flex justify-end">
@@ -22,7 +24,7 @@ export function GameCardSkeleton() {
             <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200"></div>
             <div className="h-5 w-32 animate-pulse rounded bg-gray-200"></div>
           </div>
-          <div className="h-10 w-12 animate-pulse rounded bg-gray-200"></div>
+          <div className="h-10 min-w-[80px] animate-pulse rounded bg-gray-200"></div>
         </div>
 
         {/* Away team skeleton */}
@@ -31,7 +33,7 @@ export function GameCardSkeleton() {
             <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200"></div>
             <div className="h-5 w-28 animate-pulse rounded bg-gray-200"></div>
           </div>
-          <div className="h-10 w-12 animate-pulse rounded bg-gray-200"></div>
+          <div className="h-10 min-w-[80px] animate-pulse rounded bg-gray-200"></div>
         </div>
 
         {/* Game context skeleton */}

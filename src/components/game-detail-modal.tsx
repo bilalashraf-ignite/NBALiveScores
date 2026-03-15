@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { useDrag } from '@use-gesture/react';
 import { useGameDetails } from '@/hooks/use-game-details';
 import { useModalHistory } from '@/hooks/use-modal-history';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
@@ -37,9 +38,8 @@ export function GameDetailModal({
   open,
   onOpenChange
 }: GameDetailModalProps) {
-  // Swipe-to-close state
-  const [swipeDistance, setSwipeDistance] = useState(0);
-  const [swipeStartY, setSwipeStartY] = useState(0);
+  // Ref for direct DOM manipulation (no React state for transform)
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Fetch game details on-demand when modal opens
   const { data, loading, error } = useGameDetails(gameId, league, open);
@@ -76,49 +76,50 @@ export function GameDetailModal({
   // Haptic feedback
   const { trigger } = useHapticFeedback();
 
-  // Swipe gesture handlers
-  const handleSwipeStart = (e: React.TouchEvent) => {
-    setSwipeStartY(e.touches[0].clientY);
-  };
+  // Swipe-to-close gesture using @use-gesture/react
+  const bind = useDrag(
+    ({ down, movement: [, my], velocity: [, vy] }) => {
+      // Only allow downward drag
+      const clampedY = Math.max(0, Math.min(my, 100));
 
-  const handleSwipeMove = (e: React.TouchEvent) => {
-    if (swipeStartY === 0) return;
-
-    const currentY = e.touches[0].clientY;
-    const distance = currentY - swipeStartY;
-
-    // Only track downward swipes
-    if (distance > 0) {
-      setSwipeDistance(distance);
+      // Apply transform directly to DOM via ref (no React re-render)
+      if (contentRef.current) {
+        if (down) {
+          // During drag - update transform
+          contentRef.current.style.transform = `translate(-50%, calc(-50% + ${clampedY}px))`;
+        } else {
+          // Released - check if threshold crossed
+          if (my > 100) {
+            // Crossed threshold - trigger close
+            trigger('nudge');
+            onOpenChange(false);
+          }
+          // Reset transform
+          contentRef.current.style.transform = 'translate(-50%, -50%)';
+        }
+      }
+    },
+    {
+      axis: 'y',
+      filterTaps: true,
+      bounds: { top: 0, bottom: 100 },
+      rubberband: true,
+      threshold: 10,
     }
-  };
-
-  const handleSwipeEnd = () => {
-    // Close modal if swipe exceeds 100px threshold
-    if (swipeDistance > 100) {
-      trigger('nudge');
-      onOpenChange(false);
-    }
-
-    // Reset swipe state
-    setSwipeDistance(0);
-    setSwipeStartY(0);
-  };
+  );
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         {/* Backdrop overlay */}
-        <Dialog.Overlay className="fixed inset-0 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
 
         {/* Modal content with swipe-to-close gesture */}
         <Dialog.Content
-          className="fixed left-[50%] top-[50%] max-h-[90vh] w-[90vw] max-w-4xl translate-x-[-50%] translate-y-[-50%] overflow-y-auto rounded-lg bg-white p-6 shadow-lg transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] dark:bg-gray-800"
+          ref={contentRef}
+          className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[90vw] max-w-4xl overflow-y-auto rounded-lg bg-white p-6 shadow-lg transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] dark:bg-gray-800"
           aria-describedby="game-details-description"
-          onTouchStart={handleSwipeStart}
-          onTouchMove={handleSwipeMove}
-          onTouchEnd={handleSwipeEnd}
-          style={{ transform: `translate(-50%, -50%) translateY(${Math.min(swipeDistance, 100)}px)` }}
+          {...bind()}
         >
           {/* Accessible title (visually hidden) */}
           <Dialog.Title className="sr-only">Game Details</Dialog.Title>
@@ -199,7 +200,7 @@ export function GameDetailModal({
 
                 {/* Team Statistics Section */}
                 <div>
-                  <h2 className="text-xl font-bold mt-6 mb-4">Team Statistics</h2>
+                  <h2 className="text-xl font-bold mt-6 mb-4 text-gray-900 dark:text-gray-100">Team Statistics</h2>
                   {data.teamStats && data.teamStats.home && data.teamStats.away ? (
                     <TeamStatsTable
                       homeStats={data.teamStats.home}
@@ -214,7 +215,7 @@ export function GameDetailModal({
 
                 {/* Player Statistics Section */}
                 <div>
-                  <h2 className="text-xl font-bold mt-6 mb-4">Player Statistics</h2>
+                  <h2 className="text-xl font-bold mt-6 mb-4 text-gray-900 dark:text-gray-100">Player Statistics</h2>
                   {data.playerStats && data.playerStats.home && data.playerStats.away ? (
                     <PlayerStatsTable
                       homeStats={data.playerStats.home}
@@ -229,7 +230,7 @@ export function GameDetailModal({
 
                 {/* Historical Matchup Section */}
                 <div>
-                  <h2 className="text-xl font-bold mt-8 mb-4">Historical Matchup</h2>
+                  <h2 className="text-xl font-bold mt-8 mb-4 text-gray-900 dark:text-gray-100">Historical Matchup</h2>
                   <HistoricalMatchup
                     data={data.historicalMatchup}
                     homeTeam={data.homeTeam}

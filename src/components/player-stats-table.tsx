@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,8 +8,8 @@ import {
   ColumnDef,
   flexRender,
   SortingState,
-} from '@tanstack/react-table';
-import type { PlayerStats, Team } from '@/types/sports-data';
+} from "@tanstack/react-table";
+import type { PlayerStats, Team } from "@/types/sports-data";
 
 interface PlayerStatsTableProps {
   homeStats: PlayerStats[];
@@ -18,7 +18,7 @@ interface PlayerStatsTableProps {
   awayTeam: Team;
 }
 
-type PlayerWithTeam = PlayerStats & { team: 'home' | 'away' };
+type PlayerWithTeam = PlayerStats & { team: "home" | "away" };
 
 export function PlayerStatsTable({
   homeStats,
@@ -28,89 +28,90 @@ export function PlayerStatsTable({
 }: PlayerStatsTableProps) {
   // Combine data with team identifier
   const data: PlayerWithTeam[] = [
-    ...homeStats.map((p) => ({ ...p, team: 'home' as const })),
-    ...awayStats.map((p) => ({ ...p, team: 'away' as const })),
+    ...homeStats.map((p) => ({ ...p, team: "home" as const })),
+    ...awayStats.map((p) => ({ ...p, team: "away" as const })),
   ];
 
   // Define column definitions
   const columns: ColumnDef<PlayerWithTeam>[] = [
     {
-      id: 'player',
-      header: 'Player',
+      id: "player",
+      header: "Player",
       accessorFn: (row) => row.lastName,
-      cell: ({ row }) => `#${row.original.jerseyNumber} ${row.original.lastName}`,
+      cell: ({ row }) =>
+        `#${row.original.jerseyNumber} ${row.original.lastName}`,
       enableSorting: false,
     },
     {
-      id: 'minutes',
-      header: 'MIN',
-      accessorKey: 'minutes',
-      sortingFn: 'alphanumeric',
+      id: "minutes",
+      header: "MIN",
+      accessorKey: "minutes",
+      sortingFn: "alphanumeric",
     },
     {
-      id: 'points',
-      header: 'PTS',
-      accessorKey: 'points',
+      id: "points",
+      header: "PTS",
+      accessorKey: "points",
       sortDescFirst: true,
-      sortUndefined: 'last',
+      sortUndefined: "last",
     },
     {
-      id: 'fieldGoals',
-      header: 'FG',
+      id: "fieldGoals",
+      header: "FG",
       accessorFn: (row) => row.fieldGoals.made,
       cell: ({ row }) =>
         `${row.original.fieldGoals.made}-${row.original.fieldGoals.attempted}`,
       sortDescFirst: true,
     },
     {
-      id: 'threePointers',
-      header: '3P',
+      id: "threePointers",
+      header: "3P",
       accessorFn: (row) => row.threePointers.made,
       cell: ({ row }) =>
         `${row.original.threePointers.made}-${row.original.threePointers.attempted}`,
       sortDescFirst: true,
     },
     {
-      id: 'freeThrows',
-      header: 'FT',
+      id: "freeThrows",
+      header: "FT",
       accessorFn: (row) => row.freeThrows.made,
       cell: ({ row }) =>
         `${row.original.freeThrows.made}-${row.original.freeThrows.attempted}`,
       sortDescFirst: true,
     },
     {
-      id: 'rebounds',
-      header: 'REB',
-      accessorKey: 'rebounds',
+      id: "rebounds",
+      header: "REB",
+      accessorKey: "rebounds",
       sortDescFirst: true,
-      sortUndefined: 'last',
+      sortUndefined: "last",
     },
     {
-      id: 'assists',
-      header: 'AST',
-      accessorKey: 'assists',
+      id: "assists",
+      header: "AST",
+      accessorKey: "assists",
       sortDescFirst: true,
-      sortUndefined: 'last',
+      sortUndefined: "last",
     },
     {
-      id: 'steals',
-      header: 'STL',
-      accessorKey: 'steals',
+      id: "steals",
+      header: "STL",
+      accessorKey: "steals",
       sortDescFirst: true,
-      sortUndefined: 'last',
+      sortUndefined: "last",
     },
     {
-      id: 'blocks',
-      header: 'BLK',
-      accessorKey: 'blocks',
+      id: "blocks",
+      header: "BLK",
+      accessorKey: "blocks",
       sortDescFirst: true,
-      sortUndefined: 'last',
+      sortUndefined: "last",
     },
   ];
 
   // Set initial sorting state: default sort by points descending
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'points', desc: true },
+    { id: "points", desc: true },
   ]);
 
   // Initialize table
@@ -126,21 +127,21 @@ export function PlayerStatsTable({
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full border border-gray-300 text-sm">
-        <thead className="bg-gray-100">
+        <thead className="bg-gray-200 dark:bg-gray-700">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="border-b border-gray-300 px-4 py-2 text-left font-semibold cursor-pointer hover:bg-gray-200"
+                  className="border-b border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(
                     header.column.columnDef.header,
-                    header.getContext()
+                    header.getContext(),
                   )}
                   {header.column.getIsSorted() &&
-                    (header.column.getIsSorted() === 'desc' ? ' ▼' : ' ▲')}
+                    (header.column.getIsSorted() === "desc" ? " ▼" : " ▲")}
                 </th>
               ))}
             </tr>
@@ -150,8 +151,9 @@ export function PlayerStatsTable({
           {table.getRowModel().rows.map((row, index) => {
             // Check if this is the first away team player (insert divider before)
             const isFirstAwayPlayer =
-              row.original.team === 'away' &&
-              (index === 0 || table.getRowModel().rows[index - 1]?.original.team === 'home');
+              row.original.team === "away" &&
+              (index === 0 ||
+                table.getRowModel().rows[index - 1]?.original.team === "home");
 
             return (
               <React.Fragment key={row.id}>
@@ -159,25 +161,25 @@ export function PlayerStatsTable({
                   <tr data-testid="team-divider">
                     <td
                       colSpan={columns.length}
-                      className="border-t-2 border-gray-400 bg-gray-100 px-4 py-2 text-center font-semibold"
+                      className="border-t-2 border-gray-400 bg-gray-100 dark:bg-gray-700 px-4 py-2 text-center font-semibold"
                     >
                       {awayTeam.name}
                     </td>
                   </tr>
                 )}
                 <tr
-                  className={`hover:bg-gray-50 ${
-                    row.original.team === 'home' && index === 0 ? '' : ''
+                  className={`bg-white dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-purple-900/40 ${
+                    row.original.team === "home" && index === 0 ? "" : ""
                   }`}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      className="border-b border-gray-200 px-4 py-2 whitespace-nowrap"
+                      className="border-b border-gray-200 px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </td>
                   ))}

@@ -13,7 +13,7 @@ export function GameDetailSkeleton() {
 
       {/* Team stats skeleton (3-4 rows) */}
       <div className="space-y-3">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+        <div className="h-6 bg-gray-400 dark:bg-gray-500 rounded w-1/3" />
         <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
         <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
         <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -22,7 +22,7 @@ export function GameDetailSkeleton() {
 
       {/* Player stats skeleton (5-6 rows) */}
       <div className="space-y-3">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+        <div className="h-6 bg-gray-400 dark:bg-gray-500 rounded w-1/3" />
         <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded" />
         <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded" />
         <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded" />

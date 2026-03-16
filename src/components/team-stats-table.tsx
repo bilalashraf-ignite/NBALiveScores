@@ -147,14 +147,14 @@ export function TeamStatsTable({ homeStats, awayStats, homeTeam, awayTeam }: Tea
   return (
     <table className="w-full border-collapse border border-gray-300">
       <thead>
-        <tr className="bg-gray-100">
-          <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">
+        <tr className="bg-gray-200 dark:bg-gray-700">
+          <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
             {homeTeam.name}
           </th>
-          <th className="border border-gray-300 px-4 py-2 text-center text-sm font-semibold">
+          <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-sm font-semibold text-gray-900 dark:text-gray-100">
             Stat
           </th>
-          <th className="border border-gray-300 px-4 py-2 text-right text-sm font-semibold">
+          <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-right text-sm font-semibold text-gray-900 dark:text-gray-100">
             {awayTeam.name}
           </th>
         </tr>
@@ -165,19 +165,19 @@ export function TeamStatsTable({ homeStats, awayStats, homeTeam, awayTeam }: Tea
           const awayBetter = isAwayBetter(stat);
 
           return (
-            <tr key={stat.label} className="hover:bg-gray-50">
+            <tr key={stat.label} className="hover:bg-gray-100 dark:hover:bg-gray-700">
               <td
-                className={`border border-gray-300 px-4 py-2 text-left text-sm ${
+                className={`border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 ${
                   homeBetter ? 'font-bold' : ''
                 }`}
               >
                 {stat.getValue(homeStats)}
               </td>
-              <td className="border border-gray-300 px-4 py-2 text-center text-sm text-gray-600">
+              <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-sm text-gray-500 dark:text-gray-400">
                 {stat.label}
               </td>
               <td
-                className={`border border-gray-300 px-4 py-2 text-right text-sm ${
+                className={`border border-gray-300 dark:border-gray-600 px-4 py-2 text-right text-sm text-gray-700 dark:text-gray-300 ${
                   awayBetter ? 'font-bold' : ''
                 }`}
               >

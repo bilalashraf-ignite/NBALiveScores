@@ -66,7 +66,7 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
       onKeyDown={canShowDetails ? handleKeyDown : undefined}
     >
       {/* Status badge - top-right corner */}
-      <div className="absolute right-4 top-4">
+      <div className="absolute left-1/2 -translate-x-1/2 top-1">
         <StatusBadge status={game.state} />
       </div>
 
@@ -93,7 +93,9 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
               </div>
             )}
             <div>
-              <div className="font-semibold text-gray-900 dark:text-gray-100">{game.homeTeam.name}</div>
+              <div className="font-semibold text-gray-900 dark:text-gray-100">
+                {game.homeTeam.name}
+              </div>
               {/* Season record - placeholder for Phase 4 when team data model expanded */}
             </div>
           </div>
@@ -133,7 +135,9 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
               </div>
             )}
             <div>
-              <div className="font-semibold text-gray-900 dark:text-gray-100">{game.awayTeam.name}</div>
+              <div className="font-semibold text-gray-900 dark:text-gray-100">
+                {game.awayTeam.name}
+              </div>
               {/* Season record - placeholder for Phase 4 when team data model expanded */}
             </div>
           </div>

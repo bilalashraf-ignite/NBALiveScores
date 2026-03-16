@@ -7,17 +7,19 @@
  */
 
 interface ErrorFallbackProps {
-  error: Error;
+  error: unknown;
   resetErrorBoundary: () => void;
 }
 
 export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
+  const errorMessage = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
+
   return (
     <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
       <div className="mb-4 text-4xl">⚠️</div>
       <h2 className="mb-2 text-lg font-semibold text-red-800">Unable to load games</h2>
       <p className="mb-4 text-sm text-red-600">
-        {error.message || 'Something went wrong. Please try again.'}
+        {errorMessage}
       </p>
       <button
         onClick={resetErrorBoundary}

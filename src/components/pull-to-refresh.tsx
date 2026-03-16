@@ -59,7 +59,7 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
           // Crossed threshold - trigger refresh
           setIsRefreshing(true);
           trigger('success');
-          onRefresh().finally(() => {
+          Promise.resolve(onRefresh()).finally(() => {
             setIsRefreshing(false);
             // Hide indicator after refresh
             if (indicatorRef.current) {

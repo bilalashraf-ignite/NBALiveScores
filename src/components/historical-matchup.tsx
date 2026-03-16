@@ -50,7 +50,7 @@ export function HistoricalMatchup({
       {/* Last 5 Meetings Section */}
       <h3 className="text-lg font-semibold mb-3">Last 5 Meetings</h3>
       <ul className="space-y-2">
-        {data.lastFiveMeetings.map((meeting, index) => {
+        {data.lastFiveMeetings?.map((meeting, index) => {
           const formattedDate = format(new Date(meeting.date), 'MMM d, yyyy');
           const winnerName = meeting.winner === 'home' ? meeting.homeTeam : meeting.awayTeam;
 

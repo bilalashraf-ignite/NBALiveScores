@@ -1,4 +1,4 @@
-import { Game } from '@/types/sports-data';
+import { Game, GameDetails, League } from '@/types/sports-data';
 
 /**
  * Abstract interface for sports data providers.
@@ -33,4 +33,13 @@ export interface SportsDataAdapter {
    * @returns Array of scheduled games for that date
    */
   getScheduledGames(league: string, date: Date): Promise<Game[]>;
+
+  /**
+   * Fetch detailed game information including team stats, player stats, and historical matchup.
+   * Called on-demand when user opens game detail modal.
+   * @param gameId - Game identifier
+   * @param league - League identifier
+   * @returns Promise resolving to detailed game information
+   */
+  getGameDetails(gameId: string, league: League): Promise<GameDetails>;
 }

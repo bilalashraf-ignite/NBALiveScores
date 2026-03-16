@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "langfuse": {
+    "trace_id": "f30dc696-38a4-480e-a947-cee3f427bd27",
+    "trace_url": "https://cloud.langfuse.com/trace/f30dc696-38a4-480e-a947-cee3f427bd27",
+    "session_id": "ebf488fd-e34d-414d-bc3b-de04cb0316dc",
+    "host": "https://cloud.langfuse.com"
+  },
+  "git": {
+    "commit_sha": "33ccf6c4f185412ee4798854a70847a5cb43f08e",
+    "commit_url": "https://github.com/bilalashraf-ignite/NBALiveScores/commit/33ccf6c4f185412ee4798854a70847a5cb43f08e",
+    "remote_url": "git@github.com:bilalashraf-ignite/NBALiveScores.git",
+    "branch": "main",
+    "commit_message": "docs(phase-05): complete phase execution"
+  },
+  "created_at": "2026-03-16T09:45:26.230Z",
+  "updated_at": "2026-03-16T13:20:28.718Z"
+}

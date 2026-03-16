@@ -1,0 +1,63 @@
+{
+  "version": "0.1.0",
+  "id": "00c77576-98fe-4002-be93-c37b4a05917a",
+  "timestamp": "2026-03-16T11:26:55Z",
+  "vcs": {
+    "type": "git",
+    "revision": "48931472e0b009a4c0484f98851fd4f78d665f3a"
+  },
+  "tool": {
+    "name": "claude-code"
+  },
+  "files": [
+    {
+      "path": "src/app/layout.tsx",
+      "conversations": [
+        {
+          "contributor": {
+            "type": "ai"
+          },
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": 38
+            }
+          ],
+          "url": "https://cloud.langfuse.com/trace/62e491fc-c99c-41dd-a7ff-278f6e3633f5",
+          "related": [
+            {
+              "type": "trace",
+              "url": "https://cloud.langfuse.com/trace/62e491fc-c99c-41dd-a7ff-278f6e3633f5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "src/components/theme-provider.tsx",
+      "conversations": [
+        {
+          "contributor": {
+            "type": "ai"
+          },
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": 9
+            }
+          ],
+          "url": "https://cloud.langfuse.com/trace/62e491fc-c99c-41dd-a7ff-278f6e3633f5",
+          "related": [
+            {
+              "type": "trace",
+              "url": "https://cloud.langfuse.com/trace/62e491fc-c99c-41dd-a7ff-278f6e3633f5"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "sessionId": "ebf488fd-e34d-414d-bc3b-de04cb0316dc"
+  }
+}

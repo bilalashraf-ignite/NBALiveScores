@@ -1,0 +1,40 @@
+{
+  "version": "0.1.0",
+  "id": "fb371d1a-6485-4ada-bc42-203d1b36d187",
+  "timestamp": "2026-03-16T11:50:21Z",
+  "vcs": {
+    "type": "git",
+    "revision": "809ac8255ea0b9d6ffbe906c69386534dbafd50c"
+  },
+  "tool": {
+    "name": "claude-code"
+  },
+  "files": [
+    {
+      "path": "src/app/page.tsx",
+      "conversations": [
+        {
+          "contributor": {
+            "type": "ai"
+          },
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": 178
+            }
+          ],
+          "url": "https://cloud.langfuse.com/trace/62e491fc-c99c-41dd-a7ff-278f6e3633f5",
+          "related": [
+            {
+              "type": "trace",
+              "url": "https://cloud.langfuse.com/trace/62e491fc-c99c-41dd-a7ff-278f6e3633f5"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "sessionId": "ebf488fd-e34d-414d-bc3b-de04cb0316dc"
+  }
+}

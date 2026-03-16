@@ -118,7 +118,7 @@ Plans:
 4. User experiences ad-free or minimal advertising interface with clean, scannable layout
 5. User experiences reduced polling frequency on cellular connections to conserve data
 
-**Plans**: 7 plans
+**Plans**: 9 plans
 
 Plans:
 - [x] 05-00-PLAN.md — Test infrastructure with Lighthouse CI and accessibility tests (Wave 0)
@@ -126,9 +126,10 @@ Plans:
 - [x] 05-02-PLAN.md — Mobile touch targets, pull-to-refresh, haptic feedback, swipe gestures
 - [x] 05-03-PLAN.md — Layout shift prevention with dimension-matched skeletons, fixed-width badges, scroll lock
 - [x] 05-04-PLAN.md — Cellular data conservation with network detection and adaptive SSE frequency
-- [ ] 05-05-PLAN.md — Fix player stats table color scheme (gap closure - cosmetic)
-- [ ] 05-06-PLAN.md — Fix Safari gesture hang with @use-gesture/react (gap closure - blocker)
-- [ ] 05-07-PLAN.md — Theme toggle decision (gap closure - requirements clarification)
+- [x] 05-05-PLAN.md — Fix player stats table color scheme (gap closure - cosmetic)
+- [x] 05-06-PLAN.md — Fix Safari gesture hang with @use-gesture/react (gap closure - blocker)
+- [x] 05-07-PLAN.md — Theme toggle decision (gap closure - requirements clarification)
+- [ ] 05-08-PLAN.md — Theme toggle implementation with next-themes (gap closure - user decision)
 
 ---
 
@@ -140,7 +141,7 @@ Plans:
 | 2. Live Scores Display | 4/4 | Complete | 2026-03-11 |
 | 3. Multi-League & Schedule | 0/2 | Not started | - |
 | 4. Game Details & Statistics | 0/4 | Not started | - |
-| 5. Performance & Polish | 5/7 | Gap closure | 2026-03-13 |
+| 5. Performance & Polish | 8/9 | Gap closure | 2026-03-13 |
 
 ---
 

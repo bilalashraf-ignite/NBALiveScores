@@ -56,15 +56,7 @@ export async function verifyToken(token: string, identifier: string) {
     return null;
   }
 
-  // Delete the token after verification
-  await prisma.verificationToken.delete({
-    where: {
-      identifier_token: {
-        identifier,
-        token,
-      },
-    },
-  });
-
+  // Token is valid - caller is responsible for deleting it atomically
+  // with the state change it authorizes (e.g., in a transaction)
   return verificationToken;
 }

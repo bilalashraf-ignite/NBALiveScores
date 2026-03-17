@@ -31,9 +31,11 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    // For other errors (processing failures), log internally but return 200
-    // to prevent Stripe retries - the webhook was received successfully
+    // For processing failures (e.g., DB errors), return 500 so Stripe retries
     walletLogger.error({ err: error }, 'Webhook processing failed');
-    return NextResponse.json({ received: true });
+    return NextResponse.json(
+      { error: 'processing_failed', message: 'Internal processing error' },
+      { status: 500 }
+    );
   }
 }

@@ -48,10 +48,21 @@ export async function POST(request: Request) {
     // Hash and update password using userId (not email) to prevent mis-targeting
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { password: hashedPassword },
-    });
+    // Update password and delete token atomically to prevent token burn on failure
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: user.id },
+        data: { password: hashedPassword },
+      }),
+      prisma.verificationToken.delete({
+        where: {
+          identifier_token: {
+            identifier: `password-reset:${user.id}`,
+            token,
+          },
+        },
+      }),
+    ]);
 
     return NextResponse.json({ message: "Password reset successfully" });
   } catch (error) {

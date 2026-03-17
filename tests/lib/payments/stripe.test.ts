@@ -21,7 +21,7 @@ describe('Stripe webhook signature verification', () => {
       id: 'evt_123',
       type: 'checkout.session.completed',
     });
-    const timestamp = '1710595200';
+    const timestamp = Math.floor(Date.now() / 1000).toString();
     const signature = crypto
       .createHmac('sha256', 'whsec_test_secret')
       .update(`${timestamp}.${payload}`, 'utf8')
@@ -45,7 +45,7 @@ describe('Stripe webhook signature verification', () => {
         },
       },
     });
-    const timestamp = '1710595200';
+    const timestamp = Math.floor(Date.now() / 1000).toString();
     const signature = crypto
       .createHmac('sha256', 'whsec_test_secret')
       .update(`${timestamp}.${payload}`, 'utf8')
@@ -58,10 +58,11 @@ describe('Stripe webhook signature verification', () => {
   });
 
   it('rejects an invalid webhook signature', () => {
+    const timestamp = Math.floor(Date.now() / 1000).toString();
     expect(() =>
       verifyStripeWebhookSignature(
         JSON.stringify({ id: 'evt_invalid' }),
-        't=1710595200,v1=bad_signature'
+        `t=${timestamp},v1=bad_signature`
       )
     ).toThrow('Invalid Stripe webhook signature.');
   });

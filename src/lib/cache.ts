@@ -14,6 +14,7 @@
  */
 
 import Redis from 'ioredis'
+import { cacheLogger } from '@/lib/logger'
 
 let redis: Redis | null = null
 
@@ -27,11 +28,11 @@ function getRedisClient() {
 
     // Handle connection errors gracefully (don't crash on Redis unavailable)
     redis.on('error', (err) => {
-      console.warn('Redis connection error (cache disabled):', err.message)
+      cacheLogger.warn({ err }, 'Redis connection error (cache disabled)')
     })
 
     redis.on('connect', () => {
-      console.log('Redis cache connected')
+      cacheLogger.info('Redis cache connected')
     })
   }
   return redis
@@ -62,7 +63,7 @@ export const cache = {
       const value = await client.get(key)
       return value ? JSON.parse(value) : null
     } catch (error) {
-      console.error('Cache get error:', error)
+      cacheLogger.error({ err: error }, 'Cache get error')
       return null  // Graceful degradation per PITFALLS.md Pitfall 2
     }
   },
@@ -81,7 +82,7 @@ export const cache = {
     try {
       await client.setex(key, ttlSeconds, JSON.stringify(value))
     } catch (error) {
-      console.error('Cache set error:', error)
+      cacheLogger.error({ err: error }, 'Cache set error')
       // Don't throw - cache failures should not break app
     }
   },
@@ -97,7 +98,7 @@ export const cache = {
     try {
       await client.del(key)
     } catch (error) {
-      console.error('Cache delete error:', error)
+      cacheLogger.error({ err: error }, 'Cache delete error')
     }
   },
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdapter } from '@/lib/adapters';
 import type { League } from '@/types/sports-data';
+import { apiLogger } from '@/lib/logger';
 
 /**
  * GET /api/games/[league]/[gameId]/details
@@ -42,7 +43,7 @@ export async function GET(
 
     return NextResponse.json(gameDetails);
   } catch (error) {
-    console.error('Failed to fetch game details:', error);
+    apiLogger.error({ err: error }, 'Failed to fetch game details');
 
     const message = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(

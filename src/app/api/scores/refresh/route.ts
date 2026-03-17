@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adapter } from '@/lib/adapters';
 import { cache, CACHE_TTL } from '@/lib/cache';
+import { apiLogger } from '@/lib/logger';
 
 /**
  * POST handler for manual score refresh.
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Manual refresh failed:', error);
+    apiLogger.error({ err: error }, 'Manual refresh failed');
 
     // Attempt to return cached data on adapter failure
     try {
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
         });
       }
     } catch (cacheError) {
-      console.error('Cache fallback also failed:', cacheError);
+      apiLogger.error({ err: cacheError }, 'Cache fallback also failed');
     }
 
     // No cached data available - return error

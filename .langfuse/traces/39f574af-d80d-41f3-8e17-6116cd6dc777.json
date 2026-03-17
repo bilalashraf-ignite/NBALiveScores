@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "langfuse": {
+    "trace_id": "1a616eda-67d0-4ffc-ae72-c5f2aab07ddc",
+    "trace_url": "https://cloud.langfuse.com/trace/1a616eda-67d0-4ffc-ae72-c5f2aab07ddc",
+    "session_id": "39f574af-d80d-41f3-8e17-6116cd6dc777",
+    "host": "https://cloud.langfuse.com"
+  },
+  "git": {
+    "commit_sha": "8726391dc27be45f12f05bf921de242af1b782b6",
+    "commit_url": "https://github.com/bilalashraf-ignite/NBALiveScores/commit/8726391dc27be45f12f05bf921de242af1b782b6",
+    "remote_url": "git@github.com:bilalashraf-ignite/NBALiveScores.git",
+    "branch": "feature/add-digital-wallet"
+  },
+  "created_at": "2026-03-17T11:08:14.312Z",
+  "updated_at": "2026-03-17T15:27:21.895Z"
+}

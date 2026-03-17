@@ -8,13 +8,13 @@ import { useNetworkType } from '@/hooks/useNetworkType';
 import { Game, League, Sport, getSportFromLeague } from '@/types/sports-data';
 import { GameList } from '@/components/game-list';
 import { LeagueFilter } from '@/components/league-filter';
-import { SportTabs } from '@/components/sport-tabs';
 import { GameCardSkeleton } from '@/components/game-card-skeleton';
 import { StaleDataBanner } from '@/components/stale-data-banner';
 import { ErrorFallback } from '@/components/error-fallback';
 import { GameDetailSkeleton } from '@/components/game-detail-skeleton';
 import { PullToRefresh } from '@/components/pull-to-refresh';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { Header } from '@/components/header';
+import { uiLogger } from '@/lib/client-logger';
 
 // Lazy load GameDetailModal with skeleton fallback
 // ssr: false because modal uses browser-only APIs (window.history in useModalHistory hook)
@@ -88,7 +88,7 @@ export default function HomePage() {
       // SSE will pick up the updated data automatically
       setTimeout(() => setIsRefreshing(false), 1000); // Brief feedback
     } catch (err) {
-      console.error('Manual refresh error:', err);
+      uiLogger.error({ err }, 'Manual refresh error');
       setIsRefreshing(false);
     }
   }, []);
@@ -101,22 +101,12 @@ export default function HomePage() {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={reconnect}>
-      {/* Sticky header with app title and theme toggle */}
-      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between border-b border-gray-200 dark:border-gray-700">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Live Scores</h1>
-            <ThemeToggle />
-          </div>
-          {/* Sport tabs */}
-          <SportTabs
-            selectedSport={selectedSport}
-            onSelectSport={handleSportChange}
-            basketballCount={basketballGames.length}
-            footballCount={footballGames.length}
-          />
-        </div>
-      </div>
+      <Header
+        selectedSport={selectedSport}
+        onSelectSport={handleSportChange}
+        basketballCount={basketballGames.length}
+        footballCount={footballGames.length}
+      />
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header with manual refresh button */}

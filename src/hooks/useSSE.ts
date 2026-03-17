@@ -18,6 +18,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNetworkType } from './useNetworkType';
+import { sseLogger } from '@/lib/client-logger';
 
 export interface UseSSEOptions {
   /** URL of the SSE endpoint to connect to */
@@ -108,7 +109,7 @@ export function useSSE<T>(options: UseSSEOptions): UseSSEReturn<T> {
           const parsedData = JSON.parse(event.data) as T;
           setData(parsedData);
         } catch (parseError) {
-          console.error('Failed to parse SSE data:', parseError);
+          sseLogger.error({ err: parseError }, 'Failed to parse SSE data');
           setError(new Error('Failed to parse SSE data'));
         }
       };

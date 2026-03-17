@@ -13,7 +13,7 @@ import { StaleDataBanner } from '@/components/stale-data-banner';
 import { ErrorFallback } from '@/components/error-fallback';
 import { GameDetailSkeleton } from '@/components/game-detail-skeleton';
 import { PullToRefresh } from '@/components/pull-to-refresh';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { Header } from '@/components/header';
 import { uiLogger } from '@/lib/client-logger';
 
 // Lazy load GameDetailModal with skeleton fallback
@@ -89,15 +89,7 @@ export default function HomePage() {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={reconnect}>
-      {/* Sticky header with app title and theme toggle */}
-      <div className="sticky top-0 z-10 border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Basketball Scores</h1>
-            <ThemeToggle />
-          </div>
-        </div>
-      </div>
+      <Header />
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header with manual refresh button */}

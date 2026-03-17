@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Configure dark mode to use class selector for next-themes compatibility */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -15,6 +18,12 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+/* Support manual theme toggle via next-themes class attribute */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 /* System font stack benefits:

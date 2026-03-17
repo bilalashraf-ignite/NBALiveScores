@@ -6,6 +6,19 @@ export const cloudinaryConfig = {
   uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "user-avatars",
 };
 
+export function validateCloudinaryConfig(): void {
+  if (!cloudinaryConfig.cloudName) {
+    throw new Error(
+      "Cloudinary cloud name is not configured. Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME environment variable."
+    );
+  }
+  if (!cloudinaryConfig.uploadPreset) {
+    throw new Error(
+      "Cloudinary upload preset is not configured. Set NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET environment variable."
+    );
+  }
+}
+
 export function getCloudinaryUploadUrl(): string {
   return `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`;
 }
@@ -24,6 +37,8 @@ export interface CloudinaryUploadResponse {
 export async function uploadToCloudinary(
   file: File
 ): Promise<CloudinaryUploadResponse> {
+  validateCloudinaryConfig();
+
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", cloudinaryConfig.uploadPreset);

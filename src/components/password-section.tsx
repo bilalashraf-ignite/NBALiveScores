@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export function PasswordSection() {
   const [hasPassword, setHasPassword] = useState<boolean | null>(null);
@@ -11,6 +11,7 @@ export function PasswordSection() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const hadPasswordBeforeUpdate = useRef<boolean>(false);
 
   const checkHasPassword = useCallback(async () => {
     try {
@@ -51,6 +52,7 @@ export function PasswordSection() {
     }
 
     setIsLoading(true);
+    hadPasswordBeforeUpdate.current = hasPassword ?? false;
 
     try {
       const response = await fetch("/api/profile/password", {
@@ -125,7 +127,7 @@ export function PasswordSection() {
 
       {success && (
         <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg text-sm">
-          Password {hasPassword ? "updated" : "set"} successfully!
+          Password {hadPasswordBeforeUpdate.current ? "updated" : "set"} successfully!
         </div>
       )}
 

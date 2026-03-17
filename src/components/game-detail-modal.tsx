@@ -10,7 +10,11 @@ import { GameDetailSkeleton } from './game-detail-skeleton';
 import { TeamStatsTable } from './team-stats-table';
 import { PlayerStatsTable } from './player-stats-table';
 import { HistoricalMatchup } from './historical-matchup';
+import { FootballTeamStatsTable } from './football-team-stats-table';
+import { FootballPlayerStatsTable } from './football-player-stats-table';
+import { FootballScorers } from './football-scorers';
 import type { League } from '@/types/sports-data';
+import { getSportFromLeague, isFootballGameDetails } from '@/types/sports-data';
 
 interface GameDetailModalProps {
   gameId: string;
@@ -126,7 +130,7 @@ export function GameDetailModal({
 
           {/* Accessible description */}
           <Dialog.Description id="game-details-description" className="sr-only">
-            Detailed information about the basketball game including scores, team statistics, player statistics, and historical matchup data.
+            Detailed information about the game including scores, team statistics, player statistics, and historical matchup data.
           </Dialog.Description>
 
           {/* Close button (X) - Material Design 48x48px touch target */}
@@ -180,11 +184,17 @@ export function GameDetailModal({
                     </div>
                   </div>
 
-                  {/* Game context (period, time, possession) */}
-                  {data.gameContext && (
+                  {/* Game context - sport-aware display */}
+                  {getSportFromLeague(league) === 'football' && isFootballGameDetails(data) && data.gameContext && (
+                    <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                      {data.gameContext.half === 1 ? '1st Half' : '2nd Half'} - {data.gameContext.minute}'
+                      {data.gameContext.addedTime && data.gameContext.addedTime > 0 && `+${data.gameContext.addedTime}`}
+                    </div>
+                  )}
+                  {getSportFromLeague(league) === 'basketball' && 'gameContext' in data && data.gameContext && 'period' in data.gameContext && (
                     <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                       Q{data.gameContext.period} - {data.gameContext.timeRemaining}
-                      {data.gameContext.possession && (
+                      {'possession' in data.gameContext && data.gameContext.possession && (
                         <span className="ml-2">
                           ({data.gameContext.possession === 'home' ? data.homeTeam.abbreviation : data.awayTeam.abbreviation} possession)
                         </span>
@@ -198,31 +208,58 @@ export function GameDetailModal({
                   </div>
                 </div>
 
-                {/* Team Statistics Section */}
+                {/* Football: Goal Scorers Section */}
+                {isFootballGameDetails(data) && data.scorers && data.scorers.length > 0 && (
+                  <FootballScorers
+                    scorers={data.scorers}
+                    homeTeam={data.homeTeam}
+                    awayTeam={data.awayTeam}
+                  />
+                )}
+
+                {/* Team Statistics Section - Sport-aware */}
                 <div>
                   <h2 className="text-xl font-bold mt-6 mb-4 text-gray-900 dark:text-gray-100">Team Statistics</h2>
                   {data.teamStats && data.teamStats.home && data.teamStats.away ? (
-                    <TeamStatsTable
-                      homeStats={data.teamStats.home}
-                      awayStats={data.teamStats.away}
-                      homeTeam={data.homeTeam}
-                      awayTeam={data.awayTeam}
-                    />
+                    isFootballGameDetails(data) ? (
+                      <FootballTeamStatsTable
+                        homeStats={data.teamStats.home}
+                        awayStats={data.teamStats.away}
+                        homeTeam={data.homeTeam}
+                        awayTeam={data.awayTeam}
+                      />
+                    ) : (
+                      <TeamStatsTable
+                        homeStats={data.teamStats.home}
+                        awayStats={data.teamStats.away}
+                        homeTeam={data.homeTeam}
+                        awayTeam={data.awayTeam}
+                      />
+                    )
                   ) : (
                     <p className="text-gray-600 dark:text-gray-400">Team statistics unavailable</p>
                   )}
                 </div>
 
-                {/* Player Statistics Section */}
+                {/* Player Statistics Section - Sport-aware */}
                 <div>
                   <h2 className="text-xl font-bold mt-6 mb-4 text-gray-900 dark:text-gray-100">Player Statistics</h2>
                   {data.playerStats && data.playerStats.home && data.playerStats.away ? (
-                    <PlayerStatsTable
-                      homeStats={data.playerStats.home}
-                      awayStats={data.playerStats.away}
-                      homeTeam={data.homeTeam}
-                      awayTeam={data.awayTeam}
-                    />
+                    isFootballGameDetails(data) ? (
+                      <FootballPlayerStatsTable
+                        homeStats={data.playerStats.home}
+                        awayStats={data.playerStats.away}
+                        homeTeam={data.homeTeam}
+                        awayTeam={data.awayTeam}
+                      />
+                    ) : (
+                      <PlayerStatsTable
+                        homeStats={data.playerStats.home}
+                        awayStats={data.playerStats.away}
+                        homeTeam={data.homeTeam}
+                        awayTeam={data.awayTeam}
+                      />
+                    )
                   ) : (
                     <p className="text-gray-600 dark:text-gray-400">Player statistics unavailable</p>
                   )}

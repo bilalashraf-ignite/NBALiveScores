@@ -5,7 +5,9 @@
  * Implements unidirectional server-push pattern for automatic score updates
  * without client polling overhead.
  *
- * Phase 3: Multi-league support with parallel fetching from NBA, NCAA, and EuroLeague.
+ * Multi-league support with parallel fetching from:
+ * - Basketball: NBA, NCAA, EuroLeague
+ * - Football: Premier League, La Liga, Bundesliga, Serie A, Ligue 1
  * Uses Promise.allSettled to ensure one failing API doesn't block others.
  *
  * Critical configuration:
@@ -33,7 +35,12 @@ async function fetchAllLeagues(): Promise<{
   games: Game[];
   errors: Partial<Record<League, string>>;
 }> {
-  const leagues: League[] = ['NBA', 'NCAA', 'EuroLeague'];
+  const leagues: League[] = [
+    // Basketball
+    'NBA', 'NCAA', 'EuroLeague',
+    // Football
+    'PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1'
+  ];
 
   // Parallel fetches — don't wait for slow APIs
   const results = await Promise.allSettled(

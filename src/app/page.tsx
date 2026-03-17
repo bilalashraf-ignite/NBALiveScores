@@ -5,9 +5,10 @@ import dynamic from 'next/dynamic';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useSSE } from '@/hooks/useSSE';
 import { useNetworkType } from '@/hooks/useNetworkType';
-import { Game, League } from '@/types/sports-data';
+import { Game, League, Sport, getSportFromLeague } from '@/types/sports-data';
 import { GameList } from '@/components/game-list';
 import { LeagueFilter } from '@/components/league-filter';
+import { SportTabs } from '@/components/sport-tabs';
 import { GameCardSkeleton } from '@/components/game-card-skeleton';
 import { StaleDataBanner } from '@/components/stale-data-banner';
 import { ErrorFallback } from '@/components/error-fallback';
@@ -42,6 +43,7 @@ const GameDetailModal = dynamic(() => import('@/components/game-detail-modal').t
 export default function HomePage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedSport, setSelectedSport] = useState<Sport>('basketball');
   const [selectedLeague, setSelectedLeague] = useState<League | 'all'>('all');
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [selectedGameLeague, setSelectedGameLeague] = useState<League | null>(null);
@@ -54,6 +56,17 @@ export default function HomePage() {
     url: '/api/scores/live',
     adaptiveFrequency: true, // Enable cellular detection
   });
+
+  // Filter games by selected sport
+  const basketballGames = games?.filter(g => getSportFromLeague(g.league) === 'basketball') || [];
+  const footballGames = games?.filter(g => getSportFromLeague(g.league) === 'football') || [];
+  const sportGames = selectedSport === 'basketball' ? basketballGames : footballGames;
+
+  // Reset league filter when switching sports
+  const handleSportChange = (sport: Sport) => {
+    setSelectedSport(sport);
+    setSelectedLeague('all');
+  };
 
   // Update timestamp when new data arrives
   useEffect(() => {
@@ -89,19 +102,28 @@ export default function HomePage() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={reconnect}>
       {/* Sticky header with app title and theme toggle */}
-      <div className="sticky top-0 z-10 border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Basketball Scores</h1>
+          <div className="flex h-16 items-center justify-between border-b border-gray-200 dark:border-gray-700">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Live Scores</h1>
             <ThemeToggle />
           </div>
+          {/* Sport tabs */}
+          <SportTabs
+            selectedSport={selectedSport}
+            onSelectSport={handleSportChange}
+            basketballCount={basketballGames.length}
+            footballCount={footballGames.length}
+          />
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header with manual refresh button */}
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Live Scores</h2>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {selectedSport === 'basketball' ? '🏀 Basketball' : '⚽ Football'} Scores
+          </h2>
           <button
             onClick={handleManualRefresh}
             disabled={isRefreshing}
@@ -112,10 +134,10 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* League filter */}
-        {games && (
+        {/* League filter - shows only leagues for selected sport */}
+        {sportGames.length > 0 && (
           <LeagueFilter
-            games={games}
+            games={sportGames}
             selectedLeague={selectedLeague}
             onSelectLeague={setSelectedLeague}
           />
@@ -143,15 +165,24 @@ export default function HomePage() {
         )}
 
         {/* Game list - show when data available */}
-        {games && (
+        {sportGames.length > 0 && (
           <PullToRefresh onRefresh={handleManualRefresh}>
             <GameList
-              games={games}
+              games={sportGames}
               selectedLeague={selectedLeague}
               lastUpdated={lastUpdated || undefined}
               onGameClick={handleGameClick}
             />
           </PullToRefresh>
+        )}
+
+        {/* Empty state when no games for selected sport */}
+        {games && sportGames.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400 text-lg">
+              No {selectedSport} games available at the moment.
+            </p>
+          </div>
         )}
 
         {/* Error state - handled by ErrorBoundary */}

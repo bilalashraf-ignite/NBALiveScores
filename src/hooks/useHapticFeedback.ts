@@ -1,5 +1,3 @@
-import { WebHaptics } from 'web-haptics';
-
 /**
  * Hook for triggering haptic feedback on supported devices.
  * Provides graceful degradation when haptics are not supported.
@@ -14,10 +12,18 @@ import { WebHaptics } from 'web-haptics';
  */
 export function useHapticFeedback() {
   const trigger = (pattern: 'success' | 'nudge' | 'error' | 'buzz') => {
-    // Graceful degradation - only trigger if supported
-    if (!WebHaptics.isSupported) return;
+    // Graceful degradation - only trigger if Vibration API is supported
+    if (typeof navigator === 'undefined' || !navigator.vibrate) return;
 
-    WebHaptics.trigger(pattern);
+    // Map patterns to vibration durations
+    const vibrationPatterns: Record<string, number | number[]> = {
+      success: [50, 30, 50],
+      nudge: 10,
+      error: [100, 30, 100, 30, 100],
+      buzz: 50,
+    };
+
+    navigator.vibrate(vibrationPatterns[pattern] || 10);
   };
 
   return { trigger };

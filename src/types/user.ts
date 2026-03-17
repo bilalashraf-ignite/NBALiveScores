@@ -36,3 +36,33 @@ export const genderOptions: { value: Gender; label: string }[] = [
   { value: "other", label: "Other" },
   { value: "prefer_not_to_say", label: "Prefer not to say" },
 ];
+
+// Star Points / Wallet Types
+export interface StarPointBalance {
+  balance: number;
+  pendingPurchases: number;
+}
+
+export interface StarPointLedgerEntry {
+  id: string;
+  userId: string;
+  purchaseId: string | null;
+  entryType: 'CREDIT_PURCHASE' | 'DEBIT_SPEND' | 'DEBIT_REFUND' | 'CREDIT_ADJUSTMENT' | 'DEBIT_ADJUSTMENT';
+  pointsDelta: number;
+  reason: string;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+}
+
+export interface StarPointProduct {
+  code: string;
+  name: string;
+  points: number;
+  amountCents: number;
+  currency: 'usd';
+}
+
+export interface CheckoutSessionResponse {
+  purchaseId: string;
+  checkoutUrl: string;
+}

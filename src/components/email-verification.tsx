@@ -47,12 +47,24 @@ export function EmailVerification({ email, emailVerified }: EmailVerificationPro
         method: "POST",
       });
 
-      const data = await response.json();
-
       if (response.ok) {
         setSuccess(true);
       } else {
-        setError(data.error || "Failed to send verification email");
+        // Defensively parse JSON - response may not be JSON
+        let errorMessage = "Failed to send verification email";
+        const contentType = response.headers.get("content-type");
+        if (contentType?.includes("application/json")) {
+          try {
+            const data = await response.json();
+            errorMessage = data?.error || errorMessage;
+          } catch {
+            // JSON parsing failed, use fallback
+            errorMessage = response.statusText || errorMessage;
+          }
+        } else {
+          errorMessage = response.statusText || errorMessage;
+        }
+        setError(errorMessage);
       }
     } catch {
       setError("An error occurred");

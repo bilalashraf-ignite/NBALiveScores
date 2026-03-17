@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { WebHaptics } from 'web-haptics';
 
 /**
@@ -13,11 +14,19 @@ import { WebHaptics } from 'web-haptics';
  * Pattern source: RESEARCH.md Pattern 6 (Mobile Gestures with Haptic Feedback)
  */
 export function useHapticFeedback() {
+  // Lazy-initialize WebHaptics instance
+  const hapticsRef = useRef<WebHaptics | null>(null);
+
   const trigger = (pattern: 'success' | 'nudge' | 'error' | 'buzz') => {
     // Graceful degradation - only trigger if supported
     if (!WebHaptics.isSupported) return;
 
-    WebHaptics.trigger(pattern);
+    // Lazy initialization to avoid creating instance if never used
+    if (!hapticsRef.current) {
+      hapticsRef.current = new WebHaptics();
+    }
+
+    hapticsRef.current.trigger(pattern);
   };
 
   return { trigger };

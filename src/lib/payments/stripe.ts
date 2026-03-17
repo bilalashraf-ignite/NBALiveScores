@@ -181,6 +181,20 @@ export function verifyStripeWebhookSignature(
   signatureHeader: string
 ): void {
   const { timestamp, signatures } = parseStripeSignature(signatureHeader);
+
+  // Validate timestamp is within 5-minute tolerance to prevent replay attacks
+  const timestampSeconds = parseInt(timestamp, 10);
+  const currentSeconds = Math.floor(Date.now() / 1000);
+  const tolerance = 300; // 5 minutes in seconds
+
+  if (
+    isNaN(timestampSeconds) ||
+    timestampSeconds < currentSeconds - tolerance ||
+    timestampSeconds > currentSeconds + tolerance
+  ) {
+    throw new PaymentProviderError('Stripe webhook timestamp outside tolerance window.');
+  }
+
   const signedPayload = `${timestamp}.${payload}`;
   const expected = crypto
     .createHmac('sha256', getStripeWebhookSecret())

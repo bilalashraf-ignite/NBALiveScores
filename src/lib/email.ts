@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const verificationUrl = `${baseUrl}/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
+  const verificationUrl = `${baseUrl}/verify-email?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`;
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM || "noreply@example.com",
@@ -39,7 +39,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
-  const resetUrl = `${baseUrl}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+  const resetUrl = `${baseUrl}/reset-password?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`;
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM || "noreply@example.com",

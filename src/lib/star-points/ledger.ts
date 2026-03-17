@@ -6,8 +6,20 @@ import {
 
 import { prisma } from '@/lib/db';
 
-export async function grantStarPointsForPurchase(purchaseId: string) {
-  return prisma.$transaction(async (tx) => {
+// Transaction client type for use in external transactions
+export type TransactionClient = Omit<
+  typeof prisma,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
+
+/**
+ * Core implementation that accepts a transaction client.
+ * Use this when you need to include the operation in a larger transaction.
+ */
+export async function grantStarPointsForPurchaseWithTx(
+  purchaseId: string,
+  tx: TransactionClient
+) {
     const purchase = await tx.starPointPurchase.findUnique({
       where: { id: purchaseId },
     });
@@ -63,20 +75,45 @@ export async function grantStarPointsForPurchase(purchaseId: string) {
     });
 
     return ledgerEntry;
+}
+
+/**
+ * Grants star points for a purchase.
+ * Creates its own transaction when called standalone.
+ */
+export async function grantStarPointsForPurchase(purchaseId: string) {
+  return prisma.$transaction(async (tx) => {
+    return grantStarPointsForPurchaseWithTx(purchaseId, tx);
   });
 }
 
-export async function reverseStarPointsForPurchase(
+/**
+ * Core implementation that accepts a transaction client.
+ * Use this when you need to include the operation in a larger transaction.
+ */
+export async function reverseStarPointsForPurchaseWithTx(
   purchaseId: string,
+  tx: TransactionClient,
   reason = 'Refunded purchase'
 ) {
-  return prisma.$transaction(async (tx) => {
     const purchase = await tx.starPointPurchase.findUnique({
       where: { id: purchaseId },
     });
 
     if (!purchase) {
       throw new Error(`Purchase ${purchaseId} not found.`);
+    }
+
+    // Verify points were actually granted before allowing refund
+    const existingCredit = await tx.starPointLedgerEntry.findFirst({
+      where: {
+        purchaseId,
+        entryType: StarPointLedgerEntryType.CREDIT_PURCHASE,
+      },
+    });
+
+    if (!existingCredit) {
+      throw new Error(`No credit for purchase ${purchaseId} to refund.`);
     }
 
     const existingRefund = await tx.starPointLedgerEntry.findFirst({
@@ -125,6 +162,18 @@ export async function reverseStarPointsForPurchase(
     });
 
     return refundEntry;
+}
+
+/**
+ * Reverses star points for a purchase (refund).
+ * Creates its own transaction when called standalone.
+ */
+export async function reverseStarPointsForPurchase(
+  purchaseId: string,
+  reason = 'Refunded purchase'
+) {
+  return prisma.$transaction(async (tx) => {
+    return reverseStarPointsForPurchaseWithTx(purchaseId, tx, reason);
   });
 }
 

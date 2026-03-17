@@ -14,6 +14,7 @@ import { ErrorFallback } from '@/components/error-fallback';
 import { GameDetailSkeleton } from '@/components/game-detail-skeleton';
 import { PullToRefresh } from '@/components/pull-to-refresh';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { uiLogger } from '@/lib/client-logger';
 
 // Lazy load GameDetailModal with skeleton fallback
 // ssr: false because modal uses browser-only APIs (window.history in useModalHistory hook)
@@ -75,7 +76,7 @@ export default function HomePage() {
       // SSE will pick up the updated data automatically
       setTimeout(() => setIsRefreshing(false), 1000); // Brief feedback
     } catch (err) {
-      console.error('Manual refresh error:', err);
+      uiLogger.error({ err }, 'Manual refresh error');
       setIsRefreshing(false);
     }
   }, []);

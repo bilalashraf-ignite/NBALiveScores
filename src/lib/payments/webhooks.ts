@@ -13,29 +13,26 @@ function hashPayload(payload: string): string {
 export async function processStripeWebhook(payload: string, signatureHeader: string) {
   const event = parseStripeWebhookEvent(payload, signatureHeader);
 
-  const existing = await prisma.webhookEvent.findUnique({
+  // Atomic upsert to prevent TOCTOU race between check and create
+  const record = await prisma.webhookEvent.upsert({
     where: {
       provider_providerEventId: {
         provider: WalletProvider.STRIPE,
         providerEventId: event.id,
       },
     },
+    create: {
+      provider: WalletProvider.STRIPE,
+      providerEventId: event.id,
+      eventType: event.type,
+      payloadHash: hashPayload(payload),
+      status: WebhookEventStatus.RECEIVED,
+    },
+    update: {}, // Don't update if already exists
   });
 
-  if (existing?.status === WebhookEventStatus.PROCESSED) {
+  if (record.status === WebhookEventStatus.PROCESSED) {
     return { duplicate: true, eventId: event.id };
-  }
-
-  if (!existing) {
-    await prisma.webhookEvent.create({
-      data: {
-        provider: WalletProvider.STRIPE,
-        providerEventId: event.id,
-        eventType: event.type,
-        payloadHash: hashPayload(payload),
-        status: WebhookEventStatus.RECEIVED,
-      },
-    });
   }
 
   try {

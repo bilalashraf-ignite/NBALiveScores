@@ -7,6 +7,7 @@ import { AvatarUpload } from "@/components/avatar-upload";
 import { LinkedAccounts } from "@/components/linked-accounts";
 import { PasswordSection } from "@/components/password-section";
 import { EmailVerification } from "@/components/email-verification";
+import { WalletSection } from "@/components/wallet-section";
 
 export default function ProfilePage() {
   const { profile, isLoading, error, updateProfile, refreshProfile } = useProfile();
@@ -123,6 +124,11 @@ export default function ProfilePage() {
         {/* Linked Accounts */}
         <div className="px-6 py-8 border-b border-gray-200 dark:border-gray-700">
           <LinkedAccounts />
+        </div>
+
+        {/* Wallet Section */}
+        <div className="px-6 py-8 border-b border-gray-200 dark:border-gray-700">
+          <WalletSection />
         </div>
 
         {/* Password Section */}

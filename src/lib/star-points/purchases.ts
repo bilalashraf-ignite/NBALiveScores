@@ -10,7 +10,12 @@ import {
   createStripeCheckoutSession,
   createStripeCustomer,
 } from '@/lib/payments/stripe';
-import { grantStarPointsForPurchase, reverseStarPointsForPurchase } from '@/lib/star-points/ledger';
+import {
+  grantStarPointsForPurchase,
+  grantStarPointsForPurchaseWithTx,
+  reverseStarPointsForPurchase,
+  reverseStarPointsForPurchaseWithTx,
+} from '@/lib/star-points/ledger';
 import { StarPointProduct } from '@/lib/star-points/products';
 
 type CheckoutUser = {
@@ -23,6 +28,7 @@ function walletProvider(): WalletProvider {
 }
 
 export async function ensureWalletAccountForUser(user: CheckoutUser) {
+  // Check for existing account first (fast path)
   const existing = await prisma.walletAccount.findUnique({
     where: {
       provider_userId: {
@@ -36,18 +42,45 @@ export async function ensureWalletAccountForUser(user: CheckoutUser) {
     return existing;
   }
 
+  // Create Stripe customer (side effect - may create orphan if race occurs)
   const customer = await createStripeCustomer({
     userId: user.id,
     email: user.email,
   });
 
-  return prisma.walletAccount.create({
-    data: {
-      userId: user.id,
-      provider: walletProvider(),
-      providerCustomerId: customer.id,
-    },
-  });
+  // Attempt to create wallet account, handling race condition via unique constraint
+  try {
+    return await prisma.walletAccount.create({
+      data: {
+        userId: user.id,
+        provider: walletProvider(),
+        providerCustomerId: customer.id,
+      },
+    });
+  } catch (error) {
+    // Handle unique constraint violation (race condition - another request won)
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      // Return the existing record created by the concurrent request
+      const existingAccount = await prisma.walletAccount.findUnique({
+        where: {
+          provider_userId: {
+            provider: walletProvider(),
+            userId: user.id,
+          },
+        },
+      });
+
+      if (existingAccount) {
+        return existingAccount;
+      }
+    }
+
+    // Re-throw unexpected errors
+    throw error;
+  }
 }
 
 export async function createStarPointCheckoutSession(input: {
@@ -72,34 +105,49 @@ export async function createStarPointCheckoutSession(input: {
     },
   });
 
-  const session = await createStripeCheckoutSession({
-    customerId: walletAccount.providerCustomerId,
-    purchaseId: purchase.id,
-    productCode: input.product.code,
-    productName: input.product.name,
-    amountCents: input.product.amountCents,
-    currency: input.product.currency,
-    points: input.product.points,
-    userId: input.user.id,
-  });
+  try {
+    const session = await createStripeCheckoutSession({
+      customerId: walletAccount.providerCustomerId,
+      purchaseId: purchase.id,
+      productCode: input.product.code,
+      productName: input.product.name,
+      amountCents: input.product.amountCents,
+      currency: input.product.currency,
+      points: input.product.points,
+      userId: input.user.id,
+    });
 
-  if (!session.url) {
-    throw new Error('Stripe checkout session did not include a URL.');
+    if (!session.url) {
+      throw new Error('Stripe checkout session did not include a URL.');
+    }
+
+    const updatedPurchase = await prisma.starPointPurchase.update({
+      where: { id: purchase.id },
+      data: {
+        providerSessionId: session.id,
+        providerPaymentIntentId: session.payment_intent ?? undefined,
+        status: StarPointPurchaseStatus.PAYMENT_PENDING,
+      },
+    });
+
+    return {
+      purchase: updatedPurchase,
+      checkoutUrl: session.url,
+    };
+  } catch (error) {
+    // Clean up the purchase record on Stripe failure to prevent phantom pending purchases
+    await prisma.starPointPurchase.update({
+      where: { id: purchase.id },
+      data: {
+        status: StarPointPurchaseStatus.FAILED,
+        metadata: {
+          source: 'hosted_checkout',
+          failureReason: error instanceof Error ? error.message : 'Unknown error',
+        } satisfies Prisma.JsonObject,
+      },
+    });
+    throw error;
   }
-
-  const updatedPurchase = await prisma.starPointPurchase.update({
-    where: { id: purchase.id },
-    data: {
-      providerSessionId: session.id,
-      providerPaymentIntentId: session.payment_intent ?? undefined,
-      status: StarPointPurchaseStatus.PAYMENT_PENDING,
-    },
-  });
-
-  return {
-    purchase: updatedPurchase,
-    checkoutUrl: session.url,
-  };
 }
 
 async function markPurchasePaidFromSession(session: StripeCheckoutSessionObject) {
@@ -109,16 +157,20 @@ async function markPurchasePaidFromSession(session: StripeCheckoutSessionObject)
     return;
   }
 
-  await prisma.starPointPurchase.update({
-    where: { id: purchaseId },
-    data: {
-      providerSessionId: session.id,
-      providerPaymentIntentId: session.payment_intent ?? undefined,
-      status: StarPointPurchaseStatus.PAID,
-    },
-  });
+  // Wrap both operations in a single transaction to ensure atomicity
+  // If granting points fails, the purchase status is rolled back
+  await prisma.$transaction(async (tx) => {
+    await tx.starPointPurchase.update({
+      where: { id: purchaseId },
+      data: {
+        providerSessionId: session.id,
+        providerPaymentIntentId: session.payment_intent ?? undefined,
+        status: StarPointPurchaseStatus.PAID,
+      },
+    });
 
-  await grantStarPointsForPurchase(purchaseId);
+    await grantStarPointsForPurchaseWithTx(purchaseId, tx);
+  });
 }
 
 async function markPurchaseFailedFromSession(session: StripeCheckoutSessionObject) {
@@ -157,14 +209,18 @@ async function reversePurchaseFromCharge(charge: StripeChargeObject) {
     return;
   }
 
-  await prisma.starPointPurchase.update({
-    where: { id: purchase.id },
-    data: {
-      providerChargeId: charge.id,
-    },
-  });
+  // Wrap both operations in a single transaction to ensure atomicity
+  // If reversing points fails, the charge ID update is rolled back
+  await prisma.$transaction(async (tx) => {
+    await tx.starPointPurchase.update({
+      where: { id: purchase.id },
+      data: {
+        providerChargeId: charge.id,
+      },
+    });
 
-  await reverseStarPointsForPurchase(purchase.id);
+    await reverseStarPointsForPurchaseWithTx(purchase.id, tx);
+  });
 }
 
 export async function processStripeWebhookEvent(event: StripeWebhookEvent) {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { profileLogger } from "@/lib/logger";
 
 export async function DELETE(
   request: Request,
@@ -56,7 +57,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: "Account unlinked successfully" });
   } catch (error) {
-    console.error("Unlink account error:", error);
+    profileLogger.error({ err: error }, "Unlink account error");
     return NextResponse.json(
       { error: "Failed to unlink account" },
       { status: 500 }

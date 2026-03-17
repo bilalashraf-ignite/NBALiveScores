@@ -1,5 +1,6 @@
 import type { League, GameDetails } from '@/types/sports-data';
 import { cache } from '@/lib/cache';
+import { adapterLogger } from '@/lib/logger';
 
 /**
  * Base adapter class providing shared cache and error handling logic.
@@ -35,13 +36,13 @@ export abstract class BaseAdapter {
     // Try cache first
     const cached = await cache.get<T>(cacheKey);
     if (cached) {
-      console.log(`[${this.league}] Cache hit: ${cacheKey}`);
+      adapterLogger.debug({ league: this.league, cacheKey }, 'Cache hit');
       return cached;
     }
 
     // Fetch from API
     try {
-      console.log(`[${this.league}] Cache miss, fetching from API...`);
+      adapterLogger.debug({ league: this.league }, 'Cache miss, fetching from API');
       const data = await fetchFn();
       await cache.set(cacheKey, data, ttl);
       return data;

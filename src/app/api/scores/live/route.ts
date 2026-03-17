@@ -18,6 +18,7 @@
 
 import { getAdapter } from '@/lib/adapters';
 import type { League, Game } from '@/types/sports-data';
+import { apiLogger } from '@/lib/logger';
 
 // CRITICAL: Prevent buffering and caching that breaks SSE
 export const runtime = 'nodejs';
@@ -52,7 +53,7 @@ async function fetchAllLeagues(): Promise<{
       games.push(...result.value);
     } else {
       errors[league] = result.reason.message;
-      console.error(`[${league}] Fetch failed:`, result.reason);
+      apiLogger.error({ err: result.reason, league }, 'League fetch failed');
     }
   });
 
@@ -85,7 +86,7 @@ async function* scoreUpdates(frequency: number) {
       // Wait for client-specified frequency before next update
       await new Promise(resolve => setTimeout(resolve, frequency));
     } catch (error) {
-      console.error('Error fetching live games:', error);
+      apiLogger.error({ err: error }, 'Error fetching live games');
       // Send empty array on error (graceful degradation)
       const data = `data: ${JSON.stringify([])}\n\n`;
       yield encoder.encode(data);

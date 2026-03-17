@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyToken } from "@/lib/tokens";
+import { authLogger } from "@/lib/logger";
 
 export async function POST(request: Request) {
   try {
@@ -23,15 +24,29 @@ export async function POST(request: Request) {
       );
     }
 
-    // Update user's emailVerified field
-    await prisma.user.update({
-      where: { email },
-      data: { emailVerified: new Date() },
-    });
+    // Update user and delete token in a transaction to prevent race conditions
+    const [updateResult] = await prisma.$transaction([
+      // Update user's emailVerified field
+      prisma.user.updateMany({
+        where: { email },
+        data: { emailVerified: new Date() },
+      }),
+      // Invalidate the token to prevent replay attacks
+      prisma.verificationToken.deleteMany({
+        where: { token, identifier: email },
+      }),
+    ]);
+
+    if (updateResult.count === 0) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({ message: "Email verified successfully" });
   } catch (error) {
-    console.error("Email verification error:", error);
+    authLogger.error({ err: error }, "Email verification error");
     return NextResponse.json(
       { error: "An error occurred during verification" },
       { status: 500 }

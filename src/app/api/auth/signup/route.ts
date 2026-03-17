@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
+import { authLogger } from "@/lib/logger";
 
 export async function POST(request: Request) {
   try {
@@ -15,6 +17,15 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: "Invalid email format" },
+        { status: 400 }
+      );
+    }
+
     if (password.length < 8) {
       return NextResponse.json(
         { error: "Password must be at least 8 characters" },
@@ -22,29 +33,32 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "An account with this email already exists" },
-        { status: 400 }
-      );
-    }
-
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    });
+    // Create user - handle unique constraint violation atomically
+    let user;
+    try {
+      user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+        },
+      });
+    } catch (error) {
+      // Handle unique constraint violation (email already exists)
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        return NextResponse.json(
+          { error: "An account with this email already exists" },
+          { status: 400 }
+        );
+      }
+      throw error;
+    }
 
     // Generate verification token and send email (optional verification)
     try {
@@ -52,7 +66,7 @@ export async function POST(request: Request) {
       await sendVerificationEmail(email, token);
     } catch (emailError) {
       // Log error but don't fail signup - verification is optional
-      console.error("Failed to send verification email:", emailError);
+      authLogger.error({ err: emailError }, "Failed to send verification email");
     }
 
     return NextResponse.json(
@@ -67,7 +81,7 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Signup error:", error);
+    authLogger.error({ err: error }, "Signup error");
     return NextResponse.json(
       { error: "An error occurred during signup" },
       { status: 500 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { generatePasswordResetToken } from "@/lib/tokens";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { authLogger } from "@/lib/logger";
 
 export async function POST(request: Request) {
   try {
@@ -26,12 +27,12 @@ export async function POST(request: Request) {
       });
     }
 
-    // Generate reset token and send email
+    // Generate reset token (scoped to userId for security) and send email
     try {
-      const token = await generatePasswordResetToken(email);
+      const token = await generatePasswordResetToken(user.id);
       await sendPasswordResetEmail(email, token);
     } catch (emailError) {
-      console.error("Failed to send password reset email:", emailError);
+      authLogger.error({ err: emailError }, "Failed to send password reset email");
       // Still return success to prevent enumeration
     }
 
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
       message: "If an account exists with this email, you will receive a password reset link.",
     });
   } catch (error) {
-    console.error("Forgot password error:", error);
+    authLogger.error({ err: error }, "Forgot password error");
     return NextResponse.json(
       { error: "An error occurred" },
       { status: 500 }

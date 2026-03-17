@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { profileLogger } from "@/lib/logger";
 
 export async function GET() {
   try {
@@ -34,7 +35,7 @@ export async function GET() {
 
     return NextResponse.json(user);
   } catch (error) {
-    console.error("Profile fetch error:", error);
+    profileLogger.error({ err: error }, "Profile fetch error");
     return NextResponse.json(
       { error: "Failed to fetch profile" },
       { status: 500 }
@@ -93,7 +94,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(user);
   } catch (error) {
-    console.error("Profile update error:", error);
+    profileLogger.error({ err: error }, "Profile update error");
     return NextResponse.json(
       { error: "Failed to update profile" },
       { status: 500 }

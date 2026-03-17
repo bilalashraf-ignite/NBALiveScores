@@ -1,15 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SocialLoginButtons } from "@/components/social-login-buttons";
 
-export default function SignInPage() {
+// Validate callbackUrl to prevent open redirect attacks
+function isValidCallbackUrl(url: string | null): string {
+  if (!url) return "/";
+  // Must be a relative path starting with single "/" and not "//" (protocol-relative)
+  // Must not contain a scheme (e.g., http:, https:, javascript:)
+  if (
+    url.startsWith("/") &&
+    !url.startsWith("//") &&
+    !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(url)
+  ) {
+    return url;
+  }
+  return "/";
+}
+
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = isValidCallbackUrl(searchParams.get("callbackUrl"));
   const error = searchParams.get("error");
 
   const [email, setEmail] = useState("");
@@ -141,5 +156,24 @@ export default function SignInPage() {
         </form>
       </div>
     </>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-4" />
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto mb-8" />
+          <div className="space-y-4">
+            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
+          </div>
+        </div>
+      }
+    >
+      <SignInForm />
+    </Suspense>
   );
 }

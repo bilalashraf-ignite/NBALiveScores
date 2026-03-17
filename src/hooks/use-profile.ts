@@ -46,6 +46,7 @@ export function useProfile(): UseProfileResult {
 
   const updateProfile = useCallback(async (data: UpdateProfileData): Promise<boolean> => {
     try {
+      setIsLoading(true);
       setError(null);
 
       const response = await fetch("/api/profile", {
@@ -65,6 +66,8 @@ export function useProfile(): UseProfileResult {
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       return false;
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 

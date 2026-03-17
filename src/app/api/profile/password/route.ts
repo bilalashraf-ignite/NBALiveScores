@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { profileLogger } from "@/lib/logger";
 
 export async function PATCH(request: Request) {
   try {
@@ -11,7 +12,18 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { currentPassword, newPassword } = await request.json();
+    let currentPassword: string | undefined;
+    let newPassword: string | undefined;
+    try {
+      const body = await request.json();
+      currentPassword = body.currentPassword;
+      newPassword = body.newPassword;
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON payload" },
+        { status: 400 }
+      );
+    }
 
     if (!newPassword || newPassword.length < 8) {
       return NextResponse.json(
@@ -53,7 +65,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error("Password update error:", error);
+    profileLogger.error({ err: error }, "Password update error");
     return NextResponse.json(
       { error: "Failed to update password" },
       { status: 500 }

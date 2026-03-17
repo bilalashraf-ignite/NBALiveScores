@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { profileLogger } from "@/lib/logger";
 
 export async function PATCH(request: Request) {
   try {
@@ -40,7 +41,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(user);
   } catch (error) {
-    console.error("Avatar update error:", error);
+    profileLogger.error({ err: error }, "Avatar update error");
     return NextResponse.json(
       { error: "Failed to update avatar" },
       { status: 500 }
@@ -63,7 +64,7 @@ export async function DELETE() {
 
     return NextResponse.json({ message: "Avatar removed" });
   } catch (error) {
-    console.error("Avatar delete error:", error);
+    profileLogger.error({ err: error }, "Avatar delete error");
     return NextResponse.json(
       { error: "Failed to remove avatar" },
       { status: 500 }

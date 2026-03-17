@@ -22,19 +22,19 @@ export async function generateVerificationToken(email: string) {
   return token;
 }
 
-export async function generatePasswordResetToken(email: string) {
+export async function generatePasswordResetToken(userId: string) {
   const token = crypto.randomBytes(32).toString("hex");
   const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-  // Delete existing tokens for this email
+  // Delete existing tokens for this user
   await prisma.verificationToken.deleteMany({
-    where: { identifier: `password-reset:${email}` },
+    where: { identifier: `password-reset:${userId}` },
   });
 
-  // Create new token
+  // Create new token scoped to userId for security
   await prisma.verificationToken.create({
     data: {
-      identifier: `password-reset:${email}`,
+      identifier: `password-reset:${userId}`,
       token,
       expires,
     },

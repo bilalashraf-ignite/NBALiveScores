@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { profileLogger } from "@/lib/logger";
 
 // This endpoint returns the OAuth URL for linking a new provider
 // The actual linking happens through NextAuth's OAuth flow
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: signinUrl });
   } catch (error) {
-    console.error("Link account error:", error);
+    profileLogger.error({ err: error }, "Link account error");
     return NextResponse.json(
       { error: "Failed to initiate account linking" },
       { status: 500 }

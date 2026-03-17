@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -15,6 +15,22 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Handle redirect after successful password reset
+  useEffect(() => {
+    if (success) {
+      timeoutRef.current = setTimeout(() => {
+        router.push("/signin");
+      }, 2000);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [success, router]);
 
   if (!token || !email) {
     return (
@@ -77,7 +93,6 @@ export default function ResetPasswordPage() {
 
       if (response.ok) {
         setSuccess(true);
-        setTimeout(() => router.push("/signin"), 2000);
       } else {
         setError(data.error || "Failed to reset password");
       }
@@ -183,5 +198,22 @@ export default function ResetPasswordPage() {
         </button>
       </form>
     </>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="text-center">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-4" />
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto" />
+          </div>
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

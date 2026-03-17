@@ -1,6 +1,7 @@
 import { Game, GameState, Team, Score, League, GameDetails, TeamStats, PlayerStats, HistoricalMatchup } from '@/types/sports-data';
 import { SportsDataAdapter } from './sports-api-adapter';
 import { BaseAdapter } from './base-adapter';
+import { adapterLogger } from '@/lib/logger';
 
 /**
  * Adapter for balldontlie.io API (free NBA data provider).
@@ -82,7 +83,7 @@ export class BalldontlieAdapter extends BaseAdapter implements SportsDataAdapter
 
       return mockGames;
     } catch (error) {
-      console.error('Failed to fetch live games from balldontlie.io:', error);
+      adapterLogger.error({ err: error }, 'Failed to fetch live games from balldontlie.io');
       return []; // Graceful degradation
     }
   }
@@ -108,7 +109,7 @@ export class BalldontlieAdapter extends BaseAdapter implements SportsDataAdapter
 
       throw new Error(`Game ${gameId} not found (Phase 1: network calls not implemented)`);
     } catch (error) {
-      console.error('Failed to fetch game from balldontlie.io:', error);
+      adapterLogger.error({ err: error, gameId }, 'Failed to fetch game from balldontlie.io');
       throw error;
     }
   }
@@ -135,7 +136,7 @@ export class BalldontlieAdapter extends BaseAdapter implements SportsDataAdapter
 
       return [];
     } catch (error) {
-      console.error('Failed to fetch scheduled games from balldontlie.io:', error);
+      adapterLogger.error({ err: error, league }, 'Failed to fetch scheduled games from balldontlie.io');
       return []; // Graceful degradation
     }
   }

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const email = searchParams.get("email");
@@ -19,12 +19,15 @@ export default function VerifyEmailPage() {
       return;
     }
 
+    const controller = new AbortController();
+
     const verifyEmail = async () => {
       try {
         const response = await fetch("/api/auth/verify-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token, email }),
+          signal: controller.signal,
         });
 
         const data = await response.json();
@@ -36,13 +39,21 @@ export default function VerifyEmailPage() {
           setStatus("error");
           setMessage(data.error || "Verification failed.");
         }
-      } catch {
+      } catch (error) {
+        // Ignore aborted requests (component unmounted or deps changed)
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
         setStatus("error");
         setMessage("An error occurred during verification.");
       }
     };
 
     verifyEmail();
+
+    return () => {
+      controller.abort();
+    };
   }, [token, email]);
 
   return (
@@ -136,5 +147,42 @@ export default function VerifyEmailPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12">
+            <svg
+              className="animate-spin h-8 w-8 text-blue-600"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+          </div>
+          <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
+            Loading...
+          </h2>
+        </div>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

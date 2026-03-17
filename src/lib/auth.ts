@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { UserStatus } from "@prisma/client";
 import { prisma } from "./db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -42,9 +43,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: { email },
+          select: { id: true, email: true, name: true, image: true, password: true, status: true },
         });
 
         if (!user || !user.password) {
+          return null;
+        }
+
+        // Prevent disabled users from signing in
+        if (user.status === UserStatus.DISABLED) {
           return null;
         }
 

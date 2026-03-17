@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SocialLoginButtons } from "@/components/social-login-buttons";
@@ -15,6 +15,22 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Handle redirect after successful signup
+  useEffect(() => {
+    if (success) {
+      timeoutRef.current = setTimeout(() => {
+        router.push("/signin");
+      }, 2000);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [success, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,9 +64,6 @@ export default function SignUpPage() {
       }
 
       setSuccess(true);
-      setTimeout(() => {
-        router.push("/signin");
-      }, 2000);
     } catch {
       setError("An error occurred. Please try again.");
     } finally {

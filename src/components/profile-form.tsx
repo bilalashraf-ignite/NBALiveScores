@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { UserProfile, UpdateProfileData } from "@/types/user";
 import { genderOptions } from "@/types/user";
 
@@ -23,28 +23,44 @@ export function ProfileForm({ profile, onSave }: ProfileFormProps) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
+  // Sync form state when profile prop changes
+  useEffect(() => {
+    setName(profile.name || "");
+    setPhone(profile.phone || "");
+    setBio(profile.bio || "");
+    setLocation(profile.location || "");
+    setBirthday(
+      profile.birthday ? new Date(profile.birthday).toISOString().split("T")[0] : ""
+    );
+    setGender(profile.gender || "");
+  }, [profile]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setSuccess(false);
     setError("");
 
-    const result = await onSave({
-      name: name || undefined,
-      phone: phone || undefined,
-      bio: bio || undefined,
-      location: location || undefined,
-      birthday: birthday || undefined,
-      gender: gender || undefined,
-    });
+    try {
+      const result = await onSave({
+        name: name || undefined,
+        phone: phone || undefined,
+        bio: bio || undefined,
+        location: location || undefined,
+        birthday: birthday || undefined,
+        gender: gender || undefined,
+      });
 
-    setIsLoading(false);
-
-    if (result) {
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-    } else {
-      setError("Failed to update profile");
+      if (result) {
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError("Failed to update profile");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
 

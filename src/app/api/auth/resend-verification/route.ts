@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
+import { authLogger } from "@/lib/logger";
 
 export async function POST() {
   try {
@@ -38,7 +39,7 @@ export async function POST() {
       message: "Verification email sent successfully",
     });
   } catch (error) {
-    console.error("Resend verification error:", error);
+    authLogger.error({ err: error }, "Resend verification error");
     return NextResponse.json(
       { error: "Failed to send verification email" },
       { status: 500 }

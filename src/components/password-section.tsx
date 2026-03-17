@@ -10,17 +10,24 @@ export function PasswordSection() {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const checkHasPassword = useCallback(async () => {
     try {
+      setFetchError(null);
       const response = await fetch("/api/profile/accounts");
       if (response.ok) {
         const data = await response.json();
-        setHasPassword(data.hasPassword);
+        setHasPassword(data.hasPassword ?? false);
+      } else if (response.status === 404) {
+        // No password set
+        setHasPassword(false);
+      } else {
+        setFetchError("Failed to check password status");
       }
     } catch {
-      // Silently fail - assume has password
-      setHasPassword(true);
+      // Network error - don't assume hasPassword, show retry option
+      setFetchError("Unable to load password status. Please try again.");
     }
   }, []);
 
@@ -75,6 +82,26 @@ export function PasswordSection() {
   };
 
   if (hasPassword === null) {
+    // Show error with retry if fetch failed
+    if (fetchError) {
+      return (
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+            Password Settings
+          </h3>
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+            {fetchError}
+          </div>
+          <button
+            onClick={checkHasPassword}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      );
+    }
+    // Loading skeleton
     return (
       <div className="animate-pulse space-y-4">
         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32" />

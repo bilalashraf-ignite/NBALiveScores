@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { profileLogger } from "@/lib/logger";
 
 export async function GET() {
   try {
@@ -30,7 +31,7 @@ export async function GET() {
       hasPassword: !!user?.password,
     });
   } catch (error) {
-    console.error("Accounts fetch error:", error);
+    profileLogger.error({ err: error }, "Accounts fetch error");
     return NextResponse.json(
       { error: "Failed to fetch linked accounts" },
       { status: 500 }

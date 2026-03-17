@@ -46,6 +46,11 @@ export function AvatarUpload({
       // Upload to Cloudinary
       const result = await uploadToCloudinary(file);
 
+      // Validate Cloudinary response before using
+      if (!result || !result.secure_url) {
+        throw new Error("Upload failed: Invalid response from image service");
+      }
+
       // Save URL to database
       const response = await fetch("/api/profile/avatar", {
         method: "PATCH",

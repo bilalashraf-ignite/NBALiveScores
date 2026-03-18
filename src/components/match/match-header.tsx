@@ -1,7 +1,7 @@
 'use client';
 
 import type { Team, Score } from '@/types/sports-data';
-import { TeamShield } from './team-shield';
+import { TeamShield } from './match-primitives';
 import { LiveBadge } from '@/components/ui/live-badge';
 
 interface MatchHeaderProps {

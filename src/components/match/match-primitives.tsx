@@ -1,6 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { GradientButton } from '@/components/ui/gradient-button';
+import type { Team } from '@/types/sports-data';
 
 // Stat box for displaying match statistics
 interface StatBoxProps {
@@ -62,6 +64,115 @@ export function MatchActions({ onWatchLive, onViewStats, isLive = true }: MatchA
         </svg>
         Stats
       </button>
+    </div>
+  );
+}
+
+// Stat progress bar for comparing home vs away stats
+interface StatProgressBarProps {
+  label: string;
+  homeValue: number;
+  awayValue: number;
+  homeLabel?: string;
+  awayLabel?: string;
+  isPercentage?: boolean;
+}
+
+export function StatProgressBar({
+  label,
+  homeValue,
+  awayValue,
+  homeLabel,
+  awayLabel,
+  isPercentage = false,
+}: StatProgressBarProps) {
+  const total = homeValue + awayValue;
+  const homePercent = total > 0 ? (homeValue / total) * 100 : 50;
+  const awayPercent = total > 0 ? (awayValue / total) * 100 : 50;
+
+  const formatValue = (value: number) => {
+    if (isPercentage) {
+      return `${Math.round(value)}%`;
+    }
+    return value.toString();
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-semibold text-white">
+          {homeLabel || formatValue(homeValue)}
+        </span>
+        <span className="text-gray-400 uppercase text-xs tracking-wide">
+          {label}
+        </span>
+        <span className="font-semibold text-white">
+          {awayLabel || formatValue(awayValue)}
+        </span>
+      </div>
+      <div className="flex h-2 rounded-full overflow-hidden bg-[#252540]">
+        <div
+          className="bg-gradient-to-r from-purple-500 to-purple-400 transition-all duration-500"
+          style={{ width: `${homePercent}%` }}
+        />
+        <div
+          className="bg-gradient-to-r from-pink-400 to-pink-500 transition-all duration-500"
+          style={{ width: `${awayPercent}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Team shield with logo and name
+interface TeamShieldProps {
+  team: Team;
+  size?: 'sm' | 'md' | 'lg';
+  showName?: boolean;
+}
+
+const sizeClasses = {
+  sm: 'w-10 h-10',
+  md: 'w-16 h-16',
+  lg: 'w-20 h-20',
+};
+
+const fontSizes = {
+  sm: 'text-sm',
+  md: 'text-xl',
+  lg: 'text-2xl',
+};
+
+export function TeamShield({ team, size = 'md', showName = true }: TeamShieldProps) {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div
+        className={`
+          ${sizeClasses[size]}
+          rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20
+          border border-purple-500/30
+          flex items-center justify-center overflow-hidden
+        `}
+      >
+        {team.logoUrl ? (
+          <Image
+            src={team.logoUrl}
+            alt={team.name}
+            width={size === 'lg' ? 64 : size === 'md' ? 48 : 32}
+            height={size === 'lg' ? 64 : size === 'md' ? 48 : 32}
+            className="object-contain"
+          />
+        ) : (
+          <span className={`font-bold text-purple-400 ${fontSizes[size]}`}>
+            {team.abbreviation?.charAt(0) || team.name.charAt(0)}
+          </span>
+        )}
+      </div>
+      {showName && (
+        <span className="text-sm font-medium text-white text-center max-w-[100px] truncate">
+          {team.name}
+        </span>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import type { CricketTeamStats } from '@/types/sports-data';
-import { StatProgressBar } from '@/components/match/stat-progress-bar';
+import { StatProgressBar } from '@/components/match/match-primitives';
 
 interface CricketTeamStatsTableProps {
   homeStats: CricketTeamStats;

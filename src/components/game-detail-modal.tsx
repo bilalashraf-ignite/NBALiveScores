@@ -14,8 +14,16 @@ import { StatBox } from './match/stat-box';
 import { BettingMarkets } from './betting/betting-markets';
 import { BetSlip } from './betting/bet-slip';
 import { FootballScorers } from './football-scorers';
+import { HistoricalMatchup } from './historical-matchup';
+import {
+  CricketScorecard,
+  BallByBallTicker,
+  CricketTeamStatsTable,
+  CricketPlayerStatsTable,
+  CricketTopPerformers,
+} from './cricket';
 import type { League } from '@/types/sports-data';
-import { getSportFromLeague, isFootballGameDetails, GameState } from '@/types/sports-data';
+import { getSportFromLeague, isFootballGameDetails, isCricketGameDetails, GameState } from '@/types/sports-data';
 
 interface GameDetailModalProps {
   gameId: string;
@@ -128,6 +136,9 @@ export function GameDetailModal({
     if (sport === 'football' && isFootballGameDetails(data) && data.gameContext) {
       return `${data.gameContext.minute}'`;
     }
+    if (sport === 'cricket' && isCricketGameDetails(data) && data.gameContext) {
+      return `${data.gameContext.overs} ov`;
+    }
     return '';
   };
 
@@ -203,10 +214,55 @@ export function GameDetailModal({
                     />
                   )}
 
+                  {/* Cricket Live Updates (Ball-by-ball) */}
+                  {isCricketGameDetails(data) && data.gameContext && (
+                    <BallByBallTicker
+                      recentOvers={data.gameContext.recentOvers || []}
+                      lastBall={data.gameContext.lastBall}
+                      currentBatsmen={data.gameContext.currentBatsmen}
+                      currentBowler={data.gameContext.currentBowler}
+                      totalScore={data.innings?.[data.innings.length - 1]?.runs || 0}
+                      wickets={data.innings?.[data.innings.length - 1]?.wickets || 0}
+                      overs={data.gameContext.overs}
+                      target={data.gameContext.target}
+                      runsNeeded={data.gameContext.runsNeeded}
+                      ballsRemaining={data.gameContext.ballsRemaining}
+                    />
+                  )}
+
+                  {/* Cricket Scorecard */}
+                  {isCricketGameDetails(data) && (
+                    <CricketScorecard
+                      innings={data.innings}
+                      battingStats={data.battingStats}
+                      bowlingStats={data.bowlingStats}
+                      homeTeamName={data.homeTeam.name}
+                      awayTeamName={data.awayTeam.name}
+                    />
+                  )}
+
+                  {/* Cricket Top Performers (like FootballScorers) */}
+                  {isCricketGameDetails(data) && data.battingStats && data.bowlingStats && (
+                    <CricketTopPerformers
+                      battingStats={data.battingStats}
+                      bowlingStats={data.bowlingStats}
+                      homeTeam={data.homeTeam}
+                      awayTeam={data.awayTeam}
+                    />
+                  )}
+
                   {/* Team Statistics */}
                   {data.teamStats && data.teamStats.home && data.teamStats.away && (
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-white">Match Statistics</h3>
+                      {isCricketGameDetails(data) ? (
+                        <CricketTeamStatsTable
+                          homeStats={data.teamStats.home}
+                          awayStats={data.teamStats.away}
+                          homeTeamName={data.homeTeam.name}
+                          awayTeamName={data.awayTeam.name}
+                        />
+                      ) : (
                       <div className="space-y-4 p-4 rounded-xl bg-[#16162a] border border-purple-500/10">
                         {isFootballGameDetails(data) ? (
                           <>
@@ -252,6 +308,7 @@ export function GameDetailModal({
                           </>
                         )}
                       </div>
+                      )}
 
                       {/* Stat Boxes for Football */}
                       {isFootballGameDetails(data) && (
@@ -280,6 +337,23 @@ export function GameDetailModal({
                       )}
                     </div>
                   )}
+
+                  {/* Cricket Player Stats Table (detailed batting/bowling) */}
+                  {isCricketGameDetails(data) && data.battingStats && data.bowlingStats && (
+                    <CricketPlayerStatsTable
+                      battingStats={data.battingStats}
+                      bowlingStats={data.bowlingStats}
+                      homeTeam={data.homeTeam}
+                      awayTeam={data.awayTeam}
+                    />
+                  )}
+
+                  {/* Historical Matchup (Head-to-Head) */}
+                  <HistoricalMatchup
+                    data={data.historicalMatchup}
+                    homeTeam={data.homeTeam}
+                    awayTeam={data.awayTeam}
+                  />
 
                   {/* Betting Markets */}
                   <BettingMarkets

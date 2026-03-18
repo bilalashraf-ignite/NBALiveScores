@@ -15,22 +15,30 @@ export type BasketballLeague = 'NBA' | 'NCAA' | 'EuroLeague';
 export type FootballLeague = 'PremierLeague' | 'LaLiga' | 'Bundesliga' | 'SerieA' | 'Ligue1';
 
 /**
+ * Supported cricket leagues/tournaments.
+ */
+export type CricketLeague = 'IPL' | 'BBL' | 'PSL' | 'CPL' | 'ICC' | 'CountyChampionship';
+
+/**
  * All supported leagues.
  * Each league has its own adapter implementation.
  */
-export type League = BasketballLeague | FootballLeague;
+export type League = BasketballLeague | FootballLeague | CricketLeague;
 
 /**
  * Sport type discriminator.
  */
-export type Sport = 'basketball' | 'football';
+export type Sport = 'basketball' | 'football' | 'cricket';
 
 /**
  * Helper to determine sport from league.
  */
 export function getSportFromLeague(league: League): Sport {
   const footballLeagues: FootballLeague[] = ['PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1'];
-  return footballLeagues.includes(league as FootballLeague) ? 'football' : 'basketball';
+  const cricketLeagues: CricketLeague[] = ['IPL', 'BBL', 'PSL', 'CPL', 'ICC', 'CountyChampionship'];
+  if (footballLeagues.includes(league as FootballLeague)) return 'football';
+  if (cricketLeagues.includes(league as CricketLeague)) return 'cricket';
+  return 'basketball';
 }
 
 /**
@@ -45,6 +53,13 @@ export function isFootballLeague(league: League): league is FootballLeague {
  */
 export function isBasketballLeague(league: League): league is BasketballLeague {
   return ['NBA', 'NCAA', 'EuroLeague'].includes(league);
+}
+
+/**
+ * Type guard to check if a league is a cricket league.
+ */
+export function isCricketLeague(league: League): league is CricketLeague {
+  return ['IPL', 'BBL', 'PSL', 'CPL', 'ICC', 'CountyChampionship'].includes(league);
 }
 
 /**
@@ -132,6 +147,22 @@ export interface Game {
   minute?: number;
   /** Added/stoppage time - Football */
   addedTime?: number;
+  /** Current innings (1, 2, 3, or 4 for test) - Cricket */
+  innings?: number;
+  /** Overs completed (e.g., "15.3" = 15 overs and 3 balls) - Cricket */
+  overs?: string;
+  /** Wickets fallen in current innings - Cricket */
+  wickets?: number;
+  /** Runs scored in current innings - Cricket */
+  runs?: number;
+  /** Run rate (runs per over) - Cricket */
+  runRate?: number;
+  /** Required run rate to win (for chasing team) - Cricket */
+  requiredRunRate?: number;
+  /** Match format (T20, ODI, Test) - Cricket */
+  matchFormat?: 'T20' | 'ODI' | 'Test';
+  /** Target score to chase (if second innings) - Cricket */
+  target?: number;
 }
 
 /**
@@ -420,10 +451,253 @@ export interface FootballGameDetails {
   historicalMatchup: HistoricalMatchup;
 }
 
+// ============================================
+// CRICKET TYPES
+// ============================================
+
 /**
- * Union type for game details (basketball or football).
+ * Cricket match format types.
  */
-export type GameDetails = BasketballGameDetails | FootballGameDetails;
+export type CricketMatchFormat = 'T20' | 'ODI' | 'Test';
+
+/**
+ * Cricket innings score summary.
+ */
+export interface CricketInnings {
+  /** Innings number (1, 2, 3, or 4 for Test) */
+  inningsNumber: number;
+  /** Team batting in this innings */
+  battingTeam: 'home' | 'away';
+  /** Runs scored */
+  runs: number;
+  /** Wickets fallen */
+  wickets: number;
+  /** Overs bowled (e.g., "20.0", "45.3") */
+  overs: string;
+  /** Run rate */
+  runRate: number;
+  /** Is this innings completed? */
+  isCompleted: boolean;
+  /** Declared (Test matches) */
+  declared?: boolean;
+}
+
+/**
+ * Ball-by-ball delivery information.
+ */
+export interface CricketBall {
+  /** Over number (0-indexed within the over, so 0-5) */
+  ballNumber: number;
+  /** Over number (e.g., 15 for 15th over) */
+  overNumber: number;
+  /** Formatted over.ball (e.g., "15.3") */
+  overBall: string;
+  /** Runs scored on this ball */
+  runs: number;
+  /** Type of extra (wide, no-ball, bye, leg-bye) */
+  extras?: 'wide' | 'no-ball' | 'bye' | 'leg-bye';
+  /** Extra runs */
+  extraRuns?: number;
+  /** Was it a wicket? */
+  isWicket: boolean;
+  /** Wicket type if applicable */
+  wicketType?: 'bowled' | 'caught' | 'lbw' | 'run-out' | 'stumped' | 'hit-wicket' | 'retired';
+  /** Dismissed batsman name */
+  dismissedBatsman?: string;
+  /** Bowler name */
+  bowler: string;
+  /** Batsman on strike */
+  batsman: string;
+  /** Is it a boundary (4) */
+  isFour: boolean;
+  /** Is it a six */
+  isSix: boolean;
+  /** Commentary text */
+  commentary?: string;
+}
+
+/**
+ * Over summary for quick display.
+ */
+export interface CricketOver {
+  /** Over number */
+  overNumber: number;
+  /** Bowler name */
+  bowler: string;
+  /** Runs scored in this over */
+  runs: number;
+  /** Wickets taken in this over */
+  wickets: number;
+  /** Ball-by-ball breakdown (e.g., ["1", "0", "4", "W", "0", "2"]) */
+  balls: string[];
+  /** Maiden over (0 runs, no extras) */
+  isMaiden: boolean;
+}
+
+/**
+ * Cricket batsman statistics.
+ */
+export interface CricketBatsmanStats {
+  /** Player name */
+  name: string;
+  /** Is currently batting */
+  isOnStrike: boolean;
+  /** Is at the crease (not out) */
+  isNotOut: boolean;
+  /** Runs scored */
+  runs: number;
+  /** Balls faced */
+  balls: number;
+  /** Number of fours */
+  fours: number;
+  /** Number of sixes */
+  sixes: number;
+  /** Strike rate (runs per 100 balls) */
+  strikeRate: number;
+  /** How the batsman got out (if out) */
+  dismissal?: string;
+}
+
+/**
+ * Cricket bowler statistics.
+ */
+export interface CricketBowlerStats {
+  /** Player name */
+  name: string;
+  /** Is currently bowling */
+  isBowling: boolean;
+  /** Overs bowled (e.g., "4.0") */
+  overs: string;
+  /** Maiden overs */
+  maidens: number;
+  /** Runs conceded */
+  runs: number;
+  /** Wickets taken */
+  wickets: number;
+  /** Economy rate (runs per over) */
+  economy: number;
+  /** Dot balls bowled */
+  dots?: number;
+  /** Wides bowled */
+  wides?: number;
+  /** No-balls bowled */
+  noBalls?: number;
+}
+
+/**
+ * Cricket team stats for a match.
+ */
+export interface CricketTeamStats {
+  /** Total runs */
+  totalRuns: number;
+  /** Total wickets */
+  totalWickets: number;
+  /** Total overs */
+  totalOvers: string;
+  /** Run rate */
+  runRate: number;
+  /** Extras breakdown */
+  extras: {
+    total: number;
+    wides: number;
+    noBalls: number;
+    byes: number;
+    legByes: number;
+  };
+  /** Partnerships (optional) */
+  partnerships?: Array<{
+    batsman1: string;
+    batsman2: string;
+    runs: number;
+    balls: number;
+  }>;
+}
+
+/**
+ * Cricket game context (current match state).
+ */
+export interface CricketGameContext {
+  /** Current innings number */
+  currentInnings: number;
+  /** Overs completed in current innings */
+  overs: string;
+  /** Required run rate (if chasing) */
+  requiredRunRate?: number;
+  /** Target score (if chasing) */
+  target?: number;
+  /** Runs needed to win */
+  runsNeeded?: number;
+  /** Balls remaining */
+  ballsRemaining?: number;
+  /** Current batsmen on crease */
+  currentBatsmen?: {
+    striker: CricketBatsmanStats;
+    nonStriker: CricketBatsmanStats;
+  };
+  /** Current bowler */
+  currentBowler?: CricketBowlerStats;
+  /** Recent overs summary */
+  recentOvers?: CricketOver[];
+  /** Last ball details */
+  lastBall?: CricketBall;
+}
+
+/**
+ * Detailed cricket game information.
+ */
+export interface CricketGameDetails {
+  /** Game identifier */
+  gameId: string;
+  /** League this game belongs to */
+  league: CricketLeague;
+  /** Home team information */
+  homeTeam: Team;
+  /** Away team information */
+  awayTeam: Team;
+  /** Game status (live, final, etc.) */
+  status: GameState;
+  /** Match format */
+  matchFormat: CricketMatchFormat;
+  /** Current score (simplified) */
+  score: Score;
+  /** All innings data */
+  innings: CricketInnings[];
+  /** Optional game context for live games */
+  gameContext?: CricketGameContext;
+  /** Team statistics */
+  teamStats: {
+    home: CricketTeamStats;
+    away: CricketTeamStats;
+  };
+  /** Batting stats per innings */
+  battingStats: {
+    home: CricketBatsmanStats[];
+    away: CricketBatsmanStats[];
+  };
+  /** Bowling stats per innings */
+  bowlingStats: {
+    home: CricketBowlerStats[];
+    away: CricketBowlerStats[];
+  };
+  /** Ball-by-ball data (recent balls, limited for performance) */
+  ballByBall?: CricketBall[];
+  /** Toss information */
+  toss?: {
+    winner: 'home' | 'away';
+    decision: 'bat' | 'bowl';
+  };
+  /** Venue information */
+  venue?: string;
+  /** Match result (if completed) */
+  result?: string;
+  /** Historical matchup data */
+  historicalMatchup: HistoricalMatchup;
+}
+
+/**
+ * Union type for game details (basketball, football, or cricket).
+ */
+export type GameDetails = BasketballGameDetails | FootballGameDetails | CricketGameDetails;
 
 /**
  * Type guard to check if game details are for football.
@@ -437,4 +711,11 @@ export function isFootballGameDetails(details: GameDetails): details is Football
  */
 export function isBasketballGameDetails(details: GameDetails): details is BasketballGameDetails {
   return isBasketballLeague(details.league as League);
+}
+
+/**
+ * Type guard to check if game details are for cricket.
+ */
+export function isCricketGameDetails(details: GameDetails): details is CricketGameDetails {
+  return isCricketLeague(details.league as League);
 }

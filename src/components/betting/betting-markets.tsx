@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MarketTabs } from './market-tabs';
-import { BettingOption } from './betting-option';
+import { MarketTabs, BettingOption } from './betting-primitives';
 import type { Team } from '@/types/sports-data';
 
 interface BettingMarketsProps {

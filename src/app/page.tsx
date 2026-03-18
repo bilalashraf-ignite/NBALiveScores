@@ -28,6 +28,7 @@ const GameDetailModal = dynamic(() => import('@/components/game-detail-modal').t
 const sportsItems = [
   { id: 'football' as Sport, name: 'Football', icon: '⚽' },
   { id: 'basketball' as Sport, name: 'Basketball', icon: '🏀' },
+  { id: 'cricket' as Sport, name: 'Cricket', icon: '🏏' },
 ];
 
 // League colors for sidebar
@@ -40,6 +41,13 @@ const leagueColors: Record<League, string> = {
   NBA: '#c8102e',
   NCAA: '#0033a0',
   EuroLeague: '#f68428',
+  // Cricket leagues
+  IPL: '#004ba0',
+  BBL: '#00a651',
+  PSL: '#00843d',
+  CPL: '#e31837',
+  ICC: '#1c4587',
+  CountyChampionship: '#1a472a',
 };
 
 export default function HomePage() {
@@ -64,7 +72,12 @@ export default function HomePage() {
   // Filter games by selected sport
   const basketballGames = games?.filter(g => getSportFromLeague(g.league) === 'basketball') || [];
   const footballGames = games?.filter(g => getSportFromLeague(g.league) === 'football') || [];
-  const sportGames = selectedSport === 'basketball' ? basketballGames : footballGames;
+  const cricketGames = games?.filter(g => getSportFromLeague(g.league) === 'cricket') || [];
+  const sportGames = selectedSport === 'basketball'
+    ? basketballGames
+    : selectedSport === 'cricket'
+      ? cricketGames
+      : footballGames;
 
   // Filter by league if selected
   const filteredGames = selectedLeague === 'all'
@@ -122,7 +135,11 @@ export default function HomePage() {
           <LeftSidebar
             sports={sportsItems.map(sport => ({
               ...sport,
-              count: sport.id === 'basketball' ? basketballGames.length : footballGames.length,
+              count: sport.id === 'basketball'
+                ? basketballGames.length
+                : sport.id === 'cricket'
+                  ? cricketGames.length
+                  : footballGames.length,
             }))}
             leagues={activeLeagues.map(league => ({
               id: league,
@@ -216,7 +233,7 @@ export default function HomePage() {
             <div className="text-center py-16">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-500/10 flex items-center justify-center">
                 <span className="text-3xl">
-                  {selectedSport === 'basketball' ? '🏀' : '⚽'}
+                  {selectedSport === 'basketball' ? '🏀' : selectedSport === 'cricket' ? '🏏' : '⚽'}
                 </span>
               </div>
               <h3 className="text-xl font-semibold text-white">No matches available</h3>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { GradientButton } from '@/components/ui/gradient-button';
 import { StakeInput } from './stake-input';
-import { ComboBoostPromo } from './combo-boost-promo';
+import { ComboBoostPromo } from './betting-primitives';
 
 interface BetSelection {
   type: string;

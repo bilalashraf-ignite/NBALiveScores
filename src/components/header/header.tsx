@@ -3,8 +3,7 @@
 import { useSession } from "next-auth/react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "./user-menu";
-import { AuthButtons } from "./auth-buttons";
-import { StarBalanceBadge } from "./star-balance-badge";
+import { AuthButtons, StarBalanceBadge } from "./header-components";
 import { SportTabs } from "@/components/sport-tabs";
 import type { Sport } from "@/types/sports-data";
 

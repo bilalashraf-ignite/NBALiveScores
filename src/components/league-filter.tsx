@@ -18,6 +18,13 @@ const leagueLabels: Record<League, string> = {
   Bundesliga: 'Bundesliga',
   SerieA: 'Serie A',
   Ligue1: 'Ligue 1',
+  // Cricket
+  IPL: 'IPL',
+  BBL: 'Big Bash League',
+  PSL: 'Pakistan Super League',
+  CPL: 'Caribbean Premier League',
+  ICC: 'International',
+  CountyChampionship: 'County Championship',
 };
 
 /**

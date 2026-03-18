@@ -25,7 +25,9 @@ export async function GET(
       // Basketball
       'NBA', 'NCAA', 'EuroLeague',
       // Football
-      'PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1'
+      'PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1',
+      // Cricket
+      'IPL', 'BBL', 'PSL', 'CPL', 'ICC', 'CountyChampionship'
     ];
     if (!validLeagues.includes(league as League)) {
       return NextResponse.json(

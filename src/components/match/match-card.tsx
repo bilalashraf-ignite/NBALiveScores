@@ -20,12 +20,20 @@ const leagueLabels: Record<League, string> = {
   Bundesliga: 'Bundesliga',
   SerieA: 'Serie A',
   Ligue1: 'Ligue 1',
+  IPL: 'IPL',
+  BBL: 'Big Bash',
+  PSL: 'PSL',
+  CPL: 'CPL',
+  ICC: 'International',
+  CountyChampionship: 'County',
 };
 
 function getMatchTime(game: Game): string {
   const sport = getSportFromLeague(game.league);
   if (sport === 'football') {
     return `${game.minute || 0}'`;
+  } else if (sport === 'cricket') {
+    return game.overs ? `${game.overs} ov` : '';
   } else {
     return game.period ? `Q${game.period}` : '';
   }
@@ -99,11 +107,29 @@ export function MatchCard({ game, onClick }: MatchCardProps) {
 
           {/* Score */}
           <div className="text-center px-4">
-            <p className="text-3xl font-bold text-white">
-              {game.score.home} - {game.score.away}
-            </p>
-            {isLive && game.state === GameState.HALFTIME && (
-              <p className="text-xs text-yellow-400 mt-1">HT: {game.score.home}-{game.score.away}</p>
+            {getSportFromLeague(game.league) === 'cricket' ? (
+              <>
+                <p className="text-2xl font-bold text-white">
+                  {game.runs !== undefined ? `${game.runs}/${game.wickets}` : '-'}
+                </p>
+                {game.overs && (
+                  <p className="text-xs text-gray-400 mt-1">({game.overs} ov)</p>
+                )}
+                {game.target && (
+                  <p className="text-xs text-purple-300 mt-1">
+                    Target: {game.target}
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="text-3xl font-bold text-white">
+                  {game.score.home} - {game.score.away}
+                </p>
+                {isLive && game.state === GameState.HALFTIME && (
+                  <p className="text-xs text-yellow-400 mt-1">HT: {game.score.home}-{game.score.away}</p>
+                )}
+              </>
             )}
           </div>
 

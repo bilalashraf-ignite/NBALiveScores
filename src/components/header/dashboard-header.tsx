@@ -2,11 +2,9 @@
 
 import { useSession } from 'next-auth/react';
 import { BrandLogo } from '@/components/brand/brand-logo';
-import { NavTabs } from './nav-tabs';
 import { SearchBar } from './search-bar';
 import { UserMenu } from './user-menu';
-import { AuthButtons } from './auth-buttons';
-import { StarBalanceBadge } from './star-balance-badge';
+import { NavTabs, AuthButtons, StarBalanceBadge } from './header-components';
 
 const navTabs = [
   { id: 'live', label: 'Live Scores' },

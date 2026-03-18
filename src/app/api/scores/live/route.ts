@@ -8,6 +8,7 @@
  * Multi-league support with parallel fetching from:
  * - Basketball: NBA, NCAA, EuroLeague
  * - Football: Premier League, La Liga, Bundesliga, Serie A, Ligue 1
+ * - Cricket: IPL, BBL, PSL, CPL, ICC, County Championship
  * Uses Promise.allSettled to ensure one failing API doesn't block others.
  *
  * Critical configuration:
@@ -40,7 +41,9 @@ async function fetchAllLeagues(): Promise<{
     // Basketball
     'NBA', 'NCAA', 'EuroLeague',
     // Football
-    'PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1'
+    'PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1',
+    // Cricket
+    'IPL', 'BBL', 'PSL', 'CPL', 'ICC', 'CountyChampionship'
   ];
 
   // Parallel fetches — don't wait for slow APIs

@@ -1,8 +1,6 @@
 'use client';
 
-import { SportsNavItem } from './sports-nav-item';
-import { LeaguesNavItem } from './leagues-nav-item';
-import { ProFeatureCard } from './pro-feature-card';
+import { SportsNavItem, LeaguesNavItem, ProFeatureCard } from './sidebar-components';
 import type { Sport, League } from '@/types/sports-data';
 
 interface SportItem {

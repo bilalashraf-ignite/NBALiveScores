@@ -14,8 +14,7 @@ import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { LeftSidebar } from '@/components/sidebar/left-sidebar';
 import { MatchCard } from '@/components/match/match-card';
 import { FeaturedMatch } from '@/components/match/featured-match';
-import { DateFilter } from '@/components/filters/date-filter';
-import { ViewToggle } from '@/components/filters/view-toggle';
+import { DateFilter, ViewToggle } from '@/components/filters';
 import { uiLogger } from '@/lib/client-logger';
 
 // Lazy load GameDetailModal with skeleton fallback

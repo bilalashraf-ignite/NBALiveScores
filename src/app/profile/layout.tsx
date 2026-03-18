@@ -1,22 +1,12 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-
-export default async function ProfileLayout({
+export default function ProfileLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect("/signin?callbackUrl=/profile");
-  }
-
+  // Auth check is handled by middleware - no need for redirect here
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        {children}
-      </div>
+    <div className="min-h-screen bg-[#0f0f1a]">
+      {children}
     </div>
   );
 }

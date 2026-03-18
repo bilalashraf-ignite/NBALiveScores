@@ -1,12 +1,22 @@
+import { AuthHero } from '@/components/auth/auth-hero';
+
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {children}
+    <div className="min-h-screen grid lg:grid-cols-2 bg-[#0f0f1a]">
+      {/* Left: Hero Section - hidden on mobile */}
+      <div className="hidden lg:block">
+        <AuthHero />
+      </div>
+
+      {/* Right: Form Section */}
+      <div className="flex items-center justify-center p-6 sm:p-8 lg:p-12 bg-[#0f0f1a]">
+        <div className="w-full max-w-md space-y-8">
+          {children}
+        </div>
       </div>
     </div>
   );

@@ -71,6 +71,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    async authorized({ auth, request }) {
+      const isAuthenticated = !!auth?.user;
+      const { pathname } = request.nextUrl;
+
+      // Public routes that don't require auth
+      const publicRoutes = ['/signin', '/signup', '/forgot-password', '/reset-password', '/verify-email', '/error'];
+      const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
+      // If on public route and authenticated → redirect to dashboard
+      if (isPublicRoute && isAuthenticated) {
+        return Response.redirect(new URL('/', request.nextUrl));
+      }
+
+      // If on protected route and NOT authenticated → redirect to signin
+      if (!isPublicRoute && !isAuthenticated) {
+        const callbackUrl = encodeURIComponent(pathname);
+        return Response.redirect(new URL(`/signin?callbackUrl=${callbackUrl}`, request.nextUrl));
+      }
+
+      return true; // Allow access
+    },
     async signIn({ user }) {
       // Block disabled users from signing in (applies to all providers)
       if (user.id) {

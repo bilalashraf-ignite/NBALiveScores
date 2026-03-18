@@ -6,11 +6,37 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Design System: Purple/Magenta Theme */
+  --primary-purple: #a855f7;
+  --primary-magenta: #ec4899;
+  --accent-violet: #8b5cf6;
+
+  /* Dark backgrounds for new design */
+  --dark-bg-primary: #0f0f1a;
+  --dark-bg-secondary: #1a1a2e;
+  --dark-bg-elevated: #252540;
+  --dark-bg-card: #16162a;
+
+  /* Border colors */
+  --border-purple: rgba(168, 85, 247, 0.3);
+  --border-purple-hover: rgba(168, 85, 247, 0.5);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Design System Colors */
+  --color-primary: var(--primary-purple);
+  --color-accent: var(--primary-magenta);
+  --color-violet: var(--accent-violet);
+
+  /* Dark Surface Colors */
+  --color-surface-primary: var(--dark-bg-primary);
+  --color-surface-secondary: var(--dark-bg-secondary);
+  --color-surface-elevated: var(--dark-bg-elevated);
+  --color-surface-card: var(--dark-bg-card);
 }
 
 @media (prefers-color-scheme: dark) {

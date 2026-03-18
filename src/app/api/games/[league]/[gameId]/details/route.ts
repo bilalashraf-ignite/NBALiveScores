@@ -21,7 +21,12 @@ export async function GET(
     const { league, gameId } = await params;
 
     // Validate league parameter
-    const validLeagues: League[] = ['NBA', 'NCAA', 'EuroLeague'];
+    const validLeagues: League[] = [
+      // Basketball
+      'NBA', 'NCAA', 'EuroLeague',
+      // Football
+      'PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1'
+    ];
     if (!validLeagues.includes(league as League)) {
       return NextResponse.json(
         { error: `Invalid league: ${league}. Must be one of: ${validLeagues.join(', ')}` },

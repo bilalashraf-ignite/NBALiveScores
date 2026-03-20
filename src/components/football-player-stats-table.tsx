@@ -158,69 +158,104 @@ export function FootballPlayerStatsTable({
         <thead className="bg-gray-200 dark:bg-gray-700">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="border-b border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-                  onClick={header.column.getToggleSortingHandler()}
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
-                  {header.column.getIsSorted() &&
-                    (header.column.getIsSorted() === "desc" ? " ▼" : " ▲")}
-                </th>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const sortDirection = header.column.getIsSorted();
+                const canSort = header.column.getCanSort();
+                return (
+                  <th
+                    key={header.id}
+                    className="border-b border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                    onClick={header.column.getToggleSortingHandler()}
+                    aria-sort={
+                      canSort
+                        ? sortDirection === "asc"
+                          ? "ascending"
+                          : sortDirection === "desc"
+                            ? "descending"
+                            : "none"
+                        : undefined
+                    }
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                    {sortDirection &&
+                      (sortDirection === "desc" ? " ▼" : " ▲")}
+                  </th>
+                );
+              })}
             </tr>
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row, index) => {
-            // Check if this is the first away team player (insert divider before)
-            const isFirstAwayPlayer =
-              row.original.team === "away" &&
-              (index === 0 ||
-                table.getRowModel().rows[index - 1]?.original.team === "home");
+          {(() => {
+            const rows = table.getRowModel().rows;
+            const homeRows = rows.filter((r) => r.original.team === "home");
+            const awayRows = rows.filter((r) => r.original.team === "away");
 
             return (
-              <React.Fragment key={row.id}>
-                {isFirstAwayPlayer && (
-                  <tr data-testid="team-divider">
-                    <td
-                      colSpan={columns.length}
-                      className="border-t-2 border-gray-400 bg-gray-100 dark:bg-gray-700 px-4 py-2 text-center font-semibold"
-                    >
-                      {awayTeam.name}
-                    </td>
-                  </tr>
-                )}
-                <tr
-                  className={`bg-white dark:bg-gray-800 hover:bg-green-100 dark:hover:bg-green-900/40 ${
-                    row.original.team === "home" && index === 0 ? "" : ""
-                  }`}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="border-b border-gray-200 px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  ))}
+              <>
+                {/* Home team section */}
+                <tr data-testid="home-team-header">
+                  <td
+                    colSpan={columns.length}
+                    className="bg-gray-100 dark:bg-gray-700 px-4 py-2 text-center font-semibold text-gray-900 dark:text-gray-100"
+                  >
+                    {homeTeam.name}
+                  </td>
                 </tr>
-              </React.Fragment>
+                {homeRows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="bg-white dark:bg-gray-800 hover:bg-green-100 dark:hover:bg-green-900/40"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="border-b border-gray-200 px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+
+                {/* Away team section */}
+                <tr data-testid="team-divider">
+                  <td
+                    colSpan={columns.length}
+                    className="border-t-2 border-gray-400 bg-gray-100 dark:bg-gray-700 px-4 py-2 text-center font-semibold text-gray-900 dark:text-gray-100"
+                  >
+                    {awayTeam.name}
+                  </td>
+                </tr>
+                {awayRows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="bg-white dark:bg-gray-800 hover:bg-green-100 dark:hover:bg-green-900/40"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="border-b border-gray-200 px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </>
             );
-          })}
+          })()}
         </tbody>
       </table>
-      {/* Display home team name above home players */}
-      <div className="mt-2 text-xs text-gray-600 text-center">
-        Home: {homeTeam.name}
-      </div>
     </div>
   );
 }

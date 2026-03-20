@@ -5,9 +5,23 @@ import { verifyToken } from "@/lib/tokens";
 import { authLogger } from "@/lib/logger";
 
 export async function POST(request: Request) {
-  try {
-    const { token, email, password } = await request.json();
+  let token: string | undefined;
+  let email: string | undefined;
+  let password: string | undefined;
 
+  try {
+    const body = await request.json();
+    token = body.token;
+    email = body.email;
+    password = body.password;
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON in request body" },
+      { status: 400 }
+    );
+  }
+
+  try {
     if (!token || !email || !password) {
       return NextResponse.json(
         { error: "Token, email, and password are required" },

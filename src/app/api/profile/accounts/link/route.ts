@@ -12,7 +12,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { provider } = await request.json();
+    let provider: string;
+    try {
+      const body = await request.json();
+      provider = body.provider;
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
+      );
+    }
 
     if (!["google", "facebook"].includes(provider)) {
       return NextResponse.json(

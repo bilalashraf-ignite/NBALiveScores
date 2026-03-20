@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import Image from 'next/image';
 import { LiveBadge } from '@/components/ui/live-badge';
 import { GradientButton } from '@/components/ui/gradient-button';
@@ -58,16 +59,31 @@ export function MatchCard({ game, onClick }: MatchCardProps) {
   const badgeVariant = getBadgeVariant(game.state);
 
   // Mock odds for display (in real app, these would come from the API)
-  const homeOdds = (1 + Math.random() * 2).toFixed(1);
-  const awayOdds = (1 + Math.random() * 3).toFixed(1);
+  // Memoized to prevent re-calculation on every render
+  const { homeOdds, awayOdds } = useMemo(() => ({
+    homeOdds: (1 + Math.random() * 2).toFixed(1),
+    awayOdds: (1 + Math.random() * 3).toFixed(1),
+  }), []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
 
   return (
     <div
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label={`View match details for ${game.homeTeam.name} vs ${game.awayTeam.name}`}
       className="
         group relative overflow-hidden rounded-xl
         bg-[#16162a] border border-purple-500/10
         hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/5
+        focus:outline-none focus:ring-2 focus:ring-purple-500/50
         transition-all duration-300 cursor-pointer
       "
     >

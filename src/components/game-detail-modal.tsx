@@ -62,6 +62,7 @@ export function GameDetailModal({
   const contentRef = useRef<HTMLDivElement>(null);
   const dragHandleRef = useRef<HTMLDivElement>(null);
   const [betSelections, setBetSelections] = useState<BetSelection[]>([]);
+  const [isMobileBetSlipOpen, setIsMobileBetSlipOpen] = useState(false);
 
   const { data, loading, error } = useGameDetails(gameId, league, open);
 
@@ -376,13 +377,47 @@ export function GameDetailModal({
 
           {/* Mobile Bet Slip (Fixed bottom) */}
           {betSelections.length > 0 && (
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-[#0f0f1a] border-t border-purple-500/10">
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-[#0f0f1a] border-t border-purple-500/10 z-30">
               <button
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold"
-                onClick={() => {/* Open mobile bet slip */}}
+                onClick={() => setIsMobileBetSlipOpen(true)}
               >
                 View Bet Slip ({betSelections.length})
               </button>
+            </div>
+          )}
+
+          {/* Mobile Bet Slip Drawer */}
+          {isMobileBetSlipOpen && (
+            <div className="lg:hidden fixed inset-0 z-50">
+              {/* Backdrop */}
+              <div
+                className="absolute inset-0 bg-black/60"
+                onClick={() => setIsMobileBetSlipOpen(false)}
+              />
+              {/* Drawer */}
+              <div className="absolute bottom-0 left-0 right-0 max-h-[80vh] bg-[#0f0f1a] rounded-t-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+                {/* Drawer handle */}
+                <div className="flex justify-center py-3 border-b border-purple-500/10">
+                  <button
+                    onClick={() => setIsMobileBetSlipOpen(false)}
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    <div className="h-1 w-10 rounded-full bg-purple-500/30" />
+                  </button>
+                </div>
+                {/* Bet slip content */}
+                <div className="overflow-y-auto max-h-[calc(80vh-48px)]">
+                  <BetSlip
+                    selections={betSelections}
+                    onRemoveSelection={handleRemoveSelection}
+                    onClearAll={() => {
+                      handleClearAll();
+                      setIsMobileBetSlipOpen(false);
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           )}
         </Dialog.Content>

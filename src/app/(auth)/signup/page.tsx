@@ -39,14 +39,14 @@ export default function SignUpPage() {
     setIsLoading(true);
     setError("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
       setIsLoading(false);
       return;
     }
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
       setIsLoading(false);
       return;
     }
@@ -118,7 +118,11 @@ export default function SignUpPage() {
 
       {/* Error message */}
       {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400">
+        <div
+          role="alert"
+          aria-live="polite"
+          className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400"
+        >
           {error}
         </div>
       )}
@@ -126,7 +130,7 @@ export default function SignUpPage() {
       {/* OAuth buttons */}
       <div className="grid grid-cols-2 gap-4">
         <OAuthButton provider="google" />
-        <OAuthButton provider="apple" />
+        <OAuthButton provider="facebook" />
       </div>
 
       {/* Divider */}

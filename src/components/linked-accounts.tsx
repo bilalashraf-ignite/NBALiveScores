@@ -2,12 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { signIn } from "next-auth/react";
-
-interface LinkedAccount {
-  id: string;
-  provider: string;
-  providerAccountId: string;
-}
+import type { LinkedAccount } from "@/types/user";
 
 interface AccountsData {
   accounts: LinkedAccount[];

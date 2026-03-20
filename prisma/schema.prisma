@@ -32,6 +32,8 @@ model User {
   birthday      DateTime?
   gender        String?
   status        UserStatus @default(ACTIVE)
+  lastVerificationEmailSent DateTime? // Rate limiting for verification emails
+  lastPasswordResetEmailSent DateTime? // Rate limiting for password reset emails
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 

@@ -148,23 +148,43 @@ export class FootballAdapter extends BaseAdapter implements SportsDataAdapter {
   /**
    * Fetch a single game by ID.
    *
+   * Returns null if the game is not found or if an error occurs.
+   * Callers should check for null before using the result.
+   *
+   * Note: Phase 1 implementation - real API calls not yet implemented.
+   *
    * @param gameId - Game identifier
-   * @returns Game data
-   * @throws Error if game not found
+   * @returns Game data if found, or null on error/not found
    */
-  async getGame(gameId: string): Promise<Game> {
-    throw new Error(`Game ${gameId} not found (Phase 1: network calls not implemented)`);
+  async getGame(gameId: string): Promise<Game | null> {
+    try {
+      console.warn(`FootballAdapter.getGame: Game ${gameId} lookup not implemented in Phase 1`);
+      return null;
+    } catch (error) {
+      console.error(`Failed to fetch game ${gameId} from football API:`, error);
+      return null;
+    }
   }
 
   /**
    * Fetch scheduled games for a specific date.
    *
+   * Returns an empty array if no games are scheduled or if an error occurs.
+   * Callers should check array length to determine if games exist.
+   *
+   * Note: Phase 1 implementation - real API calls not yet implemented.
+   *
    * @param league - League identifier
    * @param date - Date to fetch games for (UTC)
-   * @returns Array of scheduled games
+   * @returns Array of scheduled games, or empty array on error/no games
    */
   async getScheduledGames(league: string, date: Date): Promise<Game[]> {
-    return [];
+    try {
+      return [];
+    } catch (error) {
+      console.error(`Failed to fetch scheduled games for ${league}:`, error);
+      return [];
+    }
   }
 
   /**

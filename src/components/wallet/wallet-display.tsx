@@ -64,14 +64,34 @@ export function AssetCard({
 // Digital assets grid display
 interface DigitalAssetsProps {
   totalBalance?: number;
+  totalBalanceChange?: number;
   monthlyGrowth?: number;
+  monthlyGrowthChange?: number;
   activeAssets?: number;
+  activeAssetsChange?: number;
+}
+
+// Helper to determine change type from numeric value
+function getChangeType(change: number | undefined): 'positive' | 'negative' | 'neutral' {
+  if (change === undefined || change === 0) return 'neutral';
+  return change > 0 ? 'positive' : 'negative';
+}
+
+// Helper to format change value for display
+function formatChange(change: number | undefined): string | undefined {
+  if (change === undefined) return undefined;
+  if (change === 0) return 'No change';
+  const sign = change > 0 ? '+' : '';
+  return `${sign}${change.toFixed(1)}%`;
 }
 
 export function DigitalAssets({
   totalBalance = 12450.80,
+  totalBalanceChange,
   monthlyGrowth = 15.4,
+  monthlyGrowthChange,
   activeAssets = 8,
+  activeAssetsChange,
 }: DigitalAssetsProps) {
   return (
     <div className="space-y-4">
@@ -80,8 +100,8 @@ export function DigitalAssets({
         <AssetCard
           title="Total Balance"
           value={`$${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-          change="+2.5%"
-          changeType="positive"
+          change={formatChange(totalBalanceChange)}
+          changeType={getChangeType(totalBalanceChange)}
           icon={
             <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -90,9 +110,9 @@ export function DigitalAssets({
         />
         <AssetCard
           title="Monthly Growth"
-          value={`+${monthlyGrowth}%`}
-          change="+0.8%"
-          changeType="positive"
+          value={`${monthlyGrowth >= 0 ? '+' : ''}${monthlyGrowth}%`}
+          change={formatChange(monthlyGrowthChange)}
+          changeType={getChangeType(monthlyGrowthChange)}
           icon={
             <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -102,8 +122,8 @@ export function DigitalAssets({
         <AssetCard
           title="Active Assets"
           value={`${activeAssets} Tokens`}
-          change="No change"
-          changeType="neutral"
+          change={formatChange(activeAssetsChange)}
+          changeType={getChangeType(activeAssetsChange)}
           icon={
             <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />

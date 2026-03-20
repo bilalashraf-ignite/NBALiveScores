@@ -4,6 +4,20 @@ import { useState, useEffect } from "react";
 import type { UserProfile, UpdateProfileData } from "@/types/user";
 import { genderOptions } from "@/types/user";
 
+// Extract date string without timezone conversion
+function formatDateForInput(value: string | Date | null | undefined): string {
+  if (!value) return "";
+  if (typeof value === "string") {
+    // Already a string - extract date part if ISO format, or use as-is if YYYY-MM-DD
+    return value.split("T")[0];
+  }
+  // For Date objects, use local date components to avoid timezone shift
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 interface ProfileFormProps {
   profile: UserProfile;
   onSave: (data: UpdateProfileData) => Promise<boolean>;
@@ -14,9 +28,7 @@ export function ProfileForm({ profile, onSave }: ProfileFormProps) {
   const [phone, setPhone] = useState(profile.phone || "");
   const [bio, setBio] = useState(profile.bio || "");
   const [location, setLocation] = useState(profile.location || "");
-  const [birthday, setBirthday] = useState(
-    profile.birthday ? new Date(profile.birthday).toISOString().split("T")[0] : ""
-  );
+  const [birthday, setBirthday] = useState(formatDateForInput(profile.birthday));
   const [gender, setGender] = useState(profile.gender || "");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -29,9 +41,7 @@ export function ProfileForm({ profile, onSave }: ProfileFormProps) {
     setPhone(profile.phone || "");
     setBio(profile.bio || "");
     setLocation(profile.location || "");
-    setBirthday(
-      profile.birthday ? new Date(profile.birthday).toISOString().split("T")[0] : ""
-    );
+    setBirthday(formatDateForInput(profile.birthday));
     setGender(profile.gender || "");
   }, [profile]);
 

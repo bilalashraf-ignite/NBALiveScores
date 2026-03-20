@@ -37,8 +37,12 @@ export async function PATCH(request: Request) {
       select: { password: true },
     });
 
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     // If user has a password, verify current password
-    if (user?.password) {
+    if (user.password) {
       if (!currentPassword) {
         return NextResponse.json(
           { error: "Current password is required" },

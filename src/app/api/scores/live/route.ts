@@ -21,6 +21,7 @@
 
 import { getAdapter } from '@/lib/adapters';
 import type { League, Game } from '@/types/sports-data';
+import { VALID_LEAGUES } from '@/types/sports-data';
 import { apiLogger } from '@/lib/logger';
 
 // CRITICAL: Prevent buffering and caching that breaks SSE
@@ -37,18 +38,9 @@ async function fetchAllLeagues(): Promise<{
   games: Game[];
   errors: Partial<Record<League, string>>;
 }> {
-  const leagues: League[] = [
-    // Basketball
-    'NBA', 'NCAA', 'EuroLeague',
-    // Football
-    'PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1',
-    // Cricket
-    'IPL', 'BBL', 'PSL', 'CPL', 'ICC', 'CountyChampionship'
-  ];
-
   // Parallel fetches — don't wait for slow APIs
   const results = await Promise.allSettled(
-    leagues.map(async (league) => {
+    VALID_LEAGUES.map(async (league) => {
       const adapter = getAdapter(league);
       return adapter.getLiveGames(league);
     })
@@ -58,7 +50,7 @@ async function fetchAllLeagues(): Promise<{
   const errors: Partial<Record<League, string>> = {};
 
   results.forEach((result, index) => {
-    const league = leagues[index];
+    const league = VALID_LEAGUES[index];
     if (result.status === 'fulfilled') {
       games.push(...result.value);
     } else {

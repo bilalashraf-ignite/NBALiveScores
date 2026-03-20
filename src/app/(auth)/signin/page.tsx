@@ -44,6 +44,7 @@ function SignInForm() {
       const result = await signIn("credentials", {
         email,
         password,
+        rememberMe: rememberMe.toString(),
         redirect: false,
       });
 
@@ -72,7 +73,11 @@ function SignInForm() {
 
       {/* Error message */}
       {(error || errorMessage) && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400">
+        <div
+          role="alert"
+          aria-live="polite"
+          className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400"
+        >
           {error === "OAuthAccountNotLinked"
             ? "This email is already associated with another account. Please sign in with your original method."
             : errorMessage || "An error occurred during sign in."}
@@ -82,7 +87,7 @@ function SignInForm() {
       {/* OAuth buttons */}
       <div className="grid grid-cols-2 gap-4">
         <OAuthButton provider="google" callbackUrl={callbackUrl} />
-        <OAuthButton provider="apple" callbackUrl={callbackUrl} />
+        <OAuthButton provider="facebook" callbackUrl={callbackUrl} />
       </div>
 
       {/* Divider */}

@@ -36,7 +36,9 @@ export function BettingOption({
 }: BettingOptionProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
+      aria-pressed={isSelected}
       className={`
         flex flex-col items-center justify-center p-4 rounded-xl
         border transition-all duration-200 min-w-[100px]
@@ -68,24 +70,67 @@ export function MarketTabs({
   onTabChange,
   tabs = defaultTabs,
 }: MarketTabsProps) {
+  const handleKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
+    let newIndex: number | null = null;
+
+    switch (e.key) {
+      case 'ArrowRight':
+        newIndex = (currentIndex + 1) % tabs.length;
+        break;
+      case 'ArrowLeft':
+        newIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        break;
+      case 'Home':
+        newIndex = 0;
+        break;
+      case 'End':
+        newIndex = tabs.length - 1;
+        break;
+      default:
+        return;
+    }
+
+    e.preventDefault();
+    onTabChange(tabs[newIndex]);
+
+    // Focus the new tab button
+    const tabId = `market-tab-${tabs[newIndex].toLowerCase().replace(/\s+/g, '-')}`;
+    document.getElementById(tabId)?.focus();
+  };
+
   return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-      {tabs.map((tab) => (
-        <button
-          key={tab}
-          onClick={() => onTabChange(tab)}
-          className={`
-            px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap
-            transition-all duration-200
-            ${activeTab === tab
-              ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-              : 'bg-[#1a1a2e] text-gray-400 hover:text-white border border-purple-500/10 hover:border-purple-500/30'
-            }
-          `}
-        >
-          {tab}
-        </button>
-      ))}
+    <div
+      role="tablist"
+      aria-label="Market categories"
+      className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide"
+    >
+      {tabs.map((tab, index) => {
+        const isSelected = activeTab === tab;
+        const tabId = `market-tab-${tab.toLowerCase().replace(/\s+/g, '-')}`;
+
+        return (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            id={tabId}
+            aria-selected={isSelected}
+            tabIndex={isSelected ? 0 : -1}
+            onClick={() => onTabChange(tab)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            className={`
+              px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap
+              transition-all duration-200
+              ${isSelected
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                : 'bg-[#1a1a2e] text-gray-400 hover:text-white border border-purple-500/10 hover:border-purple-500/30'
+              }
+            `}
+          >
+            {tab}
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -11,24 +11,24 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const accounts = await prisma.account.findMany({
-      where: { userId: session.user.id },
+    // Fetch user with accounts in a single query
+    const userWithAccounts = await prisma.user.findUnique({
+      where: { id: session.user.id },
       select: {
-        id: true,
-        provider: true,
-        providerAccountId: true,
+        password: true,
+        accounts: {
+          select: {
+            id: true,
+            provider: true,
+            providerAccountId: true,
+          },
+        },
       },
     });
 
-    // Check if user has a password set (for unlinking safeguard)
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { password: true },
-    });
-
     return NextResponse.json({
-      accounts,
-      hasPassword: !!user?.password,
+      accounts: userWithAccounts?.accounts ?? [],
+      hasPassword: !!userWithAccounts?.password,
     });
   } catch (error) {
     profileLogger.error({ err: error }, "Accounts fetch error");

@@ -124,6 +124,18 @@ export class CricketAdapter extends BaseAdapter implements SportsDataAdapter {
   }
 
   /**
+   * Convert cricket overs string to decimal.
+   * In cricket, "18.2" means 18 overs and 2 balls (6 balls per over).
+   * So "18.2" = 18 + 2/6 = 18.333...
+   */
+  private convertOversToDecimal(overs: string): number {
+    const parts = overs.split('.');
+    const wholeOvers = parseInt(parts[0], 10) || 0;
+    const balls = parts[1] ? parseInt(parts[1], 10) : 0;
+    return wholeOvers + balls / 6;
+  }
+
+  /**
    * Get the match format based on league.
    */
   private getMatchFormat(league: CricketLeague): CricketMatchFormat {
@@ -158,8 +170,11 @@ export class CricketAdapter extends BaseAdapter implements SportsDataAdapter {
   /**
    * Fetch all live games for a specific cricket league.
    *
-   * @param league - League identifier
-   * @returns Array of live games
+   * Returns an empty array if no games are found or if an error occurs.
+   * Callers should check array length to determine if games exist.
+   *
+   * @param league - League identifier (e.g., 'IPL', 'BBL')
+   * @returns Array of live games, or empty array on error/no games
    */
   async getLiveGames(league: string): Promise<Game[]> {
     try {
@@ -238,16 +253,48 @@ export class CricketAdapter extends BaseAdapter implements SportsDataAdapter {
 
   /**
    * Fetch a single game by ID.
+   *
+   * Returns null if the game is not found or if an error occurs.
+   * Callers should check for null before using the result.
+   *
+   * Note: Phase 1 implementation - real API calls not yet implemented.
+   *
+   * @param gameId - Unique game identifier
+   * @returns Game object if found, or null on error/not found
    */
-  async getGame(gameId: string): Promise<Game> {
-    throw new Error(`Game ${gameId} not found (Phase 1: network calls not implemented)`);
+  async getGame(gameId: string): Promise<Game | null> {
+    try {
+      // Phase 1: Return null for not implemented
+      // TODO: Implement real API call when API keys are configured
+      console.warn(`CricketAdapter.getGame: Game ${gameId} lookup not implemented in Phase 1`);
+      return null;
+    } catch (error) {
+      console.error(`Failed to fetch game ${gameId} from cricket API:`, error);
+      return null;
+    }
   }
 
   /**
    * Fetch scheduled games for a specific date.
+   *
+   * Returns an empty array if no games are scheduled or if an error occurs.
+   * Callers should check array length to determine if games exist.
+   *
+   * Note: Phase 1 implementation - real API calls not yet implemented.
+   *
+   * @param league - League identifier (e.g., 'IPL', 'BBL')
+   * @param date - Date to fetch scheduled games for
+   * @returns Array of scheduled games, or empty array on error/no games
    */
   async getScheduledGames(league: string, date: Date): Promise<Game[]> {
-    return [];
+    try {
+      // Phase 1: Return empty array for not implemented
+      // TODO: Implement real API call when API keys are configured
+      return [];
+    } catch (error) {
+      console.error(`Failed to fetch scheduled games for ${league} on ${date.toISOString()}:`, error);
+      return [];
+    }
   }
 
   /**
@@ -391,7 +438,7 @@ export class CricketAdapter extends BaseAdapter implements SportsDataAdapter {
    * Generate mock team stats.
    */
   private generateMockTeamStats(runs: number, wickets: number, overs: string): CricketTeamStats {
-    const oversNum = parseFloat(overs);
+    const oversNum = this.convertOversToDecimal(overs);
     return {
       totalRuns: runs,
       totalWickets: wickets,
@@ -436,16 +483,19 @@ export class CricketAdapter extends BaseAdapter implements SportsDataAdapter {
   private generateMockBowlingStats(): CricketBowlerStats[] {
     const bowlers = CricketAdapter.BOWLERS.slice(0, 5);
     return bowlers.map((name, index) => {
-      const overs = Math.floor(Math.random() * 3) + 2;
+      const wholeOvers = Math.floor(Math.random() * 3) + 2;
+      const balls = Math.floor(Math.random() * 6);
+      const oversStr = `${wholeOvers}.${balls}`;
       const runs = Math.floor(Math.random() * 30) + 15;
+      const oversDecimal = this.convertOversToDecimal(oversStr);
       return {
         name,
         isBowling: index === 0,
-        overs: `${overs}.${Math.floor(Math.random() * 6)}`,
+        overs: oversStr,
         maidens: Math.floor(Math.random() * 2),
         runs,
         wickets: Math.floor(Math.random() * 3),
-        economy: parseFloat((runs / overs).toFixed(2)),
+        economy: parseFloat((runs / oversDecimal).toFixed(2)),
         dots: Math.floor(Math.random() * 10) + 5,
         wides: Math.floor(Math.random() * 3),
         noBalls: Math.floor(Math.random() * 2),

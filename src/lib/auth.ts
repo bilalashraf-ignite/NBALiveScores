@@ -32,6 +32,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        rememberMe: { label: "Remember Me", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -40,6 +41,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const email = credentials.email as string;
         const password = credentials.password as string;
+        const rememberMe = credentials.rememberMe === "true";
 
         const user = await prisma.user.findUnique({
           where: { email },
@@ -66,6 +68,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email,
           name: user.name,
           image: user.image,
+          rememberMe,
         };
       },
     }),
@@ -108,6 +111,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
+        // Set extended expiration if "Remember Me" was checked (30 days vs default)
+        if ('rememberMe' in user && user.rememberMe) {
+          token.maxAge = 30 * 24 * 60 * 60; // 30 days in seconds
+        }
       }
 
       // Handle session updates (e.g., after profile update)

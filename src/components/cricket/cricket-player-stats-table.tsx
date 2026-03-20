@@ -173,9 +173,14 @@ function BattingStatsTable({
       header: 'SR',
       accessorKey: 'strikeRate',
       sortDescFirst: true,
-      cell: ({ getValue }) => (
-        <span className="text-purple-300">{(getValue() as number).toFixed(1)}</span>
-      ),
+      cell: ({ getValue }) => {
+        const value = getValue() as number | undefined;
+        return (
+          <span className="text-purple-300">
+            {value != null ? value.toFixed(1) : '-'}
+          </span>
+        );
+      },
     },
   ];
 
@@ -218,48 +223,60 @@ function BattingStatsTable({
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row, index) => {
-            // Check if this is the first away team player (insert divider before)
-            const isFirstAwayPlayer =
-              row.original.team === 'away' &&
-              (index === 0 ||
-                table.getRowModel().rows[index - 1]?.original.team === 'home');
+          {/* Render home team group */}
+          {(() => {
+            const rows = table.getRowModel().rows;
+            const homeRows = rows.filter(r => r.original.team === 'home');
+            const awayRows = rows.filter(r => r.original.team === 'away');
 
             return (
-              <React.Fragment key={row.id}>
-                {index === 0 && (
-                  <tr>
-                    <td
-                      colSpan={columns.length}
-                      className="px-3 py-2 bg-purple-500/10 text-xs font-semibold text-purple-300"
-                    >
-                      {homeTeam.name}
-                    </td>
-                  </tr>
-                )}
-                {isFirstAwayPlayer && (
-                  <tr>
-                    <td
-                      colSpan={columns.length}
-                      className="px-3 py-2 bg-purple-500/10 text-xs font-semibold text-purple-300 border-t border-purple-500/20"
-                    >
-                      {awayTeam.name}
-                    </td>
-                  </tr>
-                )}
-                <tr className="border-b border-gray-800/50 hover:bg-purple-500/5">
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="px-3 py-2 whitespace-nowrap text-gray-300"
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
+              <>
+                {/* Home team section */}
+                <tr>
+                  <td
+                    colSpan={columns.length}
+                    className="px-3 py-2 bg-purple-500/10 text-xs font-semibold text-purple-300"
+                  >
+                    {homeTeam.name}
+                  </td>
                 </tr>
-              </React.Fragment>
+                {homeRows.map((row) => (
+                  <tr key={row.id} className="border-b border-gray-800/50 hover:bg-purple-500/5">
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="px-3 py-2 whitespace-nowrap text-gray-300"
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+
+                {/* Away team section */}
+                <tr>
+                  <td
+                    colSpan={columns.length}
+                    className="px-3 py-2 bg-purple-500/10 text-xs font-semibold text-purple-300 border-t border-purple-500/20"
+                  >
+                    {awayTeam.name}
+                  </td>
+                </tr>
+                {awayRows.map((row) => (
+                  <tr key={row.id} className="border-b border-gray-800/50 hover:bg-purple-500/5">
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="px-3 py-2 whitespace-nowrap text-gray-300"
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </>
             );
-          })}
+          })()}
         </tbody>
       </table>
     </div>
@@ -340,7 +357,10 @@ function BowlingStatsTable({
       accessorKey: 'economy',
       sortDescFirst: false, // Lower economy is better
       cell: ({ getValue }) => {
-        const value = getValue() as number;
+        const value = getValue() as number | undefined;
+        if (value == null) {
+          return <span className="text-gray-500">-</span>;
+        }
         const colorClass = value < 6 ? 'text-green-400' : value > 10 ? 'text-red-400' : 'text-purple-300';
         return <span className={colorClass}>{value.toFixed(1)}</span>;
       },
@@ -386,48 +406,60 @@ function BowlingStatsTable({
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row, index) => {
-            // Check if this is the first away team player (insert divider before)
-            const isFirstAwayPlayer =
-              row.original.team === 'away' &&
-              (index === 0 ||
-                table.getRowModel().rows[index - 1]?.original.team === 'home');
+          {/* Render grouped by team */}
+          {(() => {
+            const rows = table.getRowModel().rows;
+            const homeRows = rows.filter(r => r.original.team === 'home');
+            const awayRows = rows.filter(r => r.original.team === 'away');
 
             return (
-              <React.Fragment key={row.id}>
-                {index === 0 && (
-                  <tr>
-                    <td
-                      colSpan={columns.length}
-                      className="px-3 py-2 bg-purple-500/10 text-xs font-semibold text-purple-300"
-                    >
-                      {homeTeam.name}
-                    </td>
-                  </tr>
-                )}
-                {isFirstAwayPlayer && (
-                  <tr>
-                    <td
-                      colSpan={columns.length}
-                      className="px-3 py-2 bg-purple-500/10 text-xs font-semibold text-purple-300 border-t border-purple-500/20"
-                    >
-                      {awayTeam.name}
-                    </td>
-                  </tr>
-                )}
-                <tr className="border-b border-gray-800/50 hover:bg-purple-500/5">
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="px-3 py-2 whitespace-nowrap text-gray-300"
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
+              <>
+                {/* Home team section */}
+                <tr>
+                  <td
+                    colSpan={columns.length}
+                    className="px-3 py-2 bg-purple-500/10 text-xs font-semibold text-purple-300"
+                  >
+                    {homeTeam.name}
+                  </td>
                 </tr>
-              </React.Fragment>
+                {homeRows.map((row) => (
+                  <tr key={row.id} className="border-b border-gray-800/50 hover:bg-purple-500/5">
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="px-3 py-2 whitespace-nowrap text-gray-300"
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+
+                {/* Away team section */}
+                <tr>
+                  <td
+                    colSpan={columns.length}
+                    className="px-3 py-2 bg-purple-500/10 text-xs font-semibold text-purple-300 border-t border-purple-500/20"
+                  >
+                    {awayTeam.name}
+                  </td>
+                </tr>
+                {awayRows.map((row) => (
+                  <tr key={row.id} className="border-b border-gray-800/50 hover:bg-purple-500/5">
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="px-3 py-2 whitespace-nowrap text-gray-300"
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </>
             );
-          })}
+          })()}
         </tbody>
       </table>
     </div>

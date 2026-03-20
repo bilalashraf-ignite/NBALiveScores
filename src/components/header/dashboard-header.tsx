@@ -17,12 +17,14 @@ interface DashboardHeaderProps {
   activeTab?: string;
   onTabChange?: (tabId: string) => void;
   onSearch?: (query: string) => void;
+  hasUnreadNotifications?: boolean;
 }
 
 export function DashboardHeader({
   activeTab = 'live',
   onTabChange,
   onSearch,
+  hasUnreadNotifications = false,
 }: DashboardHeaderProps) {
   const { data: session, status } = useSession();
   const isLoading = status === 'loading';
@@ -50,12 +52,16 @@ export function DashboardHeader({
             </div>
 
             {/* Notification Bell */}
-            <button className="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-purple-500/10 transition-colors">
+            <button
+              aria-label="Notifications"
+              className="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-purple-500/10 transition-colors"
+            >
               <svg
                 className="h-5 w-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -65,7 +71,12 @@ export function DashboardHeader({
                 />
               </svg>
               {/* Notification dot */}
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-pink-500" />
+              {hasUnreadNotifications && (
+                <span
+                  className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-pink-500"
+                  aria-hidden="true"
+                />
+              )}
             </button>
 
             {/* User Section */}

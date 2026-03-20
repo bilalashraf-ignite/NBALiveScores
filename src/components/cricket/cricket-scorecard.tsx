@@ -2,6 +2,24 @@
 
 import type { CricketInnings, CricketBatsmanStats, CricketBowlerStats } from '@/types/sports-data';
 
+// Helper to generate ordinal innings label (1st, 2nd, 3rd, 4th, etc.)
+function getInningsLabel(inningsNumber: number): string {
+  if (inningsNumber < 1) return 'N/A';
+
+  const suffix = (() => {
+    const lastTwo = inningsNumber % 100;
+    if (lastTwo >= 11 && lastTwo <= 13) return 'th';
+    switch (inningsNumber % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  })();
+
+  return `${inningsNumber}${suffix} Inn`;
+}
+
 interface CricketScorecardProps {
   innings: CricketInnings[];
   battingStats: {
@@ -38,7 +56,7 @@ export function CricketScorecard({
             >
               <div className="flex items-center gap-3">
                 <span className="text-xs text-gray-500 w-16">
-                  {inning.inningsNumber === 1 ? '1st Inn' : '2nd Inn'}
+                  {getInningsLabel(inning.inningsNumber)}
                 </span>
                 <span className="font-medium text-white">
                   {inning.battingTeam === 'home' ? homeTeamName : awayTeamName}

@@ -26,6 +26,30 @@ export type CricketLeague = 'IPL' | 'BBL' | 'PSL' | 'CPL' | 'ICC' | 'CountyChamp
 export type League = BasketballLeague | FootballLeague | CricketLeague;
 
 /**
+ * Array of all supported basketball leagues.
+ */
+export const BASKETBALL_LEAGUES: readonly BasketballLeague[] = ['NBA', 'NCAA', 'EuroLeague'] as const;
+
+/**
+ * Array of all supported football leagues.
+ */
+export const FOOTBALL_LEAGUES: readonly FootballLeague[] = ['PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1'] as const;
+
+/**
+ * Array of all supported cricket leagues.
+ */
+export const CRICKET_LEAGUES: readonly CricketLeague[] = ['IPL', 'BBL', 'PSL', 'CPL', 'ICC', 'CountyChampionship'] as const;
+
+/**
+ * Array of all supported leagues across all sports.
+ */
+export const VALID_LEAGUES: readonly League[] = [
+  ...BASKETBALL_LEAGUES,
+  ...FOOTBALL_LEAGUES,
+  ...CRICKET_LEAGUES,
+] as const;
+
+/**
  * Sport type discriminator.
  */
 export type Sport = 'basketball' | 'football' | 'cricket';
@@ -34,10 +58,8 @@ export type Sport = 'basketball' | 'football' | 'cricket';
  * Helper to determine sport from league.
  */
 export function getSportFromLeague(league: League): Sport {
-  const footballLeagues: FootballLeague[] = ['PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1'];
-  const cricketLeagues: CricketLeague[] = ['IPL', 'BBL', 'PSL', 'CPL', 'ICC', 'CountyChampionship'];
-  if (footballLeagues.includes(league as FootballLeague)) return 'football';
-  if (cricketLeagues.includes(league as CricketLeague)) return 'cricket';
+  if ((FOOTBALL_LEAGUES as readonly string[]).includes(league)) return 'football';
+  if ((CRICKET_LEAGUES as readonly string[]).includes(league)) return 'cricket';
   return 'basketball';
 }
 
@@ -45,21 +67,21 @@ export function getSportFromLeague(league: League): Sport {
  * Type guard to check if a league is a football league.
  */
 export function isFootballLeague(league: League): league is FootballLeague {
-  return ['PremierLeague', 'LaLiga', 'Bundesliga', 'SerieA', 'Ligue1'].includes(league);
+  return (FOOTBALL_LEAGUES as readonly string[]).includes(league);
 }
 
 /**
  * Type guard to check if a league is a basketball league.
  */
 export function isBasketballLeague(league: League): league is BasketballLeague {
-  return ['NBA', 'NCAA', 'EuroLeague'].includes(league);
+  return (BASKETBALL_LEAGUES as readonly string[]).includes(league);
 }
 
 /**
  * Type guard to check if a league is a cricket league.
  */
 export function isCricketLeague(league: League): league is CricketLeague {
-  return ['IPL', 'BBL', 'PSL', 'CPL', 'ICC', 'CountyChampionship'].includes(league);
+  return (CRICKET_LEAGUES as readonly string[]).includes(league);
 }
 
 /**

@@ -24,8 +24,23 @@ export default function ForgotPasswordPage() {
       if (response.ok) {
         setSuccess(true);
       } else {
-        const data = await response.json();
-        setError(data.error || "An error occurred");
+        // Safely parse response - may not be JSON for some error responses
+        let errorMessage = "An error occurred";
+        try {
+          const text = await response.text();
+          try {
+            const data = JSON.parse(text);
+            errorMessage = data.error || errorMessage;
+          } catch {
+            // Response wasn't valid JSON, use text if available
+            if (text && text.length < 200) {
+              errorMessage = text;
+            }
+          }
+        } catch {
+          // Fallback to default message
+        }
+        setError(errorMessage);
       }
     } catch {
       setError("An error occurred. Please try again.");

@@ -19,13 +19,17 @@ export function SearchBar({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative">
+    <form onSubmit={handleSubmit} className="relative" role="search">
       <div className="relative">
+        <label htmlFor="search-input" className="sr-only">
+          Search leagues, teams
+        </label>
         <svg
           className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -35,6 +39,7 @@ export function SearchBar({
           />
         </svg>
         <input
+          id="search-input"
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}

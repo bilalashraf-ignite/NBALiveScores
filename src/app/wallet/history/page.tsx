@@ -125,7 +125,7 @@ export default function WalletHistoryPage() {
                 No transactions yet
               </p>
               <Link
-                href="/profile"
+                href="/profile#wallet"
                 className="mt-4 inline-block text-blue-600 hover:text-blue-500 dark:text-blue-400 text-sm"
               >
                 Purchase Star Points

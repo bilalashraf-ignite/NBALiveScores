@@ -254,7 +254,7 @@ CREATE INDEX "WebhookEvent_status_createdAt_idx" ON "WebhookEvent"("status", "cr
 CREATE UNIQUE INDEX "WebhookEvent_provider_providerEventId_key" ON "WebhookEvent"("provider", "providerEventId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Team_abbreviation_key" ON "Team"("abbreviation");
+CREATE UNIQUE INDEX "Team_abbreviation_league_key" ON "Team"("abbreviation", "league");
 
 -- CreateIndex
 CREATE INDEX "Team_league_idx" ON "Team"("league");

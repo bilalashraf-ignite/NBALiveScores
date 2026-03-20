@@ -231,7 +231,7 @@ model WebhookEvent {
 model Team {
   id           String   @id @default(cuid())
   name         String
-  abbreviation String   @unique
+  abbreviation String
   logoUrl      String?
   league       String   // "NBA", "NCAA", "EUROLEAGUE"
   createdAt    DateTime @default(now())
@@ -240,6 +240,7 @@ model Team {
   homeGames    Game[]   @relation("HomeTeam")
   awayGames    Game[]   @relation("AwayTeam")
 
+  @@unique([abbreviation, league])
   @@index([league])
 }
 

@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 
 export function AuthHero() {
+  const [imgVisible, setImgVisible] = useState(true);
+
   return (
     <div className="relative flex h-full w-full flex-col justify-between overflow-hidden bg-gradient-to-br from-[#0f0f1a] via-[#1a1a2e] to-[#0f0f1a] p-8 lg:p-12">
       {/* Background gradient overlay */}
@@ -14,17 +17,16 @@ export function AuthHero() {
           {/* Placeholder gradient for basketball player silhouette */}
           <div className="absolute inset-0 bg-gradient-to-l from-transparent via-purple-500/5 to-transparent" />
           {/* Basketball player image would go here */}
-          <Image
-            src="/images/basketball-player.png"
-            alt="Basketball player"
-            fill
-            className="object-contain object-right"
-            priority
-            onError={(e) => {
-              // Hide image on error
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          {imgVisible && (
+            <Image
+              src="/images/basketball-player.png"
+              alt="Basketball player"
+              fill
+              className="object-contain object-right"
+              priority
+              onError={() => setImgVisible(false)}
+            />
+          )}
         </div>
       </div>
 

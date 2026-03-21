@@ -9,9 +9,28 @@ import { authLogger } from "@/lib/logger";
 const PASSWORD_RESET_COOLDOWN_MS = 15 * 60 * 1000;
 
 // IP-based rate limiting (in-memory for dev, use Redis in production)
+// Note: In-memory approach won't work across serverless instances; for production
+// multi-instance deployments, replace with Redis-backed rate limiting.
 const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
 const IP_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute window
 const IP_RATE_LIMIT_MAX_REQUESTS = 5; // Max 5 requests per minute per IP
+const IP_RATE_LIMIT_MAX_ENTRIES = 10000; // Cap to prevent unbounded growth
+let lastCleanup = Date.now();
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000; // Cleanup every 5 minutes
+
+function cleanupStaleEntries(): void {
+  const now = Date.now();
+  if (now - lastCleanup < CLEANUP_INTERVAL_MS) {
+    return;
+  }
+  lastCleanup = now;
+
+  for (const [ip, record] of ipRequestCounts) {
+    if (now >= record.resetAt) {
+      ipRequestCounts.delete(ip);
+    }
+  }
+}
 
 function getClientIp(headersList: Headers): string {
   return (
@@ -23,6 +42,15 @@ function getClientIp(headersList: Headers): string {
 
 function checkIpRateLimit(ip: string): boolean {
   const now = Date.now();
+
+  // Periodic cleanup of stale entries
+  cleanupStaleEntries();
+
+  // Safety cap: if map is too large, clear it to prevent memory issues
+  if (ipRequestCounts.size >= IP_RATE_LIMIT_MAX_ENTRIES) {
+    ipRequestCounts.clear();
+  }
+
   const record = ipRequestCounts.get(ip);
 
   if (!record || now >= record.resetAt) {
@@ -76,7 +104,7 @@ export async function POST(request: Request) {
     // Check if user exists
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, lastPasswordResetEmailSent: true },
+      select: { id: true },
     });
 
     // Always return success to prevent email enumeration
@@ -84,26 +112,31 @@ export async function POST(request: Request) {
       return NextResponse.json(SUCCESS_RESPONSE);
     }
 
-    // Check per-user cooldown
-    if (user.lastPasswordResetEmailSent) {
-      const timeSinceLastEmail = Date.now() - user.lastPasswordResetEmailSent.getTime();
-      if (timeSinceLastEmail < PASSWORD_RESET_COOLDOWN_MS) {
-        authLogger.warn({ userId: user.id }, "Password reset user cooldown active");
-        // Return success to prevent enumeration
-        return NextResponse.json(SUCCESS_RESPONSE);
-      }
+    // Atomically claim the right to send a reset email.
+    // This prevents race conditions where concurrent requests both pass cooldown check.
+    const cooldownCutoff = new Date(Date.now() - PASSWORD_RESET_COOLDOWN_MS);
+    const claimResult = await prisma.user.updateMany({
+      where: {
+        id: user.id,
+        OR: [
+          { lastPasswordResetEmailSent: null },
+          { lastPasswordResetEmailSent: { lt: cooldownCutoff } },
+        ],
+      },
+      data: { lastPasswordResetEmailSent: new Date() },
+    });
+
+    // If no rows updated, cooldown is active or another request claimed it
+    if (claimResult.count === 0) {
+      authLogger.warn({ userId: user.id }, "Password reset user cooldown active");
+      // Return success to prevent enumeration
+      return NextResponse.json(SUCCESS_RESPONSE);
     }
 
-    // Generate reset token (scoped to userId for security) and send email
+    // Successfully claimed - now safe to generate token and send email
     try {
       const token = await generatePasswordResetToken(user.id);
       await sendPasswordResetEmail(email, token);
-
-      // Update last password reset email sent timestamp atomically
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { lastPasswordResetEmailSent: new Date() },
-      });
     } catch (emailError) {
       authLogger.error({ err: emailError }, "Failed to send password reset email");
       // Still return success to prevent enumeration

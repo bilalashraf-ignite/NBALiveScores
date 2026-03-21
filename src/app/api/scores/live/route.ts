@@ -5,11 +5,9 @@
  * Implements unidirectional server-push pattern for automatic score updates
  * without client polling overhead.
  *
- * Multi-league support with parallel fetching from:
- * - Basketball: NBA, NCAA, EuroLeague
- * - Football: Premier League, La Liga, Bundesliga, Serie A, Ligue 1
- * - Cricket: IPL, BBL, PSL, CPL, ICC, County Championship
- * Uses Promise.allSettled to ensure one failing API doesn't block others.
+ * Multi-league support with parallel fetching from all leagues defined in
+ * VALID_LEAGUES (see @/types/sports-data). Uses Promise.allSettled to ensure
+ * one failing API doesn't block others.
  *
  * Critical configuration:
  * - runtime = 'nodejs' prevents edge runtime buffering

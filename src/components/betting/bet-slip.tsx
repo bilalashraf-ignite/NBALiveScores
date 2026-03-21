@@ -6,6 +6,7 @@ import { StakeInput } from './stake-input';
 import { ComboBoostPromo } from './betting-primitives';
 
 interface BetSelection {
+  id: string;
   type: string;
   odds: number;
   label: string;
@@ -13,7 +14,7 @@ interface BetSelection {
 
 interface BetSlipProps {
   selections: BetSelection[];
-  onRemoveSelection?: (type: string) => void;
+  onRemoveSelection?: (id: string) => void;
   onClearAll?: () => void;
   onPlaceBet?: (stake: number) => void;
 }
@@ -27,7 +28,8 @@ export function BetSlip({
   const [stake, setStake] = useState(10);
 
   const totalOdds = selections.reduce((acc, sel) => acc * sel.odds, 1);
-  const potentialReturn = stake * totalOdds;
+  // Round to cents precision to avoid floating-point display errors
+  const potentialReturn = Math.round(stake * totalOdds * 100) / 100;
 
   return (
     <div className="flex flex-col h-full bg-[#16162a] rounded-xl border border-purple-500/10">
@@ -67,11 +69,11 @@ export function BetSlip({
             {/* Selections */}
             {selections.map((selection) => (
               <div
-                key={selection.type}
+                key={selection.id}
                 className="relative p-3 rounded-lg bg-[#1a1a2e] border border-purple-500/10"
               >
                 <button
-                  onClick={() => onRemoveSelection?.(selection.type)}
+                  onClick={() => onRemoveSelection?.(selection.id)}
                   className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 flex items-center justify-center transition-colors"
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -2,12 +2,8 @@
 
 import { Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 function WalletCancelContent() {
-  const searchParams = useSearchParams();
-  const purchaseId = searchParams.get("purchaseId");
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <div className="max-w-md w-full text-center">
@@ -17,6 +13,7 @@ function WalletCancelContent() {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"

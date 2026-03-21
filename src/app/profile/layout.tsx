@@ -5,7 +5,7 @@ export default function ProfileLayout({
 }) {
   // Auth check is handled by middleware - no need for redirect here
   return (
-    <div className="min-h-screen bg-[#0f0f1a]">
+    <div className="min-h-screen bg-background">
       {children}
     </div>
   );

@@ -36,20 +36,20 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError("");
 
+    // Client-side validation before setting loading state
     if (password.length < 8) {
       setError("Password must be at least 8 characters");
-      setIsLoading(false);
       return;
     }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
-      setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
 
     try {
       const response = await fetch("/api/auth/signup", {
@@ -58,10 +58,20 @@ export default function SignUpPage() {
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type");
+      let data: { error?: string } | null = null;
+
+      if (contentType?.includes("application/json")) {
+        try {
+          data = await response.json();
+        } catch {
+          // JSON parsing failed despite content-type header
+        }
+      }
 
       if (!response.ok) {
-        setError(data.error || "An error occurred");
+        const errorMessage = data?.error || `Request failed (${response.status})`;
+        setError(errorMessage);
         return;
       }
 

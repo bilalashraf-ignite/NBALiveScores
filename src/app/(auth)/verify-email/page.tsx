@@ -54,14 +54,23 @@ function VerifyEmailContent() {
           signal: controller.signal,
         });
 
-        const data = await response.json();
+        const contentType = response.headers.get("content-type");
+        let data: { error?: string } | null = null;
+
+        if (contentType?.includes("application/json")) {
+          try {
+            data = await response.json();
+          } catch {
+            // JSON parsing failed despite content-type header
+          }
+        }
 
         if (response.ok) {
           setStatus("success");
           setMessage("Your email has been verified successfully!");
         } else {
           setStatus("error");
-          setMessage(data.error || "Verification failed.");
+          setMessage(data?.error || "Verification failed.");
         }
       } catch (error) {
         // Ignore aborted requests (component unmounted or deps changed)

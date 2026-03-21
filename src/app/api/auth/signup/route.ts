@@ -5,9 +5,12 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
-import { authLogger } from "@/lib/logger";
+import { authLogger, hashEmail } from "@/lib/logger";
 
 // IP-based rate limiting (in-memory for dev, use Redis in production)
+// TODO: For production multi-instance deployments, replace with Redis-backed
+// rate limiting (e.g., @upstash/ratelimit) as in-memory Maps won't persist
+// across serverless instances or cold starts.
 const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
 const IP_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute window
 const IP_RATE_LIMIT_MAX_REQUESTS = 5; // Max 5 signups per minute per IP
@@ -127,7 +130,7 @@ export async function POST(request: Request) {
 
     // Check email-based rate limit (before expensive operations)
     if (!checkEmailRateLimit(email)) {
-      authLogger.warn({ email }, "Signup email rate limit exceeded");
+      authLogger.warn({ emailHash: hashEmail(email) }, "Signup email rate limit exceeded");
       return NextResponse.json(
         { error: "Too many signup attempts for this email. Please try again later." },
         { status: 429 }

@@ -1,4 +1,5 @@
 import pino from 'pino';
+import { createHash } from 'crypto';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -41,4 +42,9 @@ export type LogContext = Record<string, unknown>;
 
 export function createLogger(module: string) {
   return logger.child({ module });
+}
+
+export function hashEmail(email: string): string {
+  const normalized = email.toLowerCase().trim();
+  return createHash('sha256').update(normalized).digest('hex').slice(0, 12);
 }

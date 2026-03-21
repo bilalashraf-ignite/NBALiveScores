@@ -59,7 +59,8 @@ export function AvatarUpload({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save avatar");
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || "Failed to save avatar");
       }
 
       onUploadComplete();
@@ -113,11 +114,16 @@ export function AvatarUpload({
           )}
         </div>
         {isUploading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full"
+            role="status"
+            aria-live="polite"
+          >
             <svg
               className="animate-spin h-8 w-8 text-white"
               fill="none"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <circle
                 className="opacity-25"
@@ -133,6 +139,7 @@ export function AvatarUpload({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
+            <span className="sr-only">Uploading avatar...</span>
           </div>
         )}
       </div>

@@ -1,19 +1,20 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { verifyToken } from "@/lib/tokens";
 import { authLogger } from "@/lib/logger";
 
-export async function POST(request: Request) {
-  let token: string | undefined;
-  let email: string | undefined;
-  let password: string | undefined;
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
 
+export async function POST(request: Request) {
+  let body: unknown;
   try {
-    const body = await request.json();
-    token = body.token;
-    email = body.email;
-    password = body.password;
+    body = await request.json();
   } catch {
     return NextResponse.json(
       { error: "Invalid JSON in request body" },
@@ -21,21 +22,15 @@ export async function POST(request: Request) {
     );
   }
 
+  const parseResult = resetPasswordSchema.safeParse(body);
+  if (!parseResult.success) {
+    const firstError = parseResult.error.errors[0]?.message || "Invalid request";
+    return NextResponse.json({ error: firstError }, { status: 400 });
+  }
+
+  const { token, email, password } = parseResult.data;
+
   try {
-    if (!token || !email || !password) {
-      return NextResponse.json(
-        { error: "Token, email, and password are required" },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: "Password must be at least 8 characters" },
-        { status: 400 }
-      );
-    }
-
     // Look up user by email to get the canonical userId
     const user = await prisma.user.findUnique({
       where: { email },

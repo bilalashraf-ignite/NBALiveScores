@@ -35,7 +35,7 @@ export async function POST() {
       );
     }
 
-    // Check rate limit
+    // Check rate limit (informative check for user-friendly error message)
     if (user.lastVerificationEmailSent) {
       const timeSinceLastEmail = Date.now() - user.lastVerificationEmailSent.getTime();
       if (timeSinceLastEmail < VERIFICATION_EMAIL_COOLDOWN_MS) {
@@ -49,14 +49,32 @@ export async function POST() {
       }
     }
 
-    const token = await generateVerificationToken(user.email);
-    await sendVerificationEmail(user.email, token);
-
-    // Update last verification email sent timestamp
-    await prisma.user.update({
-      where: { id: session.user.id },
+    // Atomically claim the right to send a verification email.
+    // This prevents race conditions where concurrent requests both pass cooldown check.
+    const cooldownCutoff = new Date(Date.now() - VERIFICATION_EMAIL_COOLDOWN_MS);
+    const claimResult = await prisma.user.updateMany({
+      where: {
+        id: session.user.id,
+        emailVerified: null,
+        OR: [
+          { lastVerificationEmailSent: null },
+          { lastVerificationEmailSent: { lt: cooldownCutoff } },
+        ],
+      },
       data: { lastVerificationEmailSent: new Date() },
     });
+
+    // If claim failed, either concurrent request beat us or state changed
+    if (claimResult.count === 0) {
+      return NextResponse.json(
+        { error: "Please wait before requesting another verification email" },
+        { status: 429 }
+      );
+    }
+
+    // Successfully claimed - now safe to generate and send
+    const token = await generateVerificationToken(user.email);
+    await sendVerificationEmail(user.email, token);
 
     return NextResponse.json({
       message: "Verification email sent successfully",

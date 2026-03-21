@@ -50,7 +50,7 @@ export function BettingOption({
     >
       <span className="text-sm text-gray-400">{label}</span>
       <span className={`text-xl font-bold ${isSelected ? 'text-white' : 'text-purple-400'}`}>
-        {odds.toFixed(2)}
+        {Number.isFinite(odds) ? odds.toFixed(2) : '-'}
       </span>
     </button>
   );

@@ -271,6 +271,12 @@ CREATE INDEX "Game_scheduledTime_idx" ON "Game"("scheduledTime");
 -- CreateIndex
 CREATE INDEX "Game_league_idx" ON "Game"("league");
 
+-- CreateIndex
+CREATE INDEX "Game_homeTeamId_idx" ON "Game"("homeTeamId");
+
+-- CreateIndex
+CREATE INDEX "Game_awayTeamId_idx" ON "Game"("awayTeamId");
+
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 

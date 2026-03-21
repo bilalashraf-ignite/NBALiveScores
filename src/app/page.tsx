@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useSSE } from '@/hooks/useSSE';
@@ -68,23 +68,32 @@ export default function HomePage() {
     adaptiveFrequency: true,
   });
 
-  // Filter games by selected sport
-  const basketballGames = games?.filter(g => getSportFromLeague(g.league) === 'basketball') || [];
-  const footballGames = games?.filter(g => getSportFromLeague(g.league) === 'football') || [];
-  const cricketGames = games?.filter(g => getSportFromLeague(g.league) === 'cricket') || [];
-  const sportGames = selectedSport === 'basketball'
-    ? basketballGames
-    : selectedSport === 'cricket'
-      ? cricketGames
-      : footballGames;
+  // Filter games by selected sport (memoized to avoid recalculation on unrelated state changes)
+  const { basketballGames, footballGames, cricketGames } = useMemo(() => ({
+    basketballGames: games?.filter(g => getSportFromLeague(g.league) === 'basketball') || [],
+    footballGames: games?.filter(g => getSportFromLeague(g.league) === 'football') || [],
+    cricketGames: games?.filter(g => getSportFromLeague(g.league) === 'cricket') || [],
+  }), [games]);
+
+  const sportGames = useMemo(() => {
+    if (selectedSport === 'basketball') return basketballGames;
+    if (selectedSport === 'cricket') return cricketGames;
+    return footballGames;
+  }, [selectedSport, basketballGames, cricketGames, footballGames]);
 
   // Filter by league if selected
-  const filteredGames = selectedLeague === 'all'
-    ? sportGames
-    : sportGames.filter(g => g.league === selectedLeague);
+  const filteredGames = useMemo(() =>
+    selectedLeague === 'all'
+      ? sportGames
+      : sportGames.filter(g => g.league === selectedLeague),
+    [sportGames, selectedLeague]
+  );
 
   // Get unique leagues for sidebar
-  const activeLeagues = [...new Set(sportGames.map(g => g.league))];
+  const activeLeagues = useMemo(() =>
+    [...new Set(sportGames.map(g => g.league))],
+    [sportGames]
+  );
 
   // Reset league filter when switching sports
   const handleSportChange = (sport: Sport) => {

@@ -62,7 +62,15 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
+      );
+    }
 
     // Validate input with Zod schema
     const validationResult = profileUpdateSchema.safeParse(body);
@@ -78,9 +86,11 @@ export async function PATCH(request: Request) {
 
     const { name, phone, bio, location, birthday, gender } = validationResult.data;
 
-    // Parse birthday if provided
-    let parsedBirthday: Date | undefined;
-    if (birthday) {
+    // Parse birthday if provided, preserving null to clear the field
+    let parsedBirthday: Date | null | undefined;
+    if (birthday === null) {
+      parsedBirthday = null;
+    } else if (birthday !== undefined) {
       parsedBirthday = new Date(birthday);
     }
 

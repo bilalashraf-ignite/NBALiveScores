@@ -3,6 +3,43 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { profileLogger } from "@/lib/logger";
 
+// Allowed image hostnames (must match next.config.ts remotePatterns)
+const ALLOWED_IMAGE_HOSTS = [
+  "res.cloudinary.com",
+  "lh3.googleusercontent.com",
+  "platform-lookaside.fbsbx.com",
+] as const;
+
+const ALLOWED_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".avif"];
+
+function isAllowedImageUrl(urlString: string): { valid: boolean; error?: string } {
+  let url: URL;
+  try {
+    url = new URL(urlString);
+  } catch {
+    return { valid: false, error: "Invalid image URL" };
+  }
+
+  if (url.protocol !== "https:") {
+    return { valid: false, error: "Image URL must use HTTPS" };
+  }
+
+  if (!ALLOWED_IMAGE_HOSTS.includes(url.hostname as typeof ALLOWED_IMAGE_HOSTS[number])) {
+    return { valid: false, error: "Image URL is not from a trusted source" };
+  }
+
+  // Cloudinary URLs don't always have extensions in the path, so only check for other hosts
+  if (url.hostname !== "res.cloudinary.com") {
+    const pathname = url.pathname.toLowerCase();
+    const hasValidExtension = ALLOWED_IMAGE_EXTENSIONS.some(ext => pathname.endsWith(ext));
+    if (!hasValidExtension) {
+      return { valid: false, error: "URL does not appear to be an image" };
+    }
+  }
+
+  return { valid: true };
+}
+
 export async function PATCH(request: Request) {
   try {
     const session = await auth();
@@ -20,12 +57,10 @@ export async function PATCH(request: Request) {
       );
     }
 
-    // Basic URL validation
-    try {
-      new URL(imageUrl);
-    } catch {
+    const validation = isAllowedImageUrl(imageUrl);
+    if (!validation.valid) {
       return NextResponse.json(
-        { error: "Invalid image URL" },
+        { error: validation.error },
         { status: 400 }
       );
     }

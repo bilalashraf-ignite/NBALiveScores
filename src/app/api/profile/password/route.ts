@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { profileLogger } from "@/lib/logger";
+
+const updatePasswordSchema = z.object({
+  currentPassword: z.string().optional(),
+  newPassword: z.string().min(8, "New password must be at least 8 characters"),
+});
 
 export async function PATCH(request: Request) {
   try {
@@ -12,12 +18,9 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    let currentPassword: string | undefined;
-    let newPassword: string | undefined;
+    let body: unknown;
     try {
-      const body = await request.json();
-      currentPassword = body.currentPassword;
-      newPassword = body.newPassword;
+      body = await request.json();
     } catch {
       return NextResponse.json(
         { error: "Invalid JSON payload" },
@@ -25,12 +28,13 @@ export async function PATCH(request: Request) {
       );
     }
 
-    if (!newPassword || newPassword.length < 8) {
-      return NextResponse.json(
-        { error: "New password must be at least 8 characters" },
-        { status: 400 }
-      );
+    const parseResult = updatePasswordSchema.safeParse(body);
+    if (!parseResult.success) {
+      const firstError = parseResult.error.errors[0]?.message || "Invalid request";
+      return NextResponse.json({ error: firstError }, { status: 400 });
     }
+
+    const { currentPassword, newPassword } = parseResult.data;
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },

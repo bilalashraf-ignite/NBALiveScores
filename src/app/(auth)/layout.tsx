@@ -13,7 +13,7 @@ export default function AuthLayout({
       </div>
 
       {/* Right: Form Section */}
-      <div className="flex items-center justify-center p-6 sm:p-8 lg:p-12 bg-[var(--dark-bg-primary)]">
+      <div className="flex items-center justify-center p-6 sm:p-8 lg:p-12">
         <div className="w-full max-w-md space-y-8">
           {children}
         </div>

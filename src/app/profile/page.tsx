@@ -28,9 +28,9 @@ const supportItems = [
 ];
 
 export default function ProfilePage() {
-  const { profile, isLoading, error, updateProfile, refreshProfile } = useProfile();
+  const { profile, isLoading, error, updateProfile } = useProfile();
   const [activeTab, setActiveTab] = useState('wallet');
-  const [activeSection, setActiveSection] = useState<'overview' | 'settings'>('overview');
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'market' | 'wallet' | 'settings'>('wallet');
 
   if (isLoading) {
     return (
@@ -92,11 +92,11 @@ export default function ProfilePage() {
               {profileNavItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setActiveSection(item.id === 'settings' ? 'settings' : 'overview')}
+                  onClick={() => setActiveSection(item.id as typeof activeSection)}
                   className={`
                     w-full flex items-center gap-3 px-4 py-3 rounded-xl
                     text-left text-sm font-medium transition-all duration-200
-                    ${item.id === 'wallet'
+                    ${item.id === activeSection
                       ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30'
                       : 'text-gray-400 hover:text-white hover:bg-[#1a1a2e]'
                     }
@@ -133,12 +133,12 @@ export default function ProfilePage() {
           </div>
         }
       >
-        {activeSection === 'overview' ? (
+        {activeSection !== 'settings' ? (
           <div className="space-y-6">
             {/* Profile Header */}
             <ProfileHeader
               name={profile.name || 'User'}
-              username={profile.email?.split('@')[0]}
+              username={profile.email?.split('@')[0] ?? profile.name ?? 'User'}
               avatarUrl={profile.image}
             />
 

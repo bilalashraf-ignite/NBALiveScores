@@ -3,39 +3,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { authLogger } from "@/lib/logger";
-
-// IP-based rate limiting (in-memory for dev, use Redis in production)
-// TODO: For production multi-instance deployments, replace with Redis-backed
-// rate limiting (e.g., @upstash/ratelimit) as in-memory Maps won't persist
-// across serverless instances or cold starts.
-const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
-const IP_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute window
-const IP_RATE_LIMIT_MAX_REQUESTS = 10; // Max 10 verification attempts per minute per IP
-
-function getClientIp(headersList: Headers): string {
-  return (
-    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    headersList.get("x-real-ip") ||
-    "unknown"
-  );
-}
-
-function checkIpRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = ipRequestCounts.get(ip);
-
-  if (!record || now >= record.resetAt) {
-    ipRequestCounts.set(ip, { count: 1, resetAt: now + IP_RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-
-  if (record.count >= IP_RATE_LIMIT_MAX_REQUESTS) {
-    return false;
-  }
-
-  record.count++;
-  return true;
-}
+import { rateLimiters, getClientIp } from "@/lib/rate-limit";
 
 const verifyEmailSchema = z.object({
   token: z.string().min(1, "Token is required"),
@@ -47,7 +15,8 @@ export async function POST(request: Request) {
   const clientIp = getClientIp(headersList);
 
   // Check IP rate limit first
-  if (!checkIpRateLimit(clientIp)) {
+  const ipRateLimit = await rateLimiters.verifyEmailIp.check(clientIp);
+  if (!ipRateLimit.allowed) {
     authLogger.warn({ ip: clientIp }, "Email verification IP rate limit exceeded");
     return NextResponse.json(
       { error: "Too many verification attempts. Please try again later." },
@@ -67,7 +36,7 @@ export async function POST(request: Request) {
 
   const parseResult = verifyEmailSchema.safeParse(body);
   if (!parseResult.success) {
-    const firstError = parseResult.error.errors[0]?.message || "Invalid request";
+    const firstError = parseResult.error.issues[0]?.message || "Invalid request";
     return NextResponse.json({ error: firstError }, { status: 400 });
   }
 

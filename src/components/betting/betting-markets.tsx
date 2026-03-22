@@ -18,7 +18,7 @@ interface BettingMarketsProps {
   goalsOdds?: MarketOdds;
   cardsOdds?: MarketOdds;
   cornersOdds?: MarketOdds;
-  onSelectBet?: (selection: { type: string; odds: number; label: string }) => void;
+  onSelectBet?: (selection: { id: string; type: string; odds: number; label: string }) => void;
   selectedBet?: string | null;
 }
 
@@ -37,7 +37,7 @@ export function BettingMarkets({
   const [activeTab, setActiveTab] = useState('All');
 
   const handleBetClick = (type: string, odds: number, label: string) => {
-    onSelectBet?.({ type, odds, label });
+    onSelectBet?.({ id: type, type, odds, label });
   };
 
   return (

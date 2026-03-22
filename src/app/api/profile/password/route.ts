@@ -30,7 +30,7 @@ export async function PATCH(request: Request) {
 
     const parseResult = updatePasswordSchema.safeParse(body);
     if (!parseResult.success) {
-      const firstError = parseResult.error.errors[0]?.message || "Invalid request";
+      const firstError = parseResult.error.issues[0]?.message || "Invalid request";
       return NextResponse.json({ error: firstError }, { status: 400 });
     }
 

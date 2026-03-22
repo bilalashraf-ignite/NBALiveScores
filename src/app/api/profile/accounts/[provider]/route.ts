@@ -14,6 +14,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = session.user.id;
     const { provider } = await params;
 
     // Use transaction to prevent race conditions where concurrent requests
@@ -22,10 +23,10 @@ export async function DELETE(
       // Get user's accounts and check if they have a password
       const [accounts, user] = await Promise.all([
         tx.account.findMany({
-          where: { userId: session.user.id },
+          where: { userId },
         }),
         tx.user.findUnique({
-          where: { id: session.user.id },
+          where: { id: userId },
           select: { password: true },
         }),
       ]);

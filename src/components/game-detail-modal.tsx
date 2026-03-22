@@ -31,6 +31,7 @@ interface GameDetailModalProps {
 }
 
 interface BetSelection {
+  id: string;
   type: string;
   odds: number;
   label: string;
@@ -109,16 +110,16 @@ export function GameDetailModal({
 
   const handleSelectBet = (selection: BetSelection) => {
     setBetSelections(prev => {
-      const exists = prev.find(s => s.type === selection.type);
+      const exists = prev.find(s => s.id === selection.id);
       if (exists) {
-        return prev.filter(s => s.type !== selection.type);
+        return prev.filter(s => s.id !== selection.id);
       }
       return [...prev, selection];
     });
   };
 
-  const handleRemoveSelection = (type: string) => {
-    setBetSelections(prev => prev.filter(s => s.type !== type));
+  const handleRemoveSelection = (id: string) => {
+    setBetSelections(prev => prev.filter(s => s.id !== id));
   };
 
   const handleClearAll = () => {

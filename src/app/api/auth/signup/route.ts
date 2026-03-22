@@ -6,65 +6,10 @@ import { prisma } from "@/lib/db";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
 import { authLogger, hashEmail } from "@/lib/logger";
-
-// IP-based rate limiting (in-memory for dev, use Redis in production)
-// TODO: For production multi-instance deployments, replace with Redis-backed
-// rate limiting (e.g., @upstash/ratelimit) as in-memory Maps won't persist
-// across serverless instances or cold starts.
-const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
-const IP_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute window
-const IP_RATE_LIMIT_MAX_REQUESTS = 5; // Max 5 signups per minute per IP
-
-// Email-based rate limiting to prevent targeting specific emails
-const emailRequestCounts = new Map<string, { count: number; resetAt: number }>();
-const EMAIL_RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour window
-const EMAIL_RATE_LIMIT_MAX_REQUESTS = 3; // Max 3 attempts per hour per email
+import { rateLimiters, getClientIp } from "@/lib/rate-limit";
 
 // Name validation constraints
 const MAX_NAME_LENGTH = 100;
-
-function getClientIp(headersList: Headers): string {
-  return (
-    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    headersList.get("x-real-ip") ||
-    "unknown"
-  );
-}
-
-function checkIpRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = ipRequestCounts.get(ip);
-
-  if (!record || now >= record.resetAt) {
-    ipRequestCounts.set(ip, { count: 1, resetAt: now + IP_RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-
-  if (record.count >= IP_RATE_LIMIT_MAX_REQUESTS) {
-    return false;
-  }
-
-  record.count++;
-  return true;
-}
-
-function checkEmailRateLimit(email: string): boolean {
-  const now = Date.now();
-  const normalizedEmail = email.toLowerCase();
-  const record = emailRequestCounts.get(normalizedEmail);
-
-  if (!record || now >= record.resetAt) {
-    emailRequestCounts.set(normalizedEmail, { count: 1, resetAt: now + EMAIL_RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-
-  if (record.count >= EMAIL_RATE_LIMIT_MAX_REQUESTS) {
-    return false;
-  }
-
-  record.count++;
-  return true;
-}
 
 export async function POST(request: Request) {
   try {
@@ -72,7 +17,8 @@ export async function POST(request: Request) {
     const clientIp = getClientIp(headersList);
 
     // Check IP rate limit first (before parsing body)
-    if (!checkIpRateLimit(clientIp)) {
+    const ipRateLimit = await rateLimiters.signupIp.check(clientIp);
+    if (!ipRateLimit.allowed) {
       authLogger.warn({ ip: clientIp }, "Signup IP rate limit exceeded");
       return NextResponse.json(
         { error: "Too many signup attempts. Please try again later." },
@@ -129,7 +75,8 @@ export async function POST(request: Request) {
     }
 
     // Check email-based rate limit (before expensive operations)
-    if (!checkEmailRateLimit(email)) {
+    const emailRateLimit = await rateLimiters.signupEmail.check(email.toLowerCase());
+    if (!emailRateLimit.allowed) {
       authLogger.warn({ emailHash: hashEmail(email) }, "Signup email rate limit exceeded");
       return NextResponse.json(
         { error: "Too many signup attempts for this email. Please try again later." },

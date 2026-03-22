@@ -6,9 +6,31 @@ interface LeagueFilterProps {
   onSelectLeague: (league: League | 'all') => void;
 }
 
+// League labels mapping
+const leagueLabels: Record<League, string> = {
+  // Basketball
+  NBA: 'NBA',
+  NCAA: 'NCAA',
+  EuroLeague: 'EuroLeague',
+  // Football
+  PremierLeague: 'Premier League',
+  LaLiga: 'La Liga',
+  Bundesliga: 'Bundesliga',
+  SerieA: 'Serie A',
+  Ligue1: 'Ligue 1',
+  // Cricket
+  IPL: 'IPL',
+  BBL: 'Big Bash League',
+  PSL: 'Pakistan Super League',
+  CPL: 'Caribbean Premier League',
+  ICC: 'International',
+  CountyChampionship: 'County Championship',
+};
+
 /**
  * League filter pills/chips component.
  * Shows game counts per league and allows filtering by league.
+ * Dynamically shows only leagues that have games.
  *
  * Pattern source: RESEARCH.md Pattern 6 (Multi-League Support)
  * Requirements: LEAGUE-04 (filter by league)
@@ -20,11 +42,15 @@ export function LeagueFilter({ games, selectedLeague, onSelectLeague }: LeagueFi
     return acc;
   }, {} as Record<League, number>);
 
+  // Get unique leagues from games and build filters dynamically
+  const uniqueLeagues = Array.from(new Set(games.map(g => g.league)));
+
   const filters: Array<{ id: League | 'all'; label: string }> = [
     { id: 'all', label: 'All' },
-    { id: 'NBA', label: 'NBA' },
-    { id: 'NCAA', label: 'NCAA' },
-    { id: 'EuroLeague', label: 'EuroLeague' },
+    ...uniqueLeagues.map(league => ({
+      id: league,
+      label: leagueLabels[league] || league,
+    })),
   ];
 
   return (

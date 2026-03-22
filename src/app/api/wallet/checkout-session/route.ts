@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
 import { getCurrentUser } from '@/lib/auth/current-user';
 import { getStarPointProduct } from '@/lib/star-points/products';
 import { createStarPointCheckoutSession } from '@/lib/star-points/purchases';
 import { walletLogger } from '@/lib/logger';
+
+const checkoutSessionSchema = z.object({
+  productCode: z.string().min(1, 'Product code is required'),
+});
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -16,14 +21,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'user_not_allowed' }, { status: 403 });
   }
 
-  let body: { productCode?: string };
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
   }
 
-  const product = body.productCode ? getStarPointProduct(body.productCode) : null;
+  const parseResult = checkoutSessionSchema.safeParse(body);
+  if (!parseResult.success) {
+    return NextResponse.json({ error: 'invalid_product' }, { status: 400 });
+  }
+
+  const product = getStarPointProduct(parseResult.data.productCode);
 
   if (!product) {
     return NextResponse.json({ error: 'invalid_product' }, { status: 400 });

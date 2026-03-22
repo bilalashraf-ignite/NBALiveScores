@@ -1,16 +1,27 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useDrag } from '@use-gesture/react';
 import { useGameDetails } from '@/hooks/use-game-details';
 import { useModalHistory } from '@/hooks/use-modal-history';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { GameDetailSkeleton } from './game-detail-skeleton';
-import { TeamStatsTable } from './team-stats-table';
-import { PlayerStatsTable } from './player-stats-table';
+import { MatchHeader } from './match/match-header';
+import { MatchActions, StatBox, StatProgressBar } from './match/match-primitives';
+import { BettingMarkets } from './betting/betting-markets';
+import { BetSlip } from './betting/bet-slip';
+import { FootballScorers } from './football-scorers';
 import { HistoricalMatchup } from './historical-matchup';
+import {
+  CricketScorecard,
+  BallByBallTicker,
+  CricketTeamStatsTable,
+  CricketPlayerStatsTable,
+  CricketTopPerformers,
+} from './cricket';
 import type { League } from '@/types/sports-data';
+import { getSportFromLeague, isFootballGameDetails, isCricketGameDetails, GameState } from '@/types/sports-data';
 
 interface GameDetailModalProps {
   gameId: string;
@@ -19,18 +30,29 @@ interface GameDetailModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface BetSelection {
+  id: string;
+  type: string;
+  odds: number;
+  label: string;
+}
+
+function getBadgeVariant(state: GameState): 'live' | 'halftime' | 'finished' | 'upcoming' {
+  switch (state) {
+    case GameState.LIVE:
+      return 'live';
+    case GameState.HALFTIME:
+      return 'halftime';
+    case GameState.FINAL:
+      return 'finished';
+    default:
+      return 'upcoming';
+  }
+}
+
 /**
- * Modal dialog for displaying detailed game information.
- * Opens when user clicks on a game card, shows team stats, player stats, and historical matchup.
- *
- * Features:
- * - On-demand data fetching (only when modal opens)
- * - Browser back button support via useModalHistory
- * - Multiple dismissal methods: X button, ESC key, backdrop click, back button
- * - Loading skeleton while data fetches
- * - Smooth fade + scale animation
- *
- * Pattern from RESEARCH.md Pattern 1 (Radix UI Dialog with controlled state).
+ * Modal dialog for displaying detailed game information with betting interface.
+ * Opens when user clicks on a game card, shows team stats, betting markets, and bet slip.
  */
 export function GameDetailModal({
   gameId,
@@ -38,30 +60,23 @@ export function GameDetailModal({
   open,
   onOpenChange
 }: GameDetailModalProps) {
-  // Ref for direct DOM manipulation (no React state for transform)
   const contentRef = useRef<HTMLDivElement>(null);
+  const dragHandleRef = useRef<HTMLDivElement>(null);
+  const [betSelections, setBetSelections] = useState<BetSelection[]>([]);
+  const [isMobileBetSlipOpen, setIsMobileBetSlipOpen] = useState(false);
 
-  // Fetch game details on-demand when modal opens
   const { data, loading, error } = useGameDetails(gameId, league, open);
 
-  // Scroll lock with scrollbar compensation to prevent page jump
+  // Scroll lock with scrollbar compensation
   useEffect(() => {
     if (!open) return;
-
-    // Calculate scrollbar width (varies by OS/browser: 0-17px)
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-    // Store original scroll position
     const scrollY = window.scrollY;
-
-    // Lock scroll with compensation
     document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollY}px`;
     document.body.style.width = '100%';
     document.body.style.paddingRight = `${scrollbarWidth}px`;
-
     return () => {
-      // Restore scroll
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
@@ -70,176 +85,342 @@ export function GameDetailModal({
     };
   }, [open]);
 
-  // Integrate with browser history for back button support
   useModalHistory(open, () => onOpenChange(false));
-
-  // Haptic feedback
   const { trigger } = useHapticFeedback();
 
-  // Swipe-to-close gesture using @use-gesture/react
   const bind = useDrag(
-    ({ down, movement: [, my], velocity: [, vy] }) => {
-      // Only allow downward drag
-      const clampedY = Math.max(0, Math.min(my, 100));
-
-      // Apply transform directly to DOM via ref (no React re-render)
+    ({ down, movement: [, my] }) => {
+      const clampedY = Math.max(0, Math.min(my, 150));
       if (contentRef.current) {
         if (down) {
-          // During drag - update transform
           contentRef.current.style.transform = `translate(-50%, calc(-50% + ${clampedY}px))`;
+          contentRef.current.style.opacity = `${1 - clampedY / 200}`;
         } else {
-          // Released - check if threshold crossed
           if (my > 100) {
-            // Crossed threshold - trigger close
             trigger('nudge');
             onOpenChange(false);
           }
-          // Reset transform
-          contentRef.current.style.transform = 'translate(-50%, -50%)';
+          contentRef.current.style.transform = '';
+          contentRef.current.style.opacity = '';
         }
       }
     },
-    {
-      axis: 'y',
-      filterTaps: true,
-      bounds: { top: 0, bottom: 100 },
-      rubberband: true,
-      threshold: 10,
-    }
+    { axis: 'y', filterTaps: true, threshold: 10 }
   );
+
+  const handleSelectBet = (selection: BetSelection) => {
+    setBetSelections(prev => {
+      const exists = prev.find(s => s.id === selection.id);
+      if (exists) {
+        return prev.filter(s => s.id !== selection.id);
+      }
+      return [...prev, selection];
+    });
+  };
+
+  const handleRemoveSelection = (id: string) => {
+    setBetSelections(prev => prev.filter(s => s.id !== id));
+  };
+
+  const handleClearAll = () => {
+    setBetSelections([]);
+  };
+
+  const getSelectedBetType = () => {
+    return betSelections.length > 0 ? betSelections[betSelections.length - 1].type : null;
+  };
+
+  const getMatchTime = () => {
+    if (!data) return '';
+    const sport = getSportFromLeague(league);
+    if (sport === 'football' && isFootballGameDetails(data) && data.gameContext) {
+      return `${data.gameContext.minute}'`;
+    }
+    if (sport === 'cricket' && isCricketGameDetails(data) && data.gameContext) {
+      return `${data.gameContext.overs} ov`;
+    }
+    return '';
+  };
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        {/* Backdrop overlay */}
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/70 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
 
-        {/* Modal content with swipe-to-close gesture */}
         <Dialog.Content
           ref={contentRef}
-          className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[90vw] max-w-4xl overflow-y-auto rounded-lg bg-white p-6 shadow-lg transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] dark:bg-gray-800"
+          className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 max-h-[90vh] w-[95vw] max-w-6xl overflow-hidden rounded-2xl bg-[#0f0f1a] shadow-2xl transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
           aria-describedby="game-details-description"
-          {...bind()}
         >
-          {/* Accessible title (visually hidden) */}
-          <Dialog.Title className="sr-only">Game Details</Dialog.Title>
+          {/* Drag handle */}
+          <div
+            ref={dragHandleRef}
+            className="sticky top-0 z-10 flex justify-center py-3 cursor-grab active:cursor-grabbing bg-[#0f0f1a] rounded-t-2xl touch-none"
+            {...bind()}
+          >
+            <div className="h-1.5 w-12 rounded-full bg-purple-500/30" />
+          </div>
 
-          {/* Accessible description */}
+          <Dialog.Title className="sr-only">Game Details</Dialog.Title>
           <Dialog.Description id="game-details-description" className="sr-only">
-            Detailed information about the basketball game including scores, team statistics, player statistics, and historical matchup data.
+            Detailed game information with betting options
           </Dialog.Description>
 
-          {/* Close button (X) - Material Design 48x48px touch target */}
-          <Dialog.Close className="absolute right-4 top-4 h-12 w-12 flex items-center justify-center rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-gray-100 data-[state=open]:text-gray-500 dark:ring-offset-gray-950 dark:focus:ring-gray-300 dark:data-[state=open]:bg-gray-800 dark:data-[state=open]:text-gray-400">
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+          <Dialog.Close className="absolute right-4 top-4 h-10 w-10 flex items-center justify-center rounded-full bg-[#1a1a2e] opacity-70 hover:opacity-100 transition-opacity z-20">
+            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
             <span className="sr-only">Close</span>
           </Dialog.Close>
 
-          {/* Modal content body */}
-          <div className="mt-4">
+          {/* Content */}
+          <div className="max-h-[calc(90vh-48px)] overflow-y-auto">
             {loading && <GameDetailSkeleton />}
 
             {error && (
-              <div className="rounded-lg bg-red-50 p-4 text-red-900 dark:bg-red-900/20 dark:text-red-200">
-                <p className="font-semibold">Error loading game details</p>
-                <p className="text-sm">{error.message}</p>
+              <div className="p-6">
+                <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-red-300">
+                  <p className="font-semibold">Error loading game details</p>
+                  <p className="text-sm">{error.message}</p>
+                </div>
               </div>
             )}
 
             {data && !loading && !error && (
-              <div className="space-y-6">
-                {/* Game info header */}
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-4">
-                    {/* Away team */}
-                    <div className="flex-1 text-right">
-                      <p className="text-lg font-semibold text-foreground">{data.awayTeam.name}</p>
-                      <p className="text-3xl font-bold text-foreground">{data.score.away}</p>
-                    </div>
+              <div className="flex flex-col lg:flex-row">
+                {/* Main Content */}
+                <div className="flex-1 p-6 space-y-6">
+                  {/* Match Header */}
+                  <MatchHeader
+                    homeTeam={data.homeTeam}
+                    awayTeam={data.awayTeam}
+                    score={data.score}
+                    status={getBadgeVariant(data.status)}
+                    matchTime={getMatchTime()}
+                    league={league}
+                  />
 
-                    {/* VS divider */}
-                    <div className="text-gray-500 dark:text-gray-400">VS</div>
+                  {/* Match Actions */}
+                  <MatchActions
+                    isLive={data.status === GameState.LIVE || data.status === GameState.HALFTIME}
+                  />
 
-                    {/* Home team */}
-                    <div className="flex-1 text-left">
-                      <p className="text-lg font-semibold text-foreground">{data.homeTeam.name}</p>
-                      <p className="text-3xl font-bold text-foreground">{data.score.home}</p>
-                    </div>
-                  </div>
+                  {/* Goal Scorers (Football) */}
+                  {isFootballGameDetails(data) && data.scorers && data.scorers.length > 0 && (
+                    <FootballScorers
+                      scorers={data.scorers}
+                      homeTeam={data.homeTeam}
+                      awayTeam={data.awayTeam}
+                    />
+                  )}
 
-                  {/* Game context (period, time, possession) */}
-                  {data.gameContext && (
-                    <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                      Q{data.gameContext.period} - {data.gameContext.timeRemaining}
-                      {data.gameContext.possession && (
-                        <span className="ml-2">
-                          ({data.gameContext.possession === 'home' ? data.homeTeam.abbreviation : data.awayTeam.abbreviation} possession)
-                        </span>
+                  {/* Cricket Live Updates (Ball-by-ball) */}
+                  {isCricketGameDetails(data) && data.gameContext && (
+                    <BallByBallTicker
+                      recentOvers={data.gameContext.recentOvers || []}
+                      lastBall={data.gameContext.lastBall}
+                      currentBatsmen={data.gameContext.currentBatsmen}
+                      currentBowler={data.gameContext.currentBowler}
+                      totalScore={data.innings?.[data.innings.length - 1]?.runs || 0}
+                      wickets={data.innings?.[data.innings.length - 1]?.wickets || 0}
+                      overs={data.gameContext.overs}
+                      target={data.gameContext.target}
+                      runsNeeded={data.gameContext.runsNeeded}
+                      ballsRemaining={data.gameContext.ballsRemaining}
+                    />
+                  )}
+
+                  {/* Cricket Scorecard */}
+                  {isCricketGameDetails(data) && (
+                    <CricketScorecard
+                      innings={data.innings}
+                      battingStats={data.battingStats}
+                      bowlingStats={data.bowlingStats}
+                      homeTeamName={data.homeTeam.name}
+                      awayTeamName={data.awayTeam.name}
+                    />
+                  )}
+
+                  {/* Cricket Top Performers (like FootballScorers) */}
+                  {isCricketGameDetails(data) && data.battingStats && data.bowlingStats && (
+                    <CricketTopPerformers
+                      battingStats={data.battingStats}
+                      bowlingStats={data.bowlingStats}
+                      homeTeam={data.homeTeam}
+                      awayTeam={data.awayTeam}
+                    />
+                  )}
+
+                  {/* Team Statistics */}
+                  {data.teamStats && data.teamStats.home && data.teamStats.away && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-white">Match Statistics</h3>
+                      {isCricketGameDetails(data) ? (
+                        <CricketTeamStatsTable
+                          homeStats={data.teamStats.home}
+                          awayStats={data.teamStats.away}
+                          homeTeamName={data.homeTeam.name}
+                          awayTeamName={data.awayTeam.name}
+                        />
+                      ) : (
+                      <div className="space-y-4 p-4 rounded-xl bg-[#16162a] border border-purple-500/10">
+                        {isFootballGameDetails(data) ? (
+                          <>
+                            <StatProgressBar
+                              label="Possession"
+                              homeValue={data.teamStats.home.possession || 50}
+                              awayValue={data.teamStats.away.possession || 50}
+                              isPercentage
+                            />
+                            <StatProgressBar
+                              label="Total Shots"
+                              homeValue={data.teamStats.home.shots || 0}
+                              awayValue={data.teamStats.away.shots || 0}
+                            />
+                            <StatProgressBar
+                              label="Shots on Target"
+                              homeValue={data.teamStats.home.shotsOnTarget || 0}
+                              awayValue={data.teamStats.away.shotsOnTarget || 0}
+                            />
+                            <StatProgressBar
+                              label="Passes"
+                              homeValue={data.teamStats.home.passes || 0}
+                              awayValue={data.teamStats.away.passes || 0}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <StatProgressBar
+                              label="Field Goals"
+                              homeValue={(data.teamStats.home as { fieldGoals?: { made: number } }).fieldGoals?.made || 0}
+                              awayValue={(data.teamStats.away as { fieldGoals?: { made: number } }).fieldGoals?.made || 0}
+                            />
+                            <StatProgressBar
+                              label="Rebounds"
+                              homeValue={(data.teamStats.home as { reboundsTotal?: number }).reboundsTotal || 0}
+                              awayValue={(data.teamStats.away as { reboundsTotal?: number }).reboundsTotal || 0}
+                            />
+                            <StatProgressBar
+                              label="Assists"
+                              homeValue={(data.teamStats.home as { assists?: number }).assists || 0}
+                              awayValue={(data.teamStats.away as { assists?: number }).assists || 0}
+                            />
+                          </>
+                        )}
+                      </div>
+                      )}
+
+                      {/* Stat Boxes for Football */}
+                      {isFootballGameDetails(data) && (
+                        <div className="grid grid-cols-4 gap-3">
+                          <StatBox
+                            value={(data.teamStats.home.corners || 0) + (data.teamStats.away.corners || 0)}
+                            label="Corners"
+                            icon="corner"
+                          />
+                          <StatBox
+                            value={(data.teamStats.home.yellowCards || 0) + (data.teamStats.away.yellowCards || 0)}
+                            label="Yellow"
+                            icon="yellow"
+                          />
+                          <StatBox
+                            value={(data.teamStats.home.fouls || 0) + (data.teamStats.away.fouls || 0)}
+                            label="Fouls"
+                            icon="foul"
+                          />
+                          <StatBox
+                            value={(data.teamStats.home.redCards || 0) + (data.teamStats.away.redCards || 0)}
+                            label="Red"
+                            icon="red"
+                          />
+                        </div>
                       )}
                     </div>
                   )}
 
-                  {/* Status */}
-                  <div className="mt-1 text-sm font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                    {data.status}
-                  </div>
-                </div>
-
-                {/* Team Statistics Section */}
-                <div>
-                  <h2 className="text-xl font-bold mt-6 mb-4 text-gray-900 dark:text-gray-100">Team Statistics</h2>
-                  {data.teamStats && data.teamStats.home && data.teamStats.away ? (
-                    <TeamStatsTable
-                      homeStats={data.teamStats.home}
-                      awayStats={data.teamStats.away}
+                  {/* Cricket Player Stats Table (detailed batting/bowling) */}
+                  {isCricketGameDetails(data) && data.battingStats && data.bowlingStats && (
+                    <CricketPlayerStatsTable
+                      battingStats={data.battingStats}
+                      bowlingStats={data.bowlingStats}
                       homeTeam={data.homeTeam}
                       awayTeam={data.awayTeam}
                     />
-                  ) : (
-                    <p className="text-gray-600 dark:text-gray-400">Team statistics unavailable</p>
                   )}
-                </div>
 
-                {/* Player Statistics Section */}
-                <div>
-                  <h2 className="text-xl font-bold mt-6 mb-4 text-gray-900 dark:text-gray-100">Player Statistics</h2>
-                  {data.playerStats && data.playerStats.home && data.playerStats.away ? (
-                    <PlayerStatsTable
-                      homeStats={data.playerStats.home}
-                      awayStats={data.playerStats.away}
-                      homeTeam={data.homeTeam}
-                      awayTeam={data.awayTeam}
-                    />
-                  ) : (
-                    <p className="text-gray-600 dark:text-gray-400">Player statistics unavailable</p>
-                  )}
-                </div>
-
-                {/* Historical Matchup Section */}
-                <div>
-                  <h2 className="text-xl font-bold mt-8 mb-4 text-gray-900 dark:text-gray-100">Historical Matchup</h2>
+                  {/* Historical Matchup (Head-to-Head) */}
                   <HistoricalMatchup
                     data={data.historicalMatchup}
                     homeTeam={data.homeTeam}
                     awayTeam={data.awayTeam}
                   />
+
+                  {/* Betting Markets */}
+                  <BettingMarkets
+                    homeTeam={data.homeTeam}
+                    awayTeam={data.awayTeam}
+                    onSelectBet={handleSelectBet}
+                    selectedBet={getSelectedBetType()}
+                  />
+                </div>
+
+                {/* Bet Slip Sidebar (Desktop) */}
+                <div className="hidden lg:block w-80 border-l border-purple-500/10">
+                  <BetSlip
+                    selections={betSelections}
+                    onRemoveSelection={handleRemoveSelection}
+                    onClearAll={handleClearAll}
+                  />
                 </div>
               </div>
             )}
           </div>
+
+          {/* Mobile Bet Slip (Fixed bottom) */}
+          {betSelections.length > 0 && (
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-[#0f0f1a] border-t border-purple-500/10 z-30">
+              <button
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold"
+                onClick={() => setIsMobileBetSlipOpen(true)}
+              >
+                View Bet Slip ({betSelections.length})
+              </button>
+            </div>
+          )}
+
+          {/* Mobile Bet Slip Drawer */}
+          {isMobileBetSlipOpen && (
+            <div className="lg:hidden fixed inset-0 z-50">
+              {/* Backdrop */}
+              <div
+                className="absolute inset-0 bg-black/60"
+                onClick={() => setIsMobileBetSlipOpen(false)}
+              />
+              {/* Drawer */}
+              <div className="absolute bottom-0 left-0 right-0 max-h-[80vh] bg-[#0f0f1a] rounded-t-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+                {/* Drawer handle */}
+                <div className="flex justify-center py-3 border-b border-purple-500/10">
+                  <button
+                    onClick={() => setIsMobileBetSlipOpen(false)}
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    <div className="h-1 w-10 rounded-full bg-purple-500/30" />
+                  </button>
+                </div>
+                {/* Bet slip content */}
+                <div className="overflow-y-auto max-h-[calc(80vh-48px)]">
+                  <BetSlip
+                    selections={betSelections}
+                    onRemoveSelection={handleRemoveSelection}
+                    onClearAll={() => {
+                      handleClearAll();
+                      setIsMobileBetSlipOpen(false);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

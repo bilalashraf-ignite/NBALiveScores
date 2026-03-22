@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Game, GameState } from "@/types/sports-data";
+import { Game, GameState, getSportFromLeague } from "@/types/sports-data";
 import { StatusBadge } from "./status-badge";
 import { GameTime } from "./game-time";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
@@ -160,14 +160,23 @@ export function GameCard({ game, index, onClick }: GameCardProps) {
       {/* Game context section - only show for live/halftime games */}
       {(game.state === GameState.LIVE || game.state === GameState.HALFTIME) && (
         <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300">
-          {/* Quarter and time */}
-          {game.period && (
+          {/* Sport-aware time display */}
+          {getSportFromLeague(game.league) === 'football' ? (
+            // Football: Show half and minute
             <span>
-              Q{game.period} {game.timeRemaining || ""}
+              {game.half === 1 ? '1st' : '2nd'} {game.minute}'
+              {game.addedTime && game.addedTime > 0 && `+${game.addedTime}`}
             </span>
+          ) : (
+            // Basketball: Show quarter and time remaining
+            game.period && (
+              <span>
+                Q{game.period} {game.timeRemaining || ""}
+              </span>
+            )
           )}
-          {/* Team fouls - show if available */}
-          {game.teamFouls && (
+          {/* Team fouls - basketball only */}
+          {getSportFromLeague(game.league) === 'basketball' && game.teamFouls && (
             <span>
               Fouls: {game.teamFouls.home}-{game.teamFouls.away}
             </span>

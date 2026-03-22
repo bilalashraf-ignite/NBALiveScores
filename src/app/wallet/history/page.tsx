@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
 import { useWalletLedger } from "@/hooks/use-wallet-ledger";
 
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
+function formatDate(dateString: string, locale?: string): string {
+  return new Date(dateString).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -14,38 +14,37 @@ function formatDate(dateString: string): string {
   });
 }
 
+const DEFAULT_BADGE_COLOR = "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400";
+
+const ENTRY_TYPE_CONFIG: Record<string, { label: string; badgeColor: string }> = {
+  CREDIT_PURCHASE: {
+    label: "Purchase",
+    badgeColor: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+  },
+  DEBIT_REFUND: {
+    label: "Refund",
+    badgeColor: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+  },
+  CREDIT_ADJUSTMENT: {
+    label: "Bonus",
+    badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+  },
+  DEBIT_SPEND: {
+    label: "Spent",
+    badgeColor: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
+  },
+  DEBIT_ADJUSTMENT: {
+    label: "Adjustment",
+    badgeColor: DEFAULT_BADGE_COLOR,
+  },
+};
+
 function getEntryTypeLabel(entryType: string): string {
-  switch (entryType) {
-    case "CREDIT_PURCHASE":
-      return "Purchase";
-    case "DEBIT_REFUND":
-      return "Refund";
-    case "CREDIT_ADJUSTMENT":
-      return "Bonus";
-    case "DEBIT_SPEND":
-      return "Spent";
-    case "DEBIT_ADJUSTMENT":
-      return "Adjustment";
-    default:
-      return entryType;
-  }
+  return ENTRY_TYPE_CONFIG[entryType]?.label ?? entryType;
 }
 
 function getEntryTypeBadgeColor(entryType: string): string {
-  switch (entryType) {
-    case "CREDIT_PURCHASE":
-      return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
-    case "DEBIT_REFUND":
-      return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
-    case "CREDIT_ADJUSTMENT":
-      return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
-    case "DEBIT_SPEND":
-      return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400";
-    case "DEBIT_ADJUSTMENT":
-      return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400";
-    default:
-      return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400";
-  }
+  return ENTRY_TYPE_CONFIG[entryType]?.badgeColor ?? DEFAULT_BADGE_COLOR;
 }
 
 export default function WalletHistoryPage() {
@@ -125,7 +124,7 @@ export default function WalletHistoryPage() {
                 No transactions yet
               </p>
               <Link
-                href="/profile"
+                href="/profile#wallet"
                 className="mt-4 inline-block text-blue-600 hover:text-blue-500 dark:text-blue-400 text-sm"
               >
                 Purchase Star Points

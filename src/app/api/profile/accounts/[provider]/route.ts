@@ -14,24 +14,53 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = session.user.id;
     const { provider } = await params;
 
-    // Get user's accounts and check if they have a password
-    const [accounts, user] = await Promise.all([
-      prisma.account.findMany({
-        where: { userId: session.user.id },
-      }),
-      prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { password: true },
-      }),
-    ]);
+    // Use transaction to prevent race conditions where concurrent requests
+    // could both pass the safeguard check and leave user with no auth method
+    const result = await prisma.$transaction(async (tx) => {
+      // Get user's accounts and check if they have a password
+      const [accounts, user] = await Promise.all([
+        tx.account.findMany({
+          where: { userId },
+        }),
+        tx.user.findUnique({
+          where: { id: userId },
+          select: { password: true },
+        }),
+      ]);
 
-    // Safeguard: Ensure user has at least one auth method remaining
-    const hasPassword = !!user?.password;
-    const otherAccounts = accounts.filter((a) => a.provider !== provider);
+      // Find the account to delete
+      const accountToDelete = accounts.find((a) => a.provider === provider);
 
-    if (!hasPassword && otherAccounts.length === 0) {
+      if (!accountToDelete) {
+        return { success: false, reason: "not_found" } as const;
+      }
+
+      // Safeguard: Ensure user has at least one auth method remaining
+      const hasPassword = !!user?.password;
+      const otherAccounts = accounts.filter((a) => a.provider !== provider);
+
+      if (!hasPassword && otherAccounts.length === 0) {
+        return { success: false, reason: "last_auth_method" } as const;
+      }
+
+      // Delete the account within the transaction
+      await tx.account.delete({
+        where: { id: accountToDelete.id },
+      });
+
+      return { success: true } as const;
+    });
+
+    if (!result.success) {
+      if (result.reason === "not_found") {
+        return NextResponse.json(
+          { error: "Account not found" },
+          { status: 404 }
+        );
+      }
       return NextResponse.json(
         {
           error:
@@ -40,20 +69,6 @@ export async function DELETE(
         { status: 400 }
       );
     }
-
-    // Find and delete the account
-    const accountToDelete = accounts.find((a) => a.provider === provider);
-
-    if (!accountToDelete) {
-      return NextResponse.json(
-        { error: "Account not found" },
-        { status: 404 }
-      );
-    }
-
-    await prisma.account.delete({
-      where: { id: accountToDelete.id },
-    });
 
     return NextResponse.json({ message: "Account unlinked successfully" });
   } catch (error) {

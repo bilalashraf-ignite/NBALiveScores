@@ -91,15 +91,17 @@ export class BalldontlieAdapter extends BaseAdapter implements SportsDataAdapter
   /**
    * Fetch a single game by ID.
    *
-   * Note: Phase 1 throws error. Implementation will be added in Phase 2.
+   * Returns null if the game is not found or if an error occurs.
+   * Callers should check for null before using the result.
+   *
+   * Note: Phase 1 returns null. Implementation will be added in Phase 2.
    *
    * @param gameId - Game identifier
-   * @returns Game data
-   * @throws Error if game not found
+   * @returns Game data if found, or null on error/not found
    */
-  async getGame(gameId: string): Promise<Game> {
+  async getGame(gameId: string): Promise<Game | null> {
     try {
-      // Phase 1: Throw error (no network calls yet)
+      // Phase 1: Return null (no network calls yet)
       // Phase 2: Implement actual HTTP fetch to /games/{id} endpoint
       // const response = await fetch(`${this.baseUrl}/games/${gameId}`, {
       //   headers: { 'Authorization': this.apiKey }
@@ -107,21 +109,25 @@ export class BalldontlieAdapter extends BaseAdapter implements SportsDataAdapter
       // const data = await response.json();
       // return this.mapToGame(data);
 
-      throw new Error(`Game ${gameId} not found (Phase 1: network calls not implemented)`);
+      console.warn(`BallDontLieAdapter.getGame: Game ${gameId} lookup not implemented in Phase 1`);
+      return null;
     } catch (error) {
       adapterLogger.error({ err: error, gameId }, 'Failed to fetch game from balldontlie.io');
-      throw error;
+      return null;
     }
   }
 
   /**
    * Fetch scheduled games for a specific date.
    *
+   * Returns an empty array if no games are scheduled or if an error occurs.
+   * Callers should check array length to determine if games exist.
+   *
    * Note: Phase 1 returns empty array. Implementation will be added in Phase 2.
    *
    * @param league - League identifier (only "nba" supported)
    * @param date - Date to fetch games for (UTC)
-   * @returns Array of scheduled games
+   * @returns Array of scheduled games, or empty array on error/no games
    */
   async getScheduledGames(league: string, date: Date): Promise<Game[]> {
     try {

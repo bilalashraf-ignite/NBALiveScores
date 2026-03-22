@@ -1,0 +1,94 @@
+'use client';
+
+// Date filter button
+interface DateFilterProps {
+  selected?: string;
+  onChange?: (date: string) => void;
+}
+
+// Helper to format selected date for display
+function formatDateLabel(selected: string): string {
+  if (selected === 'today') return 'Today';
+  if (selected === 'tomorrow') return 'Tomorrow';
+  if (selected === 'week') return 'This Week';
+  return selected;
+}
+
+// TODO: Implement date picker dropdown/modal to allow users to select dates.
+// Currently this is a placeholder button that displays the selected value
+// but does not open a picker UI. When implementing, call onChange with the
+// user's chosen date value instead of cycling through options.
+export function DateFilter({ selected = 'today', onChange }: DateFilterProps) {
+  return (
+    <button
+      onClick={() => {
+        // Placeholder: cycle through options until proper picker is implemented
+        const options = ['today', 'tomorrow', 'week'];
+        const currentIndex = options.indexOf(selected);
+        const nextIndex = (currentIndex + 1) % options.length;
+        onChange?.(options[nextIndex]);
+      }}
+      className="
+        flex items-center gap-2 px-4 py-2 rounded-lg
+        bg-[#1a1a2e] border border-purple-500/20
+        text-gray-300 hover:border-purple-500/40
+        transition-all duration-200
+      "
+    >
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+        />
+      </svg>
+      <span className="text-sm font-medium">{formatDateLabel(selected)}</span>
+    </button>
+  );
+}
+
+// View toggle (grid/list)
+interface ViewToggleProps {
+  view: 'grid' | 'list';
+  onChange: (view: 'grid' | 'list') => void;
+}
+
+export function ViewToggle({ view, onChange }: ViewToggleProps) {
+  return (
+    <div
+      role="group"
+      aria-label="View toggle"
+      className="flex items-center rounded-lg border border-purple-500/20 bg-[#1a1a2e] p-1"
+    >
+      <button
+        onClick={() => onChange('grid')}
+        aria-pressed={view === 'grid'}
+        className={`
+          px-3 py-1.5 rounded-md text-sm font-medium
+          transition-all duration-200
+          ${view === 'grid'
+            ? 'bg-purple-500/20 text-white'
+            : 'text-gray-400 hover:text-white'
+          }
+        `}
+      >
+        Grid
+      </button>
+      <button
+        onClick={() => onChange('list')}
+        aria-pressed={view === 'list'}
+        className={`
+          px-3 py-1.5 rounded-md text-sm font-medium
+          transition-all duration-200
+          ${view === 'list'
+            ? 'bg-purple-500/20 text-white'
+            : 'text-gray-400 hover:text-white'
+          }
+        `}
+      >
+        List
+      </button>
+    </div>
+  );
+}

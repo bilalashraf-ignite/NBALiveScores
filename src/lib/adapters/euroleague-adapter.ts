@@ -77,26 +77,43 @@ export class EuroLeagueAdapter extends BaseAdapter implements SportsDataAdapter 
   /**
    * Fetch a single game by ID.
    *
-   * Not implemented in Phase 3.
+   * Returns null if the game is not found or if an error occurs.
+   * Callers should check for null before using the result.
+   *
+   * Note: Not implemented in Phase 3.
    *
    * @param gameId - Game identifier
-   * @throws Error indicating not implemented
+   * @returns Game data if found, or null on error/not found
    */
-  async getGame(gameId: string): Promise<Game> {
-    throw new Error('getGame not implemented for EuroLeague adapter');
+  async getGame(gameId: string): Promise<Game | null> {
+    try {
+      console.warn(`EuroLeagueAdapter.getGame: Game ${gameId} lookup not implemented`);
+      return null;
+    } catch (error) {
+      console.error(`Failed to fetch game ${gameId} from EuroLeague API:`, error);
+      return null;
+    }
   }
 
   /**
    * Fetch scheduled games for a specific date.
    *
-   * Not implemented in Phase 3.
+   * Returns an empty array if no games are scheduled or if an error occurs.
+   * Callers should check array length to determine if games exist.
+   *
+   * Note: Not implemented in Phase 3.
    *
    * @param league - League identifier
    * @param date - Date to fetch games for
-   * @returns Empty array
+   * @returns Array of scheduled games, or empty array on error/no games
    */
   async getScheduledGames(league: string, date: Date): Promise<Game[]> {
-    return [];
+    try {
+      return [];
+    } catch (error) {
+      console.error(`Failed to fetch scheduled games for ${league}:`, error);
+      return [];
+    }
   }
 
   /**

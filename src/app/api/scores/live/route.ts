@@ -5,8 +5,9 @@
  * Implements unidirectional server-push pattern for automatic score updates
  * without client polling overhead.
  *
- * Phase 3: Multi-league support with parallel fetching from NBA, NCAA, and EuroLeague.
- * Uses Promise.allSettled to ensure one failing API doesn't block others.
+ * Multi-league support with parallel fetching from all leagues defined in
+ * VALID_LEAGUES (see @/types/sports-data). Uses Promise.allSettled to ensure
+ * one failing API doesn't block others.
  *
  * Critical configuration:
  * - runtime = 'nodejs' prevents edge runtime buffering
@@ -18,6 +19,7 @@
 
 import { getAdapter } from '@/lib/adapters';
 import type { League, Game } from '@/types/sports-data';
+import { VALID_LEAGUES } from '@/types/sports-data';
 import { apiLogger } from '@/lib/logger';
 
 // CRITICAL: Prevent buffering and caching that breaks SSE
@@ -34,11 +36,9 @@ async function fetchAllLeagues(): Promise<{
   games: Game[];
   errors: Partial<Record<League, string>>;
 }> {
-  const leagues: League[] = ['NBA', 'NCAA', 'EuroLeague'];
-
   // Parallel fetches — don't wait for slow APIs
   const results = await Promise.allSettled(
-    leagues.map(async (league) => {
+    VALID_LEAGUES.map(async (league) => {
       const adapter = getAdapter(league);
       return adapter.getLiveGames(league);
     })
@@ -48,7 +48,7 @@ async function fetchAllLeagues(): Promise<{
   const errors: Partial<Record<League, string>> = {};
 
   results.forEach((result, index) => {
-    const league = leagues[index];
+    const league = VALID_LEAGUES[index];
     if (result.status === 'fulfilled') {
       games.push(...result.value);
     } else {

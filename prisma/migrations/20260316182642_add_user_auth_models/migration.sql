@@ -200,6 +200,12 @@ CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provi
 CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
 
 -- CreateIndex
+CREATE INDEX "Account_userId_idx" ON "Account"("userId");
+
+-- CreateIndex
+CREATE INDEX "Session_userId_idx" ON "Session"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");
 
 -- CreateIndex
@@ -248,7 +254,7 @@ CREATE INDEX "WebhookEvent_status_createdAt_idx" ON "WebhookEvent"("status", "cr
 CREATE UNIQUE INDEX "WebhookEvent_provider_providerEventId_key" ON "WebhookEvent"("provider", "providerEventId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Team_abbreviation_key" ON "Team"("abbreviation");
+CREATE UNIQUE INDEX "Team_abbreviation_league_key" ON "Team"("abbreviation", "league");
 
 -- CreateIndex
 CREATE INDEX "Team_league_idx" ON "Team"("league");
@@ -264,6 +270,12 @@ CREATE INDEX "Game_scheduledTime_idx" ON "Game"("scheduledTime");
 
 -- CreateIndex
 CREATE INDEX "Game_league_idx" ON "Game"("league");
+
+-- CreateIndex
+CREATE INDEX "Game_homeTeamId_idx" ON "Game"("homeTeamId");
+
+-- CreateIndex
+CREATE INDEX "Game_awayTeamId_idx" ON "Game"("awayTeamId");
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

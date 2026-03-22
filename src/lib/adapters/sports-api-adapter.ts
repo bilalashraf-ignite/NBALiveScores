@@ -8,29 +8,45 @@ import { Game, GameDetails, League } from '@/types/sports-data';
  *
  * Target: Developer can swap API providers in under 4 hours.
  *
+ * Error Handling Convention:
+ * - Array methods return empty arrays on error or no results
+ * - Single-item methods return null on error or not found
+ * - Errors are logged internally; callers check for null/empty results
+ *
  * See PITFALLS.md #7 for rationale on API abstraction from day one.
  */
 export interface SportsDataAdapter {
   /**
    * Fetch all live games for a specific league.
+   *
+   * Returns an empty array if no games are live or if an error occurs.
+   * Callers should check array length to determine if games exist.
+   *
    * @param league - League identifier (e.g., "nba", "ncaa", "euroleague")
-   * @returns Array of live games, or empty array if none are live
+   * @returns Array of live games, or empty array on error/no games
    */
   getLiveGames(league: string): Promise<Game[]>;
 
   /**
    * Fetch a single game by its ID.
+   *
+   * Returns null if the game is not found or if an error occurs.
+   * Callers should check for null before using the result.
+   *
    * @param gameId - Unique game identifier
-   * @returns Game data
-   * @throws Error if game not found
+   * @returns Game data if found, or null on error/not found
    */
-  getGame(gameId: string): Promise<Game>;
+  getGame(gameId: string): Promise<Game | null>;
 
   /**
    * Fetch scheduled games for a specific league and date.
+   *
+   * Returns an empty array if no games are scheduled or if an error occurs.
+   * Callers should check array length to determine if games exist.
+   *
    * @param league - League identifier (e.g., "nba", "ncaa", "euroleague")
    * @param date - Date to fetch games for (UTC)
-   * @returns Array of scheduled games for that date
+   * @returns Array of scheduled games, or empty array on error/no games
    */
   getScheduledGames(league: string, date: Date): Promise<Game[]>;
 

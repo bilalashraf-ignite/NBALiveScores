@@ -1,6 +1,3 @@
-import { useRef } from 'react';
-import { WebHaptics } from 'web-haptics';
-
 /**
  * Hook for triggering haptic feedback on supported devices.
  * Provides graceful degradation when haptics are not supported.
@@ -14,19 +11,19 @@ import { WebHaptics } from 'web-haptics';
  * Pattern source: RESEARCH.md Pattern 6 (Mobile Gestures with Haptic Feedback)
  */
 export function useHapticFeedback() {
-  // Lazy-initialize WebHaptics instance
-  const hapticsRef = useRef<WebHaptics | null>(null);
-
   const trigger = (pattern: 'success' | 'nudge' | 'error' | 'buzz') => {
-    // Graceful degradation - only trigger if supported
-    if (!WebHaptics.isSupported) return;
+    // Graceful degradation - only trigger if Vibration API is supported
+    if (typeof navigator === 'undefined' || !navigator.vibrate) return;
 
-    // Lazy initialization to avoid creating instance if never used
-    if (!hapticsRef.current) {
-      hapticsRef.current = new WebHaptics();
-    }
+    // Map patterns to vibration durations
+    const vibrationPatterns: Record<string, number | number[]> = {
+      success: [50, 30, 50],
+      nudge: 10,
+      error: [100, 30, 100, 30, 100],
+      buzz: 50,
+    };
 
-    hapticsRef.current.trigger(pattern);
+    navigator.vibrate(vibrationPatterns[pattern] || 10);
   };
 
   return { trigger };

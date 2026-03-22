@@ -1,7 +1,18 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { profileLogger } from "@/lib/logger";
+
+// Validation schema for profile updates
+const profileUpdateSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  phone: z.string().max(20).optional().nullable(),
+  bio: z.string().max(500).optional().nullable(),
+  location: z.string().max(100).optional().nullable(),
+  birthday: z.string().datetime().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).optional().nullable(),
+  gender: z.enum(["male", "female", "other", "prefer_not_to_say"]).optional().nullable(),
+});
 
 export async function GET() {
   try {
@@ -51,19 +62,36 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { name, phone, bio, location, birthday, gender } = body;
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
+      );
+    }
 
-    // Validate birthday format if provided
-    let parsedBirthday: Date | undefined;
-    if (birthday) {
+    // Validate input with Zod schema
+    const validationResult = profileUpdateSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          error: "Validation failed",
+          details: validationResult.error.flatten().fieldErrors
+        },
+        { status: 400 }
+      );
+    }
+
+    const { name, phone, bio, location, birthday, gender } = validationResult.data;
+
+    // Parse birthday if provided, preserving null to clear the field
+    let parsedBirthday: Date | null | undefined;
+    if (birthday === null) {
+      parsedBirthday = null;
+    } else if (birthday !== undefined) {
       parsedBirthday = new Date(birthday);
-      if (isNaN(parsedBirthday.getTime())) {
-        return NextResponse.json(
-          { error: "Invalid birthday format" },
-          { status: 400 }
-        );
-      }
     }
 
     const user = await prisma.user.update({

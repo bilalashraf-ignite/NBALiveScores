@@ -1,17 +1,9 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 function WalletSuccessContent() {
-  const searchParams = useSearchParams();
-  const purchaseId = searchParams.get("purchaseId");
-
-  useEffect(() => {
-    // Could optionally refresh balance or trigger confetti here
-  }, [purchaseId]);
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <div className="max-w-md w-full text-center">

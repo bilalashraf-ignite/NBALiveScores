@@ -24,8 +24,23 @@ export default function ForgotPasswordPage() {
       if (response.ok) {
         setSuccess(true);
       } else {
-        const data = await response.json();
-        setError(data.error || "An error occurred");
+        // Safely parse response - may not be JSON for some error responses
+        let errorMessage = "An error occurred";
+        try {
+          const text = await response.text();
+          try {
+            const data = JSON.parse(text);
+            errorMessage = data.error || errorMessage;
+          } catch {
+            // Response wasn't valid JSON, use text if available
+            if (text && text.length < 200) {
+              errorMessage = text;
+            }
+          }
+        } catch {
+          // Fallback to default message
+        }
+        setError(errorMessage);
       }
     } catch {
       setError("An error occurred. Please try again.");
@@ -43,6 +58,7 @@ export default function ForgotPasswordPage() {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -80,7 +96,11 @@ export default function ForgotPasswordPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
+        <div
+          role="alert"
+          aria-live="polite"
+          className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg"
+        >
           {error}
         </div>
       )}

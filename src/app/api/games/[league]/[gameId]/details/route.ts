@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdapter } from '@/lib/adapters';
 import type { League } from '@/types/sports-data';
+import { VALID_LEAGUES } from '@/types/sports-data';
 import { apiLogger } from '@/lib/logger';
 
 /**
@@ -21,10 +22,9 @@ export async function GET(
     const { league, gameId } = await params;
 
     // Validate league parameter
-    const validLeagues: League[] = ['NBA', 'NCAA', 'EuroLeague'];
-    if (!validLeagues.includes(league as League)) {
+    if (!VALID_LEAGUES.includes(league as League)) {
       return NextResponse.json(
-        { error: `Invalid league: ${league}. Must be one of: ${validLeagues.join(', ')}` },
+        { error: `Invalid league: ${league}. Must be one of: ${VALID_LEAGUES.join(', ')}` },
         { status: 400 }
       );
     }

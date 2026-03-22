@@ -4,7 +4,9 @@ import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { SocialLoginButtons } from "@/components/social-login-buttons";
+import { Input } from "@/components/ui/input";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { OAuthButton } from "@/components/ui/oauth-button";
 
 // Validate callbackUrl to prevent open redirect attacks
 function isValidCallbackUrl(url: string | null): string {
@@ -29,6 +31,7 @@ function SignInForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -41,6 +44,7 @@ function SignInForm() {
       const result = await signIn("credentials", {
         email,
         password,
+        rememberMe: rememberMe.toString(),
         redirect: false,
       });
 
@@ -59,101 +63,143 @@ function SignInForm() {
 
   return (
     <>
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Sign in to your account
-        </h2>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Or{" "}
-          <Link
-            href="/signup"
-            className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-          >
-            create a new account
-          </Link>
+      {/* Header */}
+      <div>
+        <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
+        <p className="mt-2 text-gray-400">
+          Ready to break some records today?
         </p>
       </div>
 
+      {/* Error message */}
       {(error || errorMessage) && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
+        <div
+          role="alert"
+          aria-live="polite"
+          className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400"
+        >
           {error === "OAuthAccountNotLinked"
             ? "This email is already associated with another account. Please sign in with your original method."
             : errorMessage || "An error occurred during sign in."}
         </div>
       )}
 
-      <div className="mt-8 space-y-6">
-        <SocialLoginButtons callbackUrl={callbackUrl} />
+      {/* OAuth buttons */}
+      <div className="grid grid-cols-2 gap-4">
+        <OAuthButton provider="google" callbackUrl={callbackUrl} />
+        <OAuthButton provider="facebook" callbackUrl={callbackUrl} />
+      </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
-              Or continue with email
-            </span>
-          </div>
+      {/* Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-purple-500/20" />
         </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="bg-[#0f0f1a] px-4 text-gray-500">
+            or login with email
+          </span>
+        </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="you@example.com"
-            />
-          </div>
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          label="Email Address"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+        />
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-medium text-gray-300">
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <div className="flex items-center justify-end">
             <Link
               href="/forgot-password"
-              className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
             >
-              Forgot your password?
+              Forgot?
             </Link>
           </div>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+          />
+        </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        {/* Remember me */}
+        <div className="flex items-center gap-2">
+          <input
+            id="remember"
+            name="remember"
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="h-4 w-4 rounded border-purple-500/30 bg-[#1a1a2e] text-purple-500 focus:ring-purple-500/50 focus:ring-offset-0"
+          />
+          <label htmlFor="remember" className="text-sm text-gray-400">
+            Remember me for 30 days
+          </label>
+        </div>
+
+        {/* Submit button */}
+        <GradientButton
+          type="submit"
+          fullWidth
+          isLoading={isLoading}
+        >
+          Sign In
+          <svg
+            className="ml-2 h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            {isLoading ? "Signing in..." : "Sign in"}
-          </button>
-        </form>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M14 5l7 7m0 0l-7 7m7-7H3"
+            />
+          </svg>
+        </GradientButton>
+      </form>
+
+      {/* Sign up link */}
+      <p className="text-center text-gray-400">
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/signup"
+          className="font-medium text-purple-400 hover:text-purple-300 transition-colors"
+        >
+          Create Account
+        </Link>
+      </p>
+
+      {/* Footer links */}
+      <div className="flex items-center justify-center gap-6 pt-4 text-xs text-gray-500">
+        <Link href="/privacy" className="hover:text-gray-400 transition-colors">
+          Privacy Policy
+        </Link>
+        <Link href="/terms" className="hover:text-gray-400 transition-colors">
+          Terms of Service
+        </Link>
+        <Link href="/support" className="hover:text-gray-400 transition-colors">
+          Support
+        </Link>
       </div>
     </>
   );
@@ -163,13 +209,20 @@ export default function SignInPage() {
   return (
     <Suspense
       fallback={
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-4" />
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto mb-8" />
-          <div className="space-y-4">
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
+        <div className="animate-pulse space-y-6">
+          <div>
+            <div className="h-8 w-48 rounded bg-purple-500/20" />
+            <div className="mt-2 h-4 w-64 rounded bg-purple-500/10" />
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-12 rounded-lg bg-purple-500/10" />
+            <div className="h-12 rounded-lg bg-purple-500/10" />
+          </div>
+          <div className="space-y-4">
+            <div className="h-12 rounded-lg bg-purple-500/10" />
+            <div className="h-12 rounded-lg bg-purple-500/10" />
+          </div>
+          <div className="h-12 rounded-lg bg-purple-500/20" />
         </div>
       }
     >

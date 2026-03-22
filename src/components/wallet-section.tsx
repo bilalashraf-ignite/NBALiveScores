@@ -99,9 +99,14 @@ export function WalletSection() {
       </h3>
 
       {/* Error Messages */}
-      {(checkoutError || ledgerError) && (
+      {checkoutError && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
-          {checkoutError || ledgerError}
+          {checkoutError}
+        </div>
+      )}
+      {ledgerError && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+          {ledgerError}
         </div>
       )}
 
